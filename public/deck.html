@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomatosuki Deck</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0e101a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StreamDeck">
+<link rel="apple-touch-icon" href="/icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/deck.css">
+</head>
+<body>
+<div class="shell">
+<div id="dmask" onclick="closeSidebar()"></div>
+<aside id="sidebar"></aside>
+
+<div class="main-wrap">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="burger" onclick="openSidebar()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+    <a href="/" class="topbtn" data-i18n="topbar_home">HOME</a>
+    <a href="/customdeck.html" class="topbtn" data-i18n="topbar_custom">CUSTOM</a>
+    <a href="/deck.html" class="topbtn tbtn-ac" data-i18n="topbar_deck">DECK</a>
+    <div class="obs-wrap">
+      <button class="topbtn" onclick="toggleOBSMenu(event)" id="obs-menu-btn"><span data-i18n="topbar_obs">OBS</span> <svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="obs-dd" id="obs-dd">
+        <div class="obs-dd-item" onclick="window.open('/obs.html','_blank');closeOBSMenu()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> <span data-i18n="obs_open_overlay">Open Overlay</span></div>
+        <div class="obs-dd-item" onclick="copyOBSUrl();closeOBSMenu()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> <span data-i18n="obs_copy_url">Copy OBS URL</span></div>
+        <div class="obs-dd-item" onclick="openOBSModal();closeOBSMenu()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span data-i18n="obs_ctrl_settings">Pengaturan OBS WebSocket</span></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+    <div class="brand-text">TOMATOSUKI <span>STREAM KIT</span></div>
+    <div class="status-pill obs-status-pill" id="obs-status-pill" onclick="openOBSModal()" title="Klik untuk koneksi OBS">
+      <div class="sdot" id="obs-sdot"></div>
+      <span id="obs-status-txt" data-i18n="obs_status_disconnected">OBS OFFLINE</span>
+    </div>
+    <div class="status-pill"><div class="sdot on"></div><span data-i18n="topbar_running">RUNNING</span></div>
+  </div>
+
+  <!-- OBS SCENE SWITCHER STRIP -->
+  <div class="obs-scene-strip" id="obs-scene-strip" style="display:none;"></div>
+  <!-- OBS SOURCES & AUDIO DRAWER -->
+  <div class="obs-sources-drawer" id="obs-sources-drawer" style="display:none;"></div>
+
+  <div class="searchbar">
+    <button class="panic-btn" onclick="triggerPanicStop()" title="Panic / Stop All (Escape)" data-i18n-title="deck_panic_stop">
+      <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+      <span data-i18n="deck_panic_stop">STOP ALL</span>
+    </button>
+    <div class="vol-control" title="Master Volume Overlay">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      <input type="range" class="vol-slider" min="0" max="100" value="100" oninput="setMasterVolume(this.value)">
+    </div>
+    <input type="text" class="sbox" id="srch" placeholder="Search meme..." data-i18n-placeholder="deck_search_placeholder" oninput="render()">
+    <button class="setbtn" onclick="triggerRandomMeme()" title="🎲 Trigger Random Meme" data-i18n-title="deck_random_title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
+    </button>
+    <button class="setbtn" onclick="triggerFX('confetti')" title="🎉 Trigger Confetti Explosion" data-i18n-title="deck_confetti_title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg>
+    </button>
+    <button class="setbtn" onclick="toggleEditMode()" id="edit-mode-btn" title="Edit Mode" data-i18n-title="deck_edit_mode_title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+    </button>
+    <button class="setbtn sc-mode-btn" id="sc-mode-btn" onclick="toggleShortcutMode()" title="Shortcut Mode" data-i18n-title="deck_shortcut_mode_title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M6 12h.001M10 12h.001M14 12h.001M18 12h.001M7 16h10"/></svg>
+    </button>
+    <button class="setbtn" onclick="openNewMacroModal()" title="⚡ Buat Macro Baru (Multi-Action)" data-i18n-title="macro_new_title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </button>
+    <button class="setbtn" onclick="openSettings()" title="Settings" data-i18n-title="topbar_settings">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+
+  <div class="tabbar" id="tabbar"></div>
+  <div id="counter-btn-wrap" class="counter-btn-wrap" style="display:none;flex-wrap:wrap;gap:8px;"></div>
+  <div class="gwrap"><div class="grid" id="grid"></div></div>
+</div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="overlay" id="set-overlay">
+  <div class="panel set-panel">
+    <div class="phd">
+      <div class="phd-title" style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span data-i18n="deck_settings_title">Deck Settings</span>
+      </div>
+      <button class="pclose" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="pbody">
+      <div>
+        <div class="fl" data-i18n="deck_grid_size">Grid Size</div>
+        <div class="gsz-wrap">
+          <div class="gsz-grid" id="gsz-grid"></div>
+          <div class="gsz-label" id="gsz-label">4 × 4</div>
+        </div>
+      </div>
+      <div>
+        <div class="fl" data-i18n="deck_tab_all">Tab "All"</div>
+        <div class="toggle-row" onclick="toggleHideAll()">
+          <span data-i18n="deck_hide_all">Hide "All" tab</span>
+          <div class="toggle" id="hide-all-toggle"></div>
+        </div>
+      </div>
+      <div>
+        <div class="fl" data-i18n="deck_mobile_title">Mobile</div>
+        <div class="toggle-row" onclick="toggleHideMobileUI()">
+          <span data-i18n="deck_hide_mobile">Hide menu on mobile</span>
+          <div class="toggle" id="hide-mobile-toggle"></div>
+        </div>
+        <div style="font-size:.52rem;color:var(--tx3);margin-top:5px;line-height:1.5;" data-i18n="deck_hide_mobile_hint">Sembunyikan topbar, search, edit & settings saat diakses dari HP. Tahan 3 detik di area kosong untuk buka settings.</div>
+      </div>
+      <div id="shortcut-display-section">
+        <div class="fl" data-i18n="deck_sc_display_title">Shortcut Display</div>
+        <div class="toggle-row" onclick="toggleShowShortcuts()">
+          <span data-i18n="deck_show_shortcuts">Tampilkan shortcut di card</span>
+          <div class="toggle" id="show-shortcuts-toggle"></div>
+        </div>
+        <div style="font-size:.52rem;color:var(--tx3);margin-top:5px;line-height:1.5;" data-i18n="deck_show_shortcuts_hint">Saat aktif, nama meme disembunyikan dan shortcut key ditampilkan di bawah card.</div>
+      </div>
+      <div>
+        <div class="fl" data-i18n="deck_sc_enable_title">Keyboard Shortcut</div>
+        <div class="toggle-row" id="deck-sc-toggle-row" onclick="toggleShortcutFromDeck()">
+          <span data-i18n="deck_sc_enable">Aktifkan keyboard shortcut</span>
+          <div class="toggle" id="deck-sc-toggle"></div>
+        </div>
+        <div style="font-size:.52rem;color:var(--tx3);margin-top:5px;line-height:1.5;" data-i18n="deck_sc_enable_hint">Matikan untuk menonaktifkan semua shortcut keyboard di seluruh aplikasi.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW/EDIT TAB OVERLAY -->
+<div class="overlay" id="tab-overlay">
+  <div class="panel tab-panel">
+    <div class="phd">
+      <div class="phd-title" id="tab-panel-title" data-i18n="tab_modal_new_title">New Tab</div>
+      <button class="pclose" onclick="closeTabPanel()">✕</button>
+    </div>
+    <div class="pbody">
+      <div>
+        <div class="fl" data-i18n="tab_name_label">Tab Name (max 6 chars)</div>
+        <div class="tab-name-wrap">
+          <input type="text" class="tab-name-inp" id="tab-name-inp" placeholder="e.g. Kocak" data-i18n-placeholder="tab_name_placeholder" maxlength="10" oninput="onTabNameInput()">
+          <span class="char-count" id="char-count">0/6</span>
+        </div>
+      </div>
+      <div id="tab-sc-section">
+        <div class="fl"><span data-i18n="tab_shortcut_label">Tab Shortcut</span> <span style="font-size:.52rem;color:var(--tx3);font-weight:400;" data-i18n="tab_optional">(opsional)</span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div id="tab-sc-preview" style="flex:1;font-size:.62rem;font-family:'Syne Mono',monospace;color:var(--tx2);background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;" data-i18n="sc_unset">Belum diatur</div>
+          <button onclick="openShortcutModal('tab', null)" style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:var(--ac);padding:6px 10px;border-radius:6px;font-size:.62rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;display:inline-flex;align-items:center;gap:4px;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+            Set
+          </button>
+          <button onclick="clearTabShortcut()" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#ef4444;padding:6px 8px;border-radius:6px;font-size:.62rem;cursor:pointer;" title="Clear">✕</button>
+        </div>
+      </div>
+      <div id="tab-counter-section">
+        <div class="fl"><span data-i18n="tab_counter_label">Counter</span> <span style="font-size:.52rem;color:var(--tx3);font-weight:400;" data-i18n="tab_optional">(opsional)</span></div>
+        <div class="counter-picker-grid" id="tab-counter-picker"></div>
+        <div style="font-size:.58rem;color:var(--tx3);margin-top:4px;" data-i18n="tab_counter_hint">Counter yang dipilih akan muncul sebagai tombol di deck view tab ini.</div>
+      </div>
+      <div>
+        <div class="fl" data-i18n="tab_select_memes">Select Memes</div>
+        <div class="meme-sel-grid" id="meme-sel-grid"></div>
+      </div>
+    </div>
+    <div class="pfooter" id="tab-footer">
+      <button class="bcnl" onclick="closeTabPanel()" data-i18n="modal_cancel_btn">Cancel</button>
+      <button class="bsave" onclick="saveTab()" data-i18n="tab_save_btn">Save Tab</button>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTER EDIT OVERLAY -->
+<div class="counter-edit-overlay" id="counter-edit-overlay">
+  <div class="counter-edit-panel">
+    <div class="phd">
+      <div class="phd-title" data-i18n="counter_edit_title">Edit Counter</div>
+      <button class="pclose" onclick="closeCounterEdit()">✕</button>
+    </div>
+    <div class="pbody">
+      <div>
+        <div class="fl" data-i18n="counter_edit_color">Warna Counter</div>
+        <div class="color-presets" id="color-presets"></div>
+        <div class="color-custom-wrap">
+          <input type="color" class="color-custom-inp" id="color-custom-inp" value="#38bdf8" oninput="pickCustomColor(this.value)">
+          <span style="font-size:.65rem;color:var(--tx2);" data-i18n="counter_custom_color">Custom warna</span>
+          <span style="font-family:'Syne Mono',monospace;font-size:.6rem;color:var(--ac);" id="color-hex-display">#38bdf8</span>
+        </div>
+      </div>
+      <div id="counter-sc-section">
+        <div class="fl"><span data-i18n="counter_sc_title">Shortcut</span> <span style="font-size:.52rem;color:var(--tx3);font-weight:400;" data-i18n="tab_optional">(opsional)</span></div>
+        
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <div style="width:40px;font-size:.6rem;color:var(--tx2);font-weight:700;">+1 (Tap)</div>
+          <div id="counter-sc-inc-preview" style="flex:1;font-size:.65rem;font-family:'Inter',sans-serif;font-weight:700;color:var(--tx2);background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;" data-i18n="sc_unset">Belum diatur</div>
+          <button onclick="openShortcutModal('counter_inc', editingCounterFilename)" style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:var(--ac);padding:6px 10px;border-radius:6px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+            Set
+          </button>
+          <button onclick="clearCounterShortcut('inc')" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#ef4444;padding:6px 8px;border-radius:6px;font-size:.62rem;cursor:pointer;" title="Clear">✕</button>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <div style="width:40px;font-size:.6rem;color:var(--tx2);font-weight:700;">-1 (Min)</div>
+          <div id="counter-sc-dec-preview" style="flex:1;font-size:.65rem;font-family:'Inter',sans-serif;font-weight:700;color:var(--tx2);background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;" data-i18n="sc_unset">Belum diatur</div>
+          <button onclick="openShortcutModal('counter_dec', editingCounterFilename)" style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:var(--ac);padding:6px 10px;border-radius:6px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+            Set
+          </button>
+          <button onclick="clearCounterShortcut('dec')" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#ef4444;padding:6px 8px;border-radius:6px;font-size:.62rem;cursor:pointer;" title="Clear">✕</button>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="width:40px;font-size:.6rem;color:var(--tx2);font-weight:700;">0 (Reset)</div>
+          <div id="counter-sc-res-preview" style="flex:1;font-size:.65rem;font-family:'Inter',sans-serif;font-weight:700;color:var(--tx2);background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;" data-i18n="sc_unset">Belum diatur</div>
+          <button onclick="openShortcutModal('counter_res', editingCounterFilename)" style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:var(--ac);padding:6px 10px;border-radius:6px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+            Set
+          </button>
+          <button onclick="clearCounterShortcut('res')" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#ef4444;padding:6px 8px;border-radius:6px;font-size:.62rem;cursor:pointer;" title="Clear">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="pfooter">
+      <button class="bcnl" onclick="closeCounterEdit()" data-i18n="modal_cancel_btn">Cancel</button>
+      <button class="bsave" onclick="saveCounterEdit()" data-i18n="modal_save_btn">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHORTCUT MODAL -->
+<div class="sc-overlay" id="sc-overlay">
+  <div class="sc-panel">
+    <div class="sc-phd">
+      <div class="sc-phd-title" style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+        <span data-i18n="sc_modal_title">Set Shortcut</span>
+      </div>
+      <button class="pclose" onclick="closeShortcutModal()">✕</button>
+    </div>
+    <div class="sc-pbody">
+      <div class="sc-for"><span data-i18n="sc_for_label">Shortcut untuk:</span> <b id="sc-for-name">—</b></div>
+
+      <!-- Modifier keys -->
+      <div>
+        <div class="fl" style="margin-bottom:6px;" data-i18n="sc_mod_key">Modifier Key</div>
+        <div class="sc-mod-row">
+          <button class="sc-mod-btn" id="mod-ctrl"  onclick="toggleMod('Ctrl')">Ctrl</button>
+          <button class="sc-mod-btn" id="mod-alt"   onclick="toggleMod('Alt')">Alt</button>
+          <button class="sc-mod-btn" id="mod-shift" onclick="toggleMod('Shift')">Shift</button>
+        </div>
+      </div>
+
+      <!-- Key type tabs -->
+      <div>
+        <div class="fl" style="margin-bottom:6px;" data-i18n="sc_key_label">Key</div>
+        <div class="sc-key-tabs">
+          <div class="sc-key-tab on" onclick="switchKeyTab('alpha',this)">A–Z</div>
+          <div class="sc-key-tab" onclick="switchKeyTab('num',this)">0–9</div>
+          <div class="sc-key-tab" onclick="switchKeyTab('fn',this)">F1–F24</div>
+        </div>
+        <div style="padding-top:10px;">
+          <div class="sc-key-grid alpha" id="sc-key-grid"></div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="sc-preview" id="sc-preview" data-i18n="sc_pick_hint">Pilih modifier + key</div>
+
+      <!-- Actions -->
+      <div class="sc-actions">
+        <button class="sc-clear-btn" onclick="clearShortcutModal()" data-i18n="sc_clear_btn">✕ Clear</button>
+        <button class="sc-save-btn" onclick="saveShortcutModal()" data-i18n="sc_save_btn">Simpan Shortcut</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OBS WEBSOCKET SETTINGS OVERLAY -->
+<div class="overlay" id="obs-overlay">
+  <div class="panel set-panel" style="max-width:440px;">
+    <div class="phd">
+      <div class="phd-title" style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span data-i18n="obs_ctrl_settings">Pengaturan OBS WebSocket</span>
+      </div>
+      <button class="pclose" onclick="closeOBSModal()">✕</button>
+    </div>
+    <div class="pbody">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sdot" id="obs-modal-sdot"></div>
+          <div>
+            <div style="font-size:0.75rem;font-weight:700;" id="obs-modal-status-txt">OBS Terputus</div>
+            <div style="font-size:0.58rem;color:var(--tx3);" id="obs-modal-status-sub">ws://127.0.0.1:4455</div>
+          </div>
+        </div>
+        <button id="obs-modal-action-btn" class="setbtn" onclick="toggleOBSConnection()" style="font-size:0.65rem;font-weight:700;padding:5px 12px;">Connect</button>
+      </div>
+
+      <div class="obs-settings-grid" style="margin-top:10px;">
+        <div>
+          <div class="fl" data-i18n="obs_host_label">IP / Host OBS</div>
+          <input type="text" class="tab-name-inp" id="obs-host-inp" placeholder="127.0.0.1" value="127.0.0.1" style="width:100%;">
+        </div>
+        <div>
+          <div class="fl" data-i18n="obs_port_label">Port WebSocket</div>
+          <input type="number" class="tab-name-inp" id="obs-port-inp" placeholder="4455" value="4455" style="width:100%;">
+        </div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <div class="fl" data-i18n="obs_pwd_label">Password WebSocket</div>
+        <input type="password" class="tab-name-inp" id="obs-pwd-inp" placeholder="Password OBS (opsional)" style="width:100%;">
+      </div>
+
+      <div style="margin-top:10px;">
+        <div class="toggle-row" onclick="toggleOBSAutoConnect()">
+          <span data-i18n="obs_autoconnect_label">Otomatis hubungkan ke OBS</span>
+          <div class="toggle on" id="obs-autoconnect-toggle"></div>
+        </div>
+      </div>
+
+      <div style="font-size:0.56rem;color:var(--tx3);line-height:1.5;margin-top:10px;" data-i18n="obs_quick_connect_hint">
+        Aktifkan Server WebSocket di menu Tools > WebSocket Server Settings di OBS Studio.
+      </div>
+    </div>
+    <div class="pfooter">
+      <button class="bcnl" onclick="closeOBSModal()" data-i18n="modal_close_btn">Tutup</button>
+      <button class="bsave" onclick="saveAndConnectOBS()" data-i18n="obs_connect_btn">Hubungkan ke OBS</button>
+    </div>
+  </div>
+</div>
+
+<!-- MULTI-ACTION MACRO BUILDER OVERLAY -->
+<div class="overlay" id="macro-overlay">
+  <div class="panel macro-panel" style="max-width:500px;">
+    <div class="phd">
+      <div class="phd-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:1.1rem;color:var(--brand);">⚡</span>
+        <span id="macro-panel-title" data-i18n="macro_new_title">Buat Macro Baru</span>
+      </div>
+      <button class="pclose" onclick="closeMacroModal()">✕</button>
+    </div>
+    <div class="pbody">
+      <div>
+        <div class="fl" data-i18n="macro_name_label">Nama Macro</div>
+        <div style="display:flex;gap:8px;position:relative;">
+          <input type="text" class="tab-name-inp" id="macro-name-inp" placeholder="e.g. Intro Stream" style="flex:1;">
+          <div class="macro-icon-picker-btn" id="macro-icon-btn" onclick="toggleMacroIconPicker()">⚡</div>
+          <div class="macro-icons-dropdown" id="macro-icons-dd" style="display:none;">
+            <span onclick="pickMacroIcon('⚡')">⚡</span>
+            <span onclick="pickMacroIcon('🎬')">🎬</span>
+            <span onclick="pickMacroIcon('🎵')">🎵</span>
+            <span onclick="pickMacroIcon('🎮')">🎮</span>
+            <span onclick="pickMacroIcon('🔥')">🔥</span>
+            <span onclick="pickMacroIcon('✨')">✨</span>
+            <span onclick="pickMacroIcon('🛑')">🛑</span>
+            <span onclick="pickMacroIcon('🏆')">🏆</span>
+            <span onclick="pickMacroIcon('💥')">💥</span>
+            <span onclick="pickMacroIcon('🎯')">🎯</span>
+            <span onclick="pickMacroIcon('🚨')">🚨</span>
+            <span onclick="pickMacroIcon('🎤')">🎤</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="fl" data-i18n="macro_color_label">Warna Tombol</div>
+        <div class="color-presets" id="macro-color-presets"></div>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;position:relative;">
+          <div class="fl" style="margin-bottom:0;" data-i18n="macro_steps_label">Langkah Aksi (Actions)</div>
+          <div class="macro-add-menu-wrap">
+            <button type="button" class="setbtn" onclick="toggleAddStepMenu(event)" style="font-size:0.65rem;font-weight:800;padding:4px 10px;color:var(--brand);border-color:var(--brand);" data-i18n="macro_add_step">+ Tambah Aksi</button>
+            <div class="macro-add-dropdown" id="macro-add-dd" style="display:none;">
+              <div onclick="addMacroStep('obs_scene')">🎬 Ganti Scene OBS</div>
+              <div onclick="addMacroStep('obs_source_visibility')">👁️ Toggle Source OBS</div>
+              <div onclick="addMacroStep('obs_audio_mute')">🎙️ Mute / Unmute Audio OBS</div>
+              <div onclick="addMacroStep('play_media')">🎵 Putar Meme / Media</div>
+              <div onclick="addMacroStep('trigger_fx')">✨ Trigger Layar FX</div>
+              <div onclick="addMacroStep('counter_op')">🏆 Ubah Counter (+1/Reset)</div>
+              <div onclick="addMacroStep('delay')">⏳ Tunggu / Jeda (Delay)</div>
+              <div onclick="addMacroStep('panic_stop')">🛑 Stop All Media</div>
+            </div>
+          </div>
+        </div>
+        <div class="macro-steps-list" id="macro-steps-list"></div>
+      </div>
+    </div>
+    <div class="pfooter" id="macro-footer">
+      <button class="bcnl" onclick="closeMacroModal()" data-i18n="modal_cancel_btn">Batal</button>
+      <button class="bsave" onclick="saveCurrentMacro()" data-i18n="macro_save_btn">Simpan Macro</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/ksk-ui.js"></script>
+<script src="/js/shared.js"></script>
+<script>
+const socket = io();
+socket.on('connect',    () => { document.querySelectorAll('.status-pill .sdot').forEach(d => d.classList.add('on')); });
+socket.on('disconnect', () => { document.querySelectorAll('.status-pill .sdot').forEach(d => d.classList.remove('on')); });
+
+// Dengarkan toggle shortcut dari index.html (BroadcastChannel)
+try {
+  const _kskChannel = new BroadcastChannel('ksk');
+  _kskChannel.onmessage = (e) => {
+    if (e.data && e.data.type === 'shortcuts_toggle') {
+      // Re-register shortcut ke OS sesuai state baru
+      // (keydown handler sudah auto-check localStorage, tapi Electron global shortcut perlu di-update manual)
+      updateGlobalKeyListeners();
+      applyShortcutVisibility();
+      if (typeof toast === 'function') toast(e.data.enabled ? '⌨ Shortcut aktif' : '⌨ Shortcut dimatikan');
+    }
+  };
+} catch {}
+
+// Register Service Worker for PWA (Progressive Web App)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+let deferredPWAPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPWAPrompt = e;
+  const pwaBtn = document.getElementById('pwa-install-btn');
+  if (pwaBtn) pwaBtn.style.display = 'flex';
+});
+
+async function installPWA() {
+  if (deferredPWAPrompt) {
+    deferredPWAPrompt.prompt();
+    const { outcome } = await deferredPWAPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredPWAPrompt = null;
+      const pwaBtn = document.getElementById('pwa-install-btn');
+      if (pwaBtn) pwaBtn.style.display = 'none';
+      if (typeof toast === 'function') toast('🎉 Aplikasi berhasil diinstall ke Home Screen!');
+    }
+  } else {
+    if (typeof toast === 'function') toast('Gunakan menu browser: "Add to Home screen" / "Install App"');
+  }
+}
+
+// Haptic tactile touch feedback for mobile & tablet
+function hapticFeedback() {
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try { navigator.vibrate(35); } catch {}
+  }
+}
+
+// ─── OBS REMOTE CONTROLLER ──────────────────────────────
+let obsStatus = { connected: false, currentScene: null, scenes: [], config: { ip: '127.0.0.1', port: 4455, autoConnect: true, hasPassword: false } };
+let obsSceneItems = [];
+let obsAudioInputs = [];
+let isSourcesDrawerOpen = false;
+
+async function loadOBSStatus() {
+  try {
+    const r = await fetch('/api/obs/status');
+    obsStatus = await r.json();
+    renderOBSUI();
+    if (obsStatus.connected) {
+      loadOBSSourcesAndAudio();
+    }
+  } catch {}
+}
+
+async function loadOBSSourcesAndAudio() {
+  if (!obsStatus.connected) return;
+  try {
+    const [itemsRes, inputsRes] = await Promise.all([
+      fetch('/api/obs/current-items').then(r => r.json()).catch(() => ({ items: [] })),
+      fetch('/api/obs/inputs').then(r => r.json()).catch(() => ({ inputs: [] }))
+    ]);
+    obsSceneItems = itemsRes.items || [];
+    obsAudioInputs = inputsRes.inputs || [];
+    renderOBSSourcesDrawer();
+  } catch {}
+}
+
+function toggleOBSSourcesDrawer() {
+  hapticFeedback();
+  isSourcesDrawerOpen = !isSourcesDrawerOpen;
+  const drawer = document.getElementById('obs-sources-drawer');
+  const btn = document.getElementById('obs-sources-toggle-btn');
+  if (drawer) drawer.style.display = isSourcesDrawerOpen ? 'flex' : 'none';
+  if (btn) btn.classList.toggle('active', isSourcesDrawerOpen);
+  if (isSourcesDrawerOpen) {
+    loadOBSSourcesAndAudio();
+  }
+}
+
+function renderOBSSourcesDrawer() {
+  const drawer = document.getElementById('obs-sources-drawer');
+  if (!drawer) return;
+  if (!obsStatus.connected) {
+    drawer.style.display = 'none';
+    return;
+  }
+
+  let html = '';
+
+  // Active Scene Sources
+  html += `
+  <div class="obs-drawer-section">
+    <div class="obs-drawer-label">👁️ SOURCES:</div>
+    <div class="obs-drawer-items">`;
+  if (obsSceneItems.length) {
+    obsSceneItems.forEach(item => {
+      const isEn = !!item.sceneItemEnabled;
+      html += `
+      <div class="obs-source-pill ${isEn ? 'active' : 'inactive'}" onclick="toggleOBSSourceItem(${item.sceneItemId})" title="${isEn ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan'}">
+        <span>${isEn ? '👁️' : '👁️‍🗨️'}</span>
+        <span>${item.sourceName}</span>
+      </div>`;
+    });
+  } else {
+    html += `<span style="font-size:0.62rem;color:var(--tx3);">(Tidak ada source di scene ini)</span>`;
+  }
+  html += `</div></div>`;
+
+  // Audio Inputs Mute Toggles
+  if (obsAudioInputs.length) {
+    html += `
+    <div class="obs-drawer-section" style="border-top:1px dashed rgba(255,255,255,0.06);padding-top:6px;">
+      <div class="obs-drawer-label">🎙️ AUDIO:</div>
+      <div class="obs-drawer-items">`;
+    obsAudioInputs.forEach(inp => {
+      const isMuted = !!inp.inputMuted;
+      const esc = inp.inputName.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      html += `
+      <div class="obs-audio-pill ${isMuted ? 'muted' : 'unmuted'}" onclick="toggleOBSAudioMute('${esc}')" title="${isMuted ? 'Unmute input' : 'Mute input'}">
+        <span>${isMuted ? '🔇' : '🎙️'}</span>
+        <span>${inp.inputName}</span>
+        <span style="font-size:0.52rem;opacity:0.8;">${isMuted ? 'MUTED' : 'ON'}</span>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  drawer.innerHTML = html;
+}
+
+async function toggleOBSSourceItem(sceneItemId) {
+  hapticFeedback();
+  if (!obsStatus.connected) return;
+  try {
+    const r = await fetch('/api/obs/toggle-item', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sceneItemId })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      const idx = obsSceneItems.findIndex(x => x.sceneItemId === sceneItemId);
+      if (idx >= 0) obsSceneItems[idx].sceneItemEnabled = d.sceneItemEnabled;
+      renderOBSSourcesDrawer();
+    }
+  } catch(e) {}
+}
+
+async function toggleOBSAudioMute(inputName) {
+  hapticFeedback();
+  if (!obsStatus.connected) return;
+  try {
+    const r = await fetch('/api/obs/toggle-mute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inputName })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      const idx = obsAudioInputs.findIndex(x => x.inputName === inputName);
+      if (idx >= 0) obsAudioInputs[idx].inputMuted = d.inputMuted;
+      renderOBSSourcesDrawer();
+    }
+  } catch(e) {}
+}
+
+function renderOBSUI() {
+  const pill = document.getElementById('obs-status-pill');
+  const dot = document.getElementById('obs-sdot');
+  const txt = document.getElementById('obs-status-txt');
+  const isConn = !!obsStatus.connected;
+
+  if (pill) pill.classList.toggle('connected', isConn);
+  if (dot) dot.classList.toggle('on', isConn);
+  if (txt) txt.textContent = isConn ? (KSK.t('obs_status_connected') || 'OBS CONNECTED') : (KSK.t('obs_status_disconnected') || 'OBS OFFLINE');
+
+  // Modal UI
+  const mDot = document.getElementById('obs-modal-sdot');
+  const mTxt = document.getElementById('obs-modal-status-txt');
+  const mSub = document.getElementById('obs-modal-status-sub');
+  const mBtn = document.getElementById('obs-modal-action-btn');
+  if (mDot) mDot.className = 'sdot' + (isConn ? ' on' : '');
+  if (mTxt) mTxt.textContent = isConn ? (KSK.t('obs_status_connected') || 'OBS Terhubung') : (KSK.t('obs_status_disconnected') || 'OBS Terputus');
+  if (mSub) mSub.textContent = `ws://${obsStatus.config?.ip || '127.0.0.1'}:${obsStatus.config?.port || 4455}${obsStatus.currentScene ? ' · ' + obsStatus.currentScene : ''}`;
+  if (mBtn) mBtn.textContent = isConn ? (KSK.t('obs_disconnect_btn') || 'Disconnect') : (KSK.t('obs_connect_btn') || 'Connect');
+
+  renderOBSSceneStrip();
+  if (isConn) {
+    loadOBSSourcesAndAudio();
+  }
+}
+
+function renderOBSSceneStrip() {
+  const strip = document.getElementById('obs-scene-strip');
+  if (!strip) return;
+  if (!obsStatus.connected || !obsStatus.scenes || !obsStatus.scenes.length) {
+    strip.style.display = 'none';
+    strip.innerHTML = '';
+    const drawer = document.getElementById('obs-sources-drawer');
+    if (drawer) drawer.style.display = 'none';
+    return;
+  }
+  strip.style.display = 'flex';
+  
+  let html = `
+  <div class="obs-strip-header">
+    <div class="obs-strip-title">
+      <span class="obs-pulse-icon"></span>
+      <span class="obs-strip-tag">OBS SCENES</span>
+    </div>
+  </div>
+  <div class="obs-scenes-carousel">`;
+
+  obsStatus.scenes.forEach((sc, idx) => {
+    const isAct = sc === obsStatus.currentScene;
+    const esc = sc.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    html += `
+    <button class="obs-scene-card${isAct ? ' active-scene' : ''}" onclick="switchOBSScene('${esc}')" title="Switch to ${sc}">
+      <div class="obs-scene-top">
+        <span class="obs-scene-badge">${isAct ? '● LIVE' : `SCENE ${idx + 1}`}</span>
+        <svg class="obs-scene-icon" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect width="18" height="14" x="3" y="5" rx="2"/><polygon points="23 7 16 12 23 17 23 7"/>
+        </svg>
+      </div>
+      <div class="obs-scene-name">${sc}</div>
+      <div class="obs-scene-indicator"></div>
+    </button>`;
+  });
+
+  html += `</div>
+  <div class="obs-strip-actions">
+    <button class="obs-strip-btn${isSourcesDrawerOpen ? ' active' : ''}" id="obs-sources-toggle-btn" onclick="toggleOBSSourcesDrawer()" title="Kontrol Sources & Audio">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+      <span>SOURCES & AUDIO</span>
+    </button>
+    <button class="obs-strip-cfg-btn" onclick="openOBSModal()" title="Pengaturan OBS">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>`;
+  strip.innerHTML = html;
+}
+
+async function switchOBSScene(name) {
+  hapticFeedback();
+  if (!obsStatus.connected) return;
+  try {
+    const r = await fetch('/api/obs/set-scene', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sceneName: name })
+    });
+    const d = await r.json();
+    if (d.success) {
+      obsStatus.currentScene = d.currentScene;
+      renderOBSUI();
+      loadOBSSourcesAndAudio();
+      if (typeof toast === 'function') toast((KSK.t('toast_obs_scene_switched') || '🎬 Pindah ke scene: ') + name);
+    }
+  } catch(e) {
+    if (typeof toast === 'function') toast('Gagal mengganti scene');
+  }
+}
+
+function openOBSModal() {
+  if (obsStatus.config) {
+    document.getElementById('obs-host-inp').value = obsStatus.config.ip || '127.0.0.1';
+    document.getElementById('obs-port-inp').value = obsStatus.config.port || 4455;
+    document.getElementById('obs-autoconnect-toggle').classList.toggle('on', obsStatus.config.autoConnect !== false);
+  }
+  renderOBSUI();
+  document.getElementById('obs-overlay').classList.add('open');
+}
+
+function closeOBSModal() {
+  document.getElementById('obs-overlay').classList.remove('open');
+}
+
+function toggleOBSAutoConnect() {
+  const toggle = document.getElementById('obs-autoconnect-toggle');
+  toggle.classList.toggle('on');
+}
+
+async function toggleOBSConnection() {
+  if (obsStatus.connected) {
+    await disconnectOBS();
+  } else {
+    await saveAndConnectOBS();
+  }
+}
+
+async function saveAndConnectOBS() {
+  const ip = document.getElementById('obs-host-inp').value.trim() || '127.0.0.1';
+  const port = parseInt(document.getElementById('obs-port-inp').value, 10) || 4455;
+  const password = document.getElementById('obs-pwd-inp').value;
+  const autoConnect = document.getElementById('obs-autoconnect-toggle').classList.contains('on');
+
+  const actionBtn = document.getElementById('obs-modal-action-btn');
+  if (actionBtn) { actionBtn.textContent = 'Connecting...'; actionBtn.disabled = true; }
+
+  try {
+    const r = await fetch('/api/obs/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip, port, password, autoConnect })
+    });
+    const d = await r.json();
+    if (d.success) {
+      obsStatus = d.status;
+      renderOBSUI();
+      if (typeof toast === 'function') toast(KSK.t('toast_obs_connected') || '✅ Berhasil terhubung ke OBS Studio!');
+      closeOBSModal();
+    } else {
+      if (typeof toast === 'function') toast(KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.');
+    }
+  } catch(e) {
+    if (typeof toast === 'function') toast(KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.');
+  } finally {
+    if (actionBtn) actionBtn.disabled = false;
+    renderOBSUI();
+  }
+}
+
+async function disconnectOBS() {
+  try {
+    await fetch('/api/obs/disconnect', { method: 'POST' });
+    obsStatus.connected = false;
+    obsStatus.currentScene = null;
+    obsStatus.scenes = [];
+    renderOBSUI();
+    if (typeof toast === 'function') toast(KSK.t('toast_obs_disconnected') || 'OBS Studio terputus');
+  } catch {}
+}
+
+socket.on('obs-status-changed', (data) => {
+  if (data) {
+    obsStatus = data;
+    renderOBSUI();
+  }
+});
+
+socket.on('obs-scene-changed', (data) => {
+  if (data) {
+    obsStatus.currentScene = data.currentScene;
+    if (data.scenes) obsStatus.scenes = data.scenes;
+    renderOBSUI();
+  }
+});
+
+// Close OBS overlay on backdrop click
+document.getElementById('obs-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('obs-overlay')) closeOBSModal();
+});
+
+// ─── OBS DROPDOWN ───────────────────────────────────────
+let obsUrl = location.protocol + '//' + location.hostname + ':' + location.port + '/obs.html';
+(async()=>{
+  try{
+    const r=await fetch('/api/local-ip');
+    const d=await r.json();
+    obsUrl='http://'+d.ip+':'+d.port+'/obs.html';
+  }catch{}
+})();
+function toggleOBSMenu(e) {
+  e.stopPropagation();
+  document.getElementById('obs-dd').classList.toggle('open');
+}
+function closeOBSMenu() {
+  document.getElementById('obs-dd').classList.remove('open');
+}
+function copyOBSUrl() {
+  navigator.clipboard.writeText(obsUrl).then(() => {
+    const btn = document.getElementById('obs-menu-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ ' + (KSK.t('toast_copied') || 'Copied!');
+    btn.style.borderColor = 'var(--gn)';
+    btn.style.color = 'var(--gn)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 1500);
+  }).catch(() => {});
+}
+document.addEventListener('click', () => closeOBSMenu());
+
+// ─── STATE ───────────────────────────────────────────────
+let files = [], active = null, lastSig = '';
+let curTab = 'all'; // 'all' or tab id
+let editingTabId = null;
+
+let settings = defSettings();
+let settingsSaveTimer = null;
+function defSettings() {
+  return { cols: 4, rows: 4, hideAll: false, hideMobileUI: false, showShortcuts: false, tabs: [], counterColors: {}, shortcuts: {}, counterShortcuts: {}, tabShortcuts: {} };
+}
+async function loadSettingsFromServer() {
+  try {
+    const r = await fetch('/api/deck-settings');
+    const data = await r.json();
+    if (data && typeof data === 'object') {
+      settings = { ...defSettings(), ...data };
+    }
+  } catch {}
+  updateGlobalKeyListeners();
+}
+function saveSettings() {
+  clearTimeout(settingsSaveTimer);
+  settingsSaveTimer = setTimeout(() => {
+    fetch('/api/deck-settings', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(settings)
+    }).catch(() => {});
+  }, 300);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────
+function getType(n) {
+  const e = n.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp'].includes(e)) return 'image';
+  if (['mp4','webm','mov'].includes(e)) return 'video';
+  return 'audio';
+}
+function getLabel(f) { return (f.settings && f.settings.displayName) || f.name; }
+function getThumb(f) {
+  const t = getType(f.name);
+  if (t === 'image') return '/assets/' + encodeURIComponent(f.name);
+  if (t === 'video') {
+    const td = f.settings && f.settings.thumbnailData;
+    return td || '/api/thumb/' + encodeURIComponent(f.name);
+  }
+  return null;
+}
+
+// ─── LOAD FILES ──────────────────────────────────────────
+async function loadFiles() {
+  try { const r = await fetch('/api/media'); files = await r.json(); } catch { files = []; }
+  const sig = files.map(f => f.name + (f.settings ? (f.settings.displayName||'')+(f.settings.thumbnailData?'1':'0') : '0')).join('|');
+  if (sig !== lastSig) { lastSig = sig; renderTabs(); render(); return; }
+  // Just update active highlights
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('act', c.dataset.nm === active));
+}
+
+// ─── TABS ────────────────────────────────────────────────
+let editMode = false;
+
+function toggleEditMode() {
+  editMode = !editMode;
+  
+  // Matiin mode shortcut kalau mode edit dinyalain
+  if (editMode && scMode) toggleShortcutMode(); 
+
+  const btn = document.getElementById('edit-mode-btn');
+  btn.classList.toggle('edit-on', editMode);
+  btn.innerHTML = editMode ? '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' : '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+  document.getElementById('grid').classList.toggle('edit-mode', editMode);
+  document.getElementById('counter-btn-wrap').classList.toggle('edit-mode-counters', editMode);
+  
+  // Munculin Editor bar (Merah)
+  const bar = document.getElementById('editor-bar');
+  if(bar) bar.style.display = editMode ? 'flex' : 'none';
+  
+  // Kasih jarak bawah biar meme nggak ketutupan bar
+  const gwrap = document.querySelector('.gwrap');
+  if(gwrap) gwrap.style.paddingBottom = (editMode || scMode) ? '56px' : '8px';
+  
+  renderTabs();
+  render();
+}
+
+function exitEditorMode() { if (editMode) toggleEditMode(); }
+
+function renderTabs() {
+  const bar = document.getElementById('tabbar');
+  const tabs = settings.tabs || [];
+  const hideAll = settings.hideAll;
+  let html = '';
+
+  if (!hideAll) {
+    html += `<div class="tab${curTab==='all'?' on':''}" onclick="switchTab('all')">All</div>`;
+  } else if (curTab === 'all' && tabs.length) {
+    curTab = tabs[0].id;
+  }
+
+  tabs.forEach(t => {
+    // Tampilkan tombol Gear kalau di mode Edit ATAU mode Shortcut
+    if (editMode || scMode) {
+      html += `<div class="tab${curTab===t.id?' on':''}" onclick="switchTab('${t.id}')">
+        ${t.name}
+        <button class="tab-edit-btn" onclick="event.stopPropagation();openEditTab('${t.id}')" title="Edit tab"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        ${editMode ? `<button class="tab-del-btn" onclick="event.stopPropagation();deleteTab('${t.id}')" title="Hapus tab"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>` : ''}
+      </div>`;
+    } else {
+      html += `<div class="tab${curTab===t.id?' on':''}" onclick="switchTab('${t.id}')">${t.name}</div>`;
+    }
+  });
+
+  html += `<div class="tab-add" onclick="openNewTab()" title="New tab"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>`;
+  bar.innerHTML = html;
+}
+
+function switchTab(id) {
+  curTab = id;
+  renderTabs();
+  render();
+  updateCounterDisplay();
+}
+
+// ─── GRID RENDER ─────────────────────────────────────────
+function render() {
+  applyGridSize();
+  const q = document.getElementById('srch').value.toLowerCase();
+  // Apply global order if set
+  let fs = [...files];
+  if (curTab === 'all' && settings.globalOrder && settings.globalOrder.length) {
+    fs.sort((a, b) => {
+      const ai = settings.globalOrder.indexOf(a.name);
+      const bi = settings.globalOrder.indexOf(b.name);
+      if (ai < 0 && bi < 0) return 0;
+      if (ai < 0) return 1;
+      if (bi < 0) return -1;
+      return ai - bi;
+    });
+  }
+
+// Filter by tab
+  if (curTab !== 'all') {
+    const tab = (settings.tabs || []).find(t => t.id === curTab);
+    if (tab) {
+      // HANYA tampilkan item yang dipilih saat bikin tab, sesuai urutannya
+      fs = tab.items.map(name => fs.find(f => f.name === name)).filter(Boolean);
+    } else {
+      fs = [];
+    }
+  } else {
+    // Sembunyikan audio yang merupakan companion audio dari meme lain atau bertag isCompanionOnly
+    const companionAudios = new Set(
+      files.map(f => f.settings && f.settings.companionAudio).filter(Boolean)
+    );
+    fs = fs.filter(f => {
+      if (getType(f.name) === 'audio') {
+        if (f.settings && (f.settings.isCompanionOnly || f.settings.hiddenFromDeck)) return false;
+        if (companionAudios.has(f.name)) return false;
+      }
+      return true;
+    });
+  }
+
+  // Filter by search
+  if (q) fs = fs.filter(f => getLabel(f).toLowerCase().includes(q) || f.name.toLowerCase().includes(q));
+
+  // Filter macros
+  let tabMacros = [];
+  if (curTab === 'all') {
+    tabMacros = [...macros];
+  } else {
+    tabMacros = macros.filter(m => m.tab === curTab || m.tab === 'all');
+  }
+  if (q) tabMacros = tabMacros.filter(m => m.name.toLowerCase().includes(q));
+
+  const g = document.getElementById('grid');
+  if (!fs.length && !tabMacros.length) { g.innerHTML = `<div class="empty">${KSK.t('deck_empty_tab') || 'No memes here.<br>Add some to this tab!'}</div>`; return; }
+
+  let macroHtml = tabMacros.map(m => {
+    const color = m.color || '#38bdf8';
+    const sc = (settings.shortcuts || {})[m.id];
+    const scText = sc ? formatShortcut(sc) : '';
+    const dragHint = KSK.t('card_drag_hint') || 'Geser untuk atur urutan';
+    const scHint = KSK.t('card_set_sc_hint') || 'Set Shortcut';
+    return `<div class="card macro-card" data-id="${m.id}" data-nm="${m.id}"
+      style="--macro-color:${color};"
+      onclick="editMode?openEditMacroModal('${m.id}'):scMode?openShortcutModal('card','${m.id}'):triggerMacro('${m.id}')"
+      title="⚡ Macro: ${m.name} (${(m.steps||[]).length} Actions)">
+      <div class="macro-badge">⚡ MACRO</div>
+      <div class="macro-gear-btn" onclick="event.stopPropagation();openEditMacroModal('${m.id}')" title="Edit Macro">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="macro-inner">
+        <div class="macro-icon">${m.icon || '⚡'}</div>
+        <div class="macro-name">${m.name}</div>
+        <div class="macro-steps-count">${(m.steps||[]).length} Actions</div>
+      </div>
+      <div class="card-shortcut-badge">${scText}</div>
+    </div>`;
+  }).join('');
+
+  let memeHtml = fs.map(f => {
+    const nm = f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const label = getLabel(f);
+    const isAct = f.name === active, hasCfg = !!f.settings;
+    const t = getType(f.name);
+    const thumb = getThumb(f);
+    const hasAudio = !!(f.settings && f.settings.companionAudio);
+    const soundBadge = hasAudio ? `<div class="card-sound-badge" title="Sound: ${f.settings.companionAudio}">🎵</div>` : '';
+
+    let media;
+    if (t === 'audio') {
+      const s = f.settings || {};
+      if(s.audioThumbMode==='image' && s.audioThumbImg){
+        media = `<img src="${s.audioThumbImg}" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+      } else if(s.audioThumbMode==='text' && s.audioThumbText){
+        media = `<div class="vaudio"><div class="vaudio-ic" style="font-size:2rem;">${s.audioThumbText.replace(/</g,'&lt;')}</div></div>`;
+      } else {
+        media = `<div class="vaudio"><div class="vaudio-ic"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="vaudio-nm">${label}</div></div>`;
+      }
+    } else {
+      media = `<img src="${thumb}" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"
+        onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'vaudio',innerHTML:'<div class=vaudio-ic><svg width=24 height=24 fill=none stroke=currentColor stroke-width=2 viewBox=\\\'0 0 24 24\\\'><polygon points=\\\'23 7 16 12 23 17 23 7\\\'/><rect width=14 height=14 x=1 y=5 rx=2 ry=2/></svg></div><div class=vaudio-nm>${label.replace(/'/g,"&#39;")}</div>'}));">`;
+    }
+
+    const sc = (settings.shortcuts || {})[f.name];
+    const scText = sc ? formatShortcut(sc) : '';
+    const dragHint = KSK.t('card_drag_hint') || 'Geser untuk atur urutan';
+    const scHint = KSK.t('card_set_sc_hint') || 'Set Shortcut';
+    return `<div class="card${isAct?' act':''}${hasCfg?'':' nc'}" onclick="editMode?null:scMode?openShortcutModal('card','${nm}'):trigger('${nm}')" data-nm="${nm}"
+      draggable="${editMode?'true':'false'}"
+      ondragstart="dragStart(event,'${nm}')"
+      ondragend="dragEnd(event)"
+      ondragover="dragOver(event)"
+      ondragleave="dragLeave(event)"
+      ondrop="dropOn(event,'${nm}')">
+      <div class="drag-handle" title="${dragHint}">
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>
+      </div>
+      <div class="sc-handle" title="${scHint}">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
+      </div>
+      <div class="clive">● LIVE</div>${soundBadge}${media}
+      <div class="card-label clbl">${label}</div>
+      <div class="card-shortcut-badge">${scText}</div></div>`;
+  }).join('');
+
+  g.innerHTML = macroHtml + memeHtml;
+  // Apply edit-mode class to grid
+  document.getElementById('grid').classList.toggle('edit-mode', editMode);
+}
+
+function applyGridSize() {
+  const cols = settings.cols || 4;
+  document.getElementById('grid').style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+}
+
+// ─── DRAG & DROP (Edit Mode) ─────────────────────────────
+let dragSrcName = null;
+
+function dragStart(e, name) {
+  if (!editMode) { e.preventDefault(); return; }
+  dragSrcName = name;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', name);
+  setTimeout(() => {
+    const el = document.querySelector(`.card[data-nm="${CSS.escape(name)}"]`);
+    if(el) el.classList.add('dragging');
+  }, 0);
+}
+
+function dragEnd(e) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging', 'drag-over'));
+}
+
+function dragOver(e) {
+  if (!editMode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function dragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function dropOn(e, targetName) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('drag-over', 'dragging'));
+  if (!dragSrcName || dragSrcName === targetName) { dragSrcName = null; return; }
+
+  if (curTab !== 'all') {
+    // Reorder items in tab — work from current visible card order in DOM
+    const tab = (settings.tabs||[]).find(t => t.id === curTab);
+    if (!tab) { dragSrcName = null; return; }
+
+    // Get current order from DOM cards
+    const currentOrder = Array.from(document.querySelectorAll('.card[data-nm]')).map(c => c.dataset.nm);
+    const si = currentOrder.indexOf(dragSrcName);
+    const ti = currentOrder.indexOf(targetName);
+    if (si < 0 || ti < 0) { dragSrcName = null; return; }
+
+    // Build new order
+    currentOrder.splice(si, 1);
+    currentOrder.splice(ti, 0, dragSrcName);
+
+    // Merge: keep new order for items in tab, preserve any extras at end
+    const tabSet = new Set(tab.items);
+    const extras = currentOrder.filter(n => !tabSet.has(n));
+    const reordered = currentOrder.filter(n => tabSet.has(n));
+    tab.items = [...reordered, ...extras];
+    saveSettings();
+  } else {
+    // Reorder global files array (in-memory, persisted via globalOrder)
+    const si = files.findIndex(f => f.name === dragSrcName);
+    const ti = files.findIndex(f => f.name === targetName);
+    if (si < 0 || ti < 0) { dragSrcName = null; return; }
+    const [moved] = files.splice(si, 1);
+    files.splice(ti, 0, moved);
+    settings.globalOrder = files.map(f => f.name);
+    saveSettings();
+  }
+  dragSrcName = null;
+  // Force re-render without reloading from server
+  lastSig = '';
+  render();
+}
+
+// ─── TRIGGER & PRO STREAM DECK ACTIONS ───────────────────
+async function trigger(name) {
+  hapticFeedback();
+  const f = files.find(x => x.name === name); if (!f) return;
+  active = name;
+  
+  // Card visual feedback & cooldown animation
+  const cardEl = document.querySelector(`.card[data-nm="${CSS.escape(name)}"]`);
+  if (cardEl) {
+    cardEl.classList.add('act', 'cooling-down');
+    setTimeout(() => cardEl.classList.remove('cooling-down'), 1200);
+  }
+  document.querySelectorAll('.card').forEach(c => {
+    if (c.dataset.nm !== active) c.classList.remove('act');
+  });
+
+  await fetch('/trigger', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ filename: name, ...(f.settings || {}) })
+  });
+}
+
+// Panic / Emergency Stop All
+async function triggerPanicStop() {
+  active = null;
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('act'));
+  try {
+    await fetch('/api/panic', { method: 'POST' });
+    toast(KSK.t('toast_panic_stopped') || '🛑 STOP ALL: Media dimatikan');
+  } catch(e) {
+    toast(KSK.t('toast_panic_failed') || 'Gagal mengirim stop command');
+  }
+}
+
+// Master Volume Controller
+function setMasterVolume(val) {
+  const vol = (parseFloat(val) || 100) / 100;
+  fetch('/api/master-volume', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ volume: vol })
+  }).catch(() => {});
+}
+
+// Trigger Random Meme from current tab
+function triggerRandomMeme() {
+  const visible = getVisibleCards();
+  if (!visible || !visible.length) {
+    toast(KSK.t('toast_no_memes_tab') || 'Tidak ada meme di tab ini');
+    return;
+  }
+  const rand = visible[Math.floor(Math.random() * visible.length)];
+  trigger(rand.name);
+  toast('🎲 Playing: ' + getLabel(rand));
+}
+
+function getVisibleCards() {
+  if (curTab === 'all') return files;
+  const tab = (settings.tabs || []).find(t => t.id === curTab);
+  if (!tab) return files;
+  return files.filter(f => (tab.items || []).includes(f.name));
+}
+
+// Trigger Visual FX
+function triggerFX(type) {
+  fetch('/api/fx', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fx: type })
+  }).catch(() => {});
+  toast('✨ FX Triggered: ' + type);
+}
+
+// Escape key to trigger panic stop
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !document.querySelector('.overlay.open') && !document.querySelector('.modal-bg.open')) {
+    triggerPanicStop();
+  }
+});
+
+// ─── SETTINGS PANEL ──────────────────────────────────────
+function openSettings() {
+  buildGszGrid();
+  updateToggle();
+  applyShortcutVisibility();
+  document.getElementById('set-overlay').classList.add('open');
+}
+function closeSettings() { document.getElementById('set-overlay').classList.remove('open'); }
+
+// Grid size picker — Excel style
+let hoverCols = settings.cols || 4, hoverRows = settings.rows || 4;
+function buildGszGrid() {
+  const g = document.getElementById('gsz-grid');
+  let html = '';
+  for (let r = 1; r <= 6; r++) {
+    for (let c = 1; c <= 8; c++) {
+      html += `<div class="gsz-cell${(r<=(settings.rows||4)&&c<=(settings.cols||4))?' hover':''}"
+        data-r="${r}" data-c="${c}"
+        onmouseover="hoverGsz(${r},${c})"
+        onmouseleave="leaveGsz()"
+        onclick="pickGsz(${r},${c})"></div>`;
+    }
+  }
+  g.innerHTML = html;
+  document.getElementById('gsz-label').textContent = `${settings.cols||4} × ${settings.rows||4}`;
+}
+function hoverGsz(r, c) {
+  document.querySelectorAll('.gsz-cell').forEach(el => {
+    el.classList.toggle('hover', +el.dataset.r <= r && +el.dataset.c <= c);
+  });
+  document.getElementById('gsz-label').textContent = `${c} × ${r}`;
+}
+function leaveGsz() {
+  document.querySelectorAll('.gsz-cell').forEach(el => {
+    el.classList.toggle('hover', +el.dataset.r <= (settings.rows||4) && +el.dataset.c <= (settings.cols||4));
+  });
+  document.getElementById('gsz-label').textContent = `${settings.cols||4} × ${settings.rows||4}`;
+}
+function pickGsz(r, c) {
+  settings.cols = c; settings.rows = r;
+  saveSettings(); buildGszGrid(); applyGridSize(); updateCounterDisplay();
+}
+
+function toggleHideAll() {
+  settings.hideAll = !settings.hideAll;
+  if (settings.hideAll && curTab === 'all') {
+    const tabs = settings.tabs || [];
+    curTab = tabs.length ? tabs[0].id : 'all';
+  }
+  saveSettings(); updateToggle(); renderTabs(); render();
+}
+function toggleHideMobileUI() {
+  settings.hideMobileUI = !settings.hideMobileUI;
+  saveSettings(); updateToggle(); applyMobileClean();
+}
+function applyMobileClean() {
+  const mw = document.querySelector('.main-wrap');
+  if (settings.hideMobileUI) {
+    mw.classList.add('mobile-clean');
+  } else {
+    mw.classList.remove('mobile-clean');
+  }
+}
+function updateToggle() {
+  document.getElementById('hide-all-toggle').classList.toggle('on', !!settings.hideAll);
+  document.getElementById('hide-mobile-toggle').classList.toggle('on', !!settings.hideMobileUI);
+  document.getElementById('show-shortcuts-toggle').classList.toggle('on', !!settings.showShortcuts);
+  document.getElementById('grid').classList.toggle('show-shortcuts', !!settings.showShortcuts);
+}
+
+// ─── SHORTCUT VISIBILITY & SYNC ─────────────────────────
+function isShortcutEnabled() {
+  return localStorage.getItem('shortcuts_enabled') !== 'false';
+}
+
+function applyShortcutVisibility() {
+  const enabled = isShortcutEnabled();
+
+  // Tombol ⌨ di searchbar
+  const scBtn = document.getElementById('sc-mode-btn');
+  if (scBtn) scBtn.style.display = enabled ? '' : 'none';
+
+  // Shortcut section di counter edit
+  const csc = document.getElementById('counter-sc-section');
+  if (csc) csc.style.display = enabled ? '' : 'none';
+
+  // Shortcut section di tab panel
+  const tsc = document.getElementById('tab-sc-section');
+  if (tsc) tsc.style.display = enabled ? '' : 'none';
+
+  // Shortcut Display di settings
+  const dsc = document.getElementById('shortcut-display-section');
+  if (dsc) dsc.style.display = enabled ? '' : 'none';
+
+  // Toggle di settings gear
+  const deckToggle = document.getElementById('deck-sc-toggle');
+  if (deckToggle) deckToggle.classList.toggle('on', enabled);
+}
+
+function toggleShortcutFromDeck() {
+  const newVal = !isShortcutEnabled();
+  localStorage.setItem('shortcuts_enabled', String(newVal));
+  applyShortcutVisibility();
+  updateGlobalKeyListeners();
+  // Sync ke tab lain
+  try { new BroadcastChannel('ksk').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
+  // Sync ke Electron tray
+  try { if (window.kskElectron && window.kskElectron.setShortcutEnabled) window.kskElectron.setShortcutEnabled(newVal); } catch {}
+  if (typeof toast === 'function') toast(newVal ? '⌨ Shortcut aktif' : '⌨ Shortcut dimatikan');
+}
+
+// ─── TAB PANEL ───────────────────────────────────────────
+let selectedCounters = []; // array of filenames
+function populateTabCounterSel(selectedVals) {
+  selectedCounters = Array.isArray(selectedVals) ? [...selectedVals] : (selectedVals ? [selectedVals] : []);
+  const picker = document.getElementById('tab-counter-picker');
+  if (!picker) return;
+  let html = counters.map(c => {
+    const isSel = selectedCounters.includes(c.filename);
+    const color = (settings.counterColors && settings.counterColors[c.filename]) || '#38bdf8';
+    const fn = c.filename.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="cpick-card${isSel?' on':''}" onclick="toggleCounterSel('${fn}')" style="${isSel?`border-color:${color};background:color-mix(in srgb,${color} 15%,transparent);`:''}">
+      <div class="cpick-card-icon" style="${isSel?`color:${color}`:''}">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+      </div>
+      <div class="cpick-card-name">${c.name}</div>
+    </div>`;
+  }).join('');
+  if (!html) html = `<div style="font-size:.65rem;color:var(--tx3);padding:8px;text-align:center;">${KSK.t('counter_empty_hint') || 'Belum ada counter. Buat dulu di Dashboard.'}</div>`;
+  picker.innerHTML = html;
+}
+function toggleCounterSel(filename) {
+  const idx = selectedCounters.indexOf(filename);
+  if (idx >= 0) selectedCounters.splice(idx, 1);
+  else selectedCounters.push(filename);
+  populateTabCounterSel(selectedCounters);
+}
+
+function openNewTab() {
+  editingTabId = null;
+  document.getElementById('tab-panel-title').textContent = KSK.t('tab_modal_new_title') || 'New Tab';
+  document.getElementById('tab-name-inp').value = '';
+  document.getElementById('char-count').textContent = '0/6';
+  populateTabCounterSel([]);
+  renderMemeSel([]);
+  document.getElementById('tab-footer').innerHTML =
+    `<button class="bcnl" onclick="closeTabPanel()">${KSK.t('modal_cancel_btn') || 'Cancel'}</button>
+     <button class="bsave" onclick="saveTab()">${KSK.t('tab_save_btn') || 'Save Tab'}</button>`;
+  _editingTabShortcut = null;
+  updateTabScPreview();
+  document.getElementById('tab-overlay').classList.add('open');
+}
+
+function openEditTab(id) {
+  const tab = (settings.tabs||[]).find(t => t.id === id);
+  if (!tab) return;
+  editingTabId = id;
+  document.getElementById('tab-panel-title').textContent = KSK.t('tab_modal_edit_title') || 'Edit Tab';
+  document.getElementById('tab-name-inp').value = tab.name;
+  onTabNameInput();
+  populateTabCounterSel(tab.counters || (tab.counter ? [tab.counter] : []));
+  renderMemeSel(tab.items || []);
+  document.getElementById('tab-footer').innerHTML =
+    `<button class="bdel" onclick="deleteTab('${id}')">${KSK.t('tab_delete_btn') || 'Delete'}</button>
+     <div style="flex:1"></div>
+     <button class="bcnl" onclick="closeTabPanel()">${KSK.t('modal_cancel_btn') || 'Cancel'}</button>
+     <button class="bsave" onclick="saveTab()">${KSK.t('modal_save_btn') || 'Save'}</button>`;
+  _editingTabShortcut = (settings.tabShortcuts || {})[id] || null;
+  updateTabScPreview();
+  document.getElementById('tab-overlay').classList.add('open');
+}
+
+function closeTabPanel() { document.getElementById('tab-overlay').classList.remove('open'); editingTabId = null; }
+
+function onTabNameInput() {
+  const inp = document.getElementById('tab-name-inp');
+  // Count display chars (emoji = 1 char visually but multiple codepoints)
+  const visual = [...inp.value]; // spread splits into grapheme clusters
+  const count = visual.length;
+  if (count > 6) inp.value = visual.slice(0,6).join('');
+  document.getElementById('char-count').textContent = Math.min(count,6)+'/6';
+}
+
+function renderMemeSel(selected) {
+  const g = document.getElementById('meme-sel-grid');
+  g.innerHTML = files.map(f => {
+    const nm = f.name;
+    const label = getLabel(f);
+    const t = getType(nm);
+    const thumb = getThumb(f);
+    const isSel = selected.includes(nm);
+    const nm_esc = nm.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+    let media;
+    if (t === 'audio') {
+      media = `<div class="saudio"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><small>${label}</small></div>`;
+    } else {
+      media = `<img src="${thumb}" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"
+        onerror="this.style.display='none'">`;
+    }
+
+    return `<div class="sel-card${isSel?' on':''}" onclick="toggleSel(this,'${nm_esc}')">
+      ${media}
+      <div class="sel-check">✓</div>
+      <div class="sel-card-lbl">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSel(el, name) {
+  el.classList.toggle('on');
+}
+
+function saveTab() {
+  const name = document.getElementById('tab-name-inp').value.trim();
+  if (!name) { document.getElementById('tab-name-inp').focus(); return; }
+  const selected = Array.from(document.querySelectorAll('.sel-card.on'))
+    .map(el => {
+      // get name from the onclick attr
+      const onc = el.getAttribute('onclick');
+      const m = onc.match(/toggleSel\(this,'(.+?)'\)/);
+      return m ? m[1].replace(/\\'/g,"'").replace(/\\\\/g,'\\') : null;
+    }).filter(Boolean);
+
+  const countersArr = [...selectedCounters];
+
+  if (!settings.tabs) settings.tabs = [];
+  if (editingTabId) {
+    const idx = settings.tabs.findIndex(t => t.id === editingTabId);
+    if (idx >= 0) settings.tabs[idx] = { id: editingTabId, name, items: selected, counters: countersArr, counter: countersArr[0] || null };
+  } else {
+    const id = 'tab_' + Date.now();
+    settings.tabs.push({ id, name, items: selected, counters: countersArr, counter: countersArr[0] || null });
+    curTab = id;
+  }
+  // Save tab shortcut
+  if (!settings.tabShortcuts) settings.tabShortcuts = {};
+  const tabId = editingTabId || ('tab_' + Date.now());
+  if (_editingTabShortcut) settings.tabShortcuts[editingTabId || tabId] = _editingTabShortcut;
+  else delete settings.tabShortcuts[editingTabId || tabId];
+
+  saveSettings(); closeTabPanel(); renderTabs(); render(); updateCounterDisplay();
+  updateGlobalKeyListeners();
+}
+
+function deleteTab(id) {
+  if (!confirm(KSK.t('tab_delete_confirm') || 'Delete this tab?')) return;
+  settings.tabs = (settings.tabs||[]).filter(t => t.id !== id);
+  if (curTab === id) curTab = settings.hideAll ? (settings.tabs[0]?.id||'all') : 'all';
+  saveSettings(); closeTabPanel(); renderTabs(); render();
+}
+
+// Close overlays on backdrop click
+document.getElementById('set-overlay').addEventListener('click', e => { if(e.target===document.getElementById('set-overlay')) closeSettings(); });
+document.getElementById('tab-overlay').addEventListener('click', e => { if(e.target===document.getElementById('tab-overlay')) closeTabPanel(); });
+
+// ─── COUNTERS ────────────────────────────────────────────
+let counters = [];
+let counterPollTimer = null;
+let counterHoldTimer = null;
+let counterHoldStart_t = null;
+let counterHoldAnimFrame = null;
+let counterHoldActive = false;
+
+async function loadCounters() {
+  try {
+    const r = await fetch('/api/counters');
+    counters = await r.json();
+  } catch { counters = []; }
+  // Re-render picker if open
+  const picker = document.getElementById('tab-counter-picker');
+  if (picker && picker.children.length > 0) {
+    populateTabCounterSel(selectedCounterVal);
+  }
+}
+
+function getTabCounters(tabId) {
+  if (tabId === 'all') return [];
+  const tab = (settings.tabs||[]).find(t => t.id === tabId);
+  if (!tab) return [];
+  const list = tab.counters || (tab.counter ? [tab.counter] : []);
+  return list.map(fn => counters.find(c => c.filename === fn)).filter(Boolean);
+}
+function getTabCounter(tabId) {
+  const arr = getTabCounters(tabId);
+  return arr[0] || null;
+}
+
+function applyCounterColor(btnEl, filename) {
+  const color = (settings.counterColors && settings.counterColors[filename]) || null;
+  if (color) {
+    btnEl.style.setProperty('--counter-color', color);
+    btnEl.classList.add('color-custom');
+  } else {
+    btnEl.style.removeProperty('--counter-color');
+    btnEl.classList.remove('color-custom');
+  }
+}
+
+function updateCounterDisplay() {
+  const counterList = getTabCounters(curTab);
+  const wrap = document.getElementById('counter-btn-wrap');
+  clearInterval(counterPollTimer);
+  counterPollTimer = null;
+
+  if (!counterList.length) {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  wrap.style.flexWrap = 'wrap';
+
+  // Compute card size — wait for gwrap to have width
+  const cols = settings.cols || 4;
+  const gwrap = document.querySelector('.gwrap');
+  const gwrapW = gwrap ? gwrap.clientWidth : 0;
+  const gapPx = 7;
+  const cardSize = Math.max(70, Math.floor(((gwrapW || 320) - 20 - gapPx * (cols - 1)) / cols));
+  const valFontSize = Math.round(cardSize * 0.32);
+  const nameFontSize = Math.max(9, Math.round(cardSize * 0.1));
+
+  // Build counter buttons — use div (not button) as outer to avoid nested-button HTML issue
+  wrap.innerHTML = counterList.map((counter, i) => {
+    const color = (settings.counterColors && settings.counterColors[counter.filename]) || '#38bdf8';
+    const fn = counter.filename.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="counter-btn" id="counter-btn-${i}"
+      style="--counter-color:${color};width:${cardSize}px;height:${cardSize}px;"
+      data-filename="${counter.filename}" data-idx="${i}"
+      onmousedown="counterHoldStart(event,${i})"
+      onmouseup="counterHoldEnd(event,${i})"
+      onmouseleave="counterHoldCancel(${i})"
+      ontouchstart="counterHoldStart(event,${i})"
+      ontouchend="counterHoldEnd(event,${i})"
+      ontouchcancel="counterHoldCancel(${i})">
+      <div class="counter-gear-btn" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()" onclick="event.stopPropagation();openCounterEdit('${fn}')" title="Edit warna">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="counter-btn-val" id="counter-btn-val-${i}" style="font-size:${valFontSize}px">0</div>
+      <div class="counter-btn-name" id="counter-btn-name-${i}" style="font-size:${nameFontSize}px">${counter.name}</div>
+      <div class="counter-progress" id="counter-progress-${i}"></div>
+    </div>`;
+  }).join('');
+
+  // Fetch values
+  counterList.forEach((counter, i) => fetchAndShowCounterVal(counter.filename, i));
+  counterPollTimer = setInterval(() => {
+    const cl = getTabCounters(curTab);
+    cl.forEach((c, i) => fetchAndShowCounterVal(c.filename, i));
+  }, 2000);
+}
+
+async function fetchAndShowCounterVal(filename, idx=0) {
+  try {
+    const r = await fetch('/api/counters/' + encodeURIComponent(filename) + '/value');
+    const d = await r.json();
+    const el = document.getElementById('counter-btn-val-' + idx);
+    if (el) el.textContent = d.value ?? '0';
+  } catch {}
+}
+
+async function setCounterVal(filename, val, idx=0) {
+  await fetch('/api/counters/' + encodeURIComponent(filename) + '/value', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ value: String(val) })
+  });
+  const el = document.getElementById('counter-btn-val-' + idx);
+  if (el) el.textContent = String(val);
+}
+
+async function incrementCounter(idx=0) {
+  const counterList = getTabCounters(curTab);
+  const counter = counterList[idx];
+  if (!counter) return;
+  try {
+    const r = await fetch('/api/counters/' + encodeURIComponent(counter.filename) + '/op', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: 'inc' })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      const el = document.getElementById('counter-btn-val-' + idx);
+      if (el) el.textContent = String(d.value);
+    }
+  } catch {}
+}
+
+// Update display instan saat server emit counter-updated (dari shortcut keyboard)
+socket.on('counter-updated', (data) => {
+  if (!data || !data.filename) return;
+  const counterList = getTabCounters(curTab);
+  for (let i = 0; i < counterList.length; i++) {
+    if (counterList[i].filename === data.filename) {
+      const el = document.getElementById('counter-btn-val-' + i);
+      if (el) el.textContent = String(data.value);
+    }
+  }
+});
+
+function counterHoldStart(e, idx=0) {
+  e.preventDefault();
+  counterHoldActive = true;
+  counterHoldStart_t = Date.now();
+  const progress = document.getElementById('counter-progress-' + idx);
+  const btn = document.getElementById('counter-btn-' + idx);
+  if (!progress || !btn) return;
+  progress.style.transition = 'none';
+  progress.style.width = '0%';
+  progress.className = 'counter-progress';
+
+  function animate() {
+    if (!counterHoldActive) return;
+    const elapsed = Date.now() - counterHoldStart_t;
+    if (elapsed < 3000) {
+      const pct = (elapsed / 3000) * 100;
+      progress.style.width = pct + '%';
+      if (elapsed > 500) {
+        progress.className = 'counter-progress minus';
+        btn.classList.add('holding-minus');
+        btn.classList.remove('holding-reset');
+      }
+    } else if (elapsed < 5000) {
+      const pct = 33.3 + ((elapsed - 3000) / 2000) * 66.7;
+      progress.style.width = Math.min(pct, 100) + '%';
+      progress.className = 'counter-progress reset';
+      btn.classList.remove('holding-minus');
+      btn.classList.add('holding-reset');
+    } else {
+      progress.style.width = '100%';
+    }
+    counterHoldAnimFrame = requestAnimationFrame(animate);
+  }
+  counterHoldAnimFrame = requestAnimationFrame(animate);
+}
+
+async function counterHoldEnd(e, idx=0) {
+  if (!counterHoldActive) return;
+  counterHoldActive = false;
+  cancelAnimationFrame(counterHoldAnimFrame);
+  const elapsed = Date.now() - (counterHoldStart_t || Date.now());
+  const btn = document.getElementById('counter-btn-' + idx);
+  const progress = document.getElementById('counter-progress-' + idx);
+  if (btn) { btn.classList.remove('holding-minus','holding-reset'); }
+  if (progress) { progress.style.width = '0%'; progress.className = 'counter-progress'; }
+
+  const counterList = getTabCounters(curTab);
+  const counter = counterList[idx];
+  if (!counter) return;
+
+  if (elapsed >= 5000) {
+    const rr = await fetch('/api/counters/' + encodeURIComponent(counter.filename) + '/op', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: 'reset' })
+    });
+    const dr = await rr.json();
+    if (dr.ok) { const el = document.getElementById('counter-btn-val-' + idx); if (el) el.textContent = String(dr.value); }
+  } else if (elapsed >= 3000) {
+    const rd = await fetch('/api/counters/' + encodeURIComponent(counter.filename) + '/op', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: 'dec' })
+    });
+    const dd = await rd.json();
+    if (dd.ok) { const el = document.getElementById('counter-btn-val-' + idx); if (el) el.textContent = String(dd.value); }
+  } else {
+    await incrementCounter(idx);
+  }
+}
+
+function counterHoldCancel(idx=0) {
+  if (!counterHoldActive) return;
+  counterHoldActive = false;
+  cancelAnimationFrame(counterHoldAnimFrame);
+  const btn = document.getElementById('counter-btn-' + idx);
+  const progress = document.getElementById('counter-progress-' + idx);
+  if (btn) btn.classList.remove('holding-minus','holding-reset');
+  if (progress) { progress.style.width = '0%'; progress.className = 'counter-progress'; }
+}
+
+// ─── COUNTER COLOR EDIT ──────────────────────────────────
+const COLOR_PRESETS = [
+  {color:'#38bdf8', name:'Sky Blue'},
+  {color:'#22c55e', name:'Green'},
+  {color:'#ef4444', name:'Red'},
+  {color:'#f59e0b', name:'Amber'},
+  {color:'#f97316', name:'Orange'},
+  {color:'#a855f7', name:'Purple'},
+  {color:'#ec4899', name:'Pink'},
+  {color:'#14b8a6', name:'Teal'},
+  {color:'#e2e8f0', name:'White'},
+  {color:'#fbbf24', name:'Gold'},
+  {color:'#34d399', name:'Emerald'},
+  {color:'#fb7185', name:'Rose'},
+];
+
+let editingCounterFilename = null;
+let currentPickerColor = '#38bdf8';
+
+function openCounterEdit(filename) {
+  editingCounterFilename = filename;
+  currentPickerColor = (settings.counterColors && settings.counterColors[filename]) || '#38bdf8';
+  document.getElementById('color-custom-inp').value = currentPickerColor;
+  document.getElementById('color-hex-display').textContent = currentPickerColor;
+  renderColorPresets();
+  document.getElementById('counter-edit-overlay').classList.add('open');
+}
+
+function closeCounterEdit() {
+  document.getElementById('counter-edit-overlay').classList.remove('open');
+  editingCounterFilename = null;
+}
+
+function renderColorPresets() {
+  const el = document.getElementById('color-presets');
+  el.innerHTML = COLOR_PRESETS.map(p => `
+    <div class="color-swatch${p.color.toLowerCase()===currentPickerColor.toLowerCase()?' on':''}"
+      style="background:${p.color}"
+      title="${p.name}"
+      onclick="pickPresetColor('${p.color}')">
+    </div>`).join('');
+}
+
+function pickPresetColor(color) {
+  currentPickerColor = color;
+  document.getElementById('color-custom-inp').value = color;
+  document.getElementById('color-hex-display').textContent = color;
+  renderColorPresets();
+}
+
+function pickCustomColor(color) {
+  currentPickerColor = color;
+  document.getElementById('color-hex-display').textContent = color;
+  renderColorPresets();
+}
+
+function saveCounterEdit() {
+  if (!editingCounterFilename) return;
+  if (!settings.counterColors) settings.counterColors = {};
+  settings.counterColors[editingCounterFilename] = currentPickerColor;
+  saveSettings();
+  closeCounterEdit();
+  updateCounterDisplay();
+}
+
+// ─── MULTI-ACTION MACRO SYSTEM ──────────────────────────
+let macros = [];
+let editingMacroId = null;
+let macroCurrentSteps = [];
+let macroSelectedColor = '#38bdf8';
+let macroSelectedIcon = '⚡';
+
+async function loadMacros() {
+  try {
+    const r = await fetch('/api/macros');
+    macros = await r.json();
+    render();
+  } catch { macros = []; }
+}
+
+function openNewMacroModal() {
+  editingMacroId = null;
+  macroCurrentSteps = [];
+  macroSelectedColor = '#38bdf8';
+  macroSelectedIcon = '⚡';
+  document.getElementById('macro-panel-title').textContent = KSK.t('macro_new_title') || 'Buat Macro Baru';
+  document.getElementById('macro-name-inp').value = '';
+  document.getElementById('macro-icon-btn').textContent = macroSelectedIcon;
+  renderMacroColorPresets();
+  renderMacroStepsList();
+  document.getElementById('macro-footer').innerHTML = `
+    <button class="bcnl" onclick="closeMacroModal()">${KSK.t('modal_cancel_btn') || 'Batal'}</button>
+    <button class="bsave" onclick="saveCurrentMacro()">${KSK.t('macro_save_btn') || 'Simpan Macro'}</button>
+  `;
+  document.getElementById('macro-overlay').classList.add('open');
+}
+
+function openEditMacroModal(id) {
+  const m = macros.find(x => x.id === id);
+  if (!m) return;
+  editingMacroId = id;
+  macroCurrentSteps = Array.isArray(m.steps) ? JSON.parse(JSON.stringify(m.steps)) : [];
+  macroSelectedColor = m.color || '#38bdf8';
+  macroSelectedIcon = m.icon || '⚡';
+  document.getElementById('macro-panel-title').textContent = KSK.t('macro_edit_title') || 'Edit Macro';
+  document.getElementById('macro-name-inp').value = m.name || '';
+  document.getElementById('macro-icon-btn').textContent = macroSelectedIcon;
+  renderMacroColorPresets();
+  renderMacroStepsList();
+  document.getElementById('macro-footer').innerHTML = `
+    <button class="bdel" onclick="deleteCurrentMacro('${id}')">${KSK.t('macro_delete_btn') || 'Hapus'}</button>
+    <div style="flex:1"></div>
+    <button class="bcnl" onclick="closeMacroModal()">${KSK.t('modal_cancel_btn') || 'Batal'}</button>
+    <button class="bsave" onclick="saveCurrentMacro()">${KSK.t('modal_save_btn') || 'Simpan'}</button>
+  `;
+  document.getElementById('macro-overlay').classList.add('open');
+}
+
+function closeMacroModal() {
+  document.getElementById('macro-overlay').classList.remove('open');
+  document.getElementById('macro-icons-dd').style.display = 'none';
+  document.getElementById('macro-add-dd').style.display = 'none';
+  editingMacroId = null;
+}
+
+function toggleMacroIconPicker() {
+  const dd = document.getElementById('macro-icons-dd');
+  dd.style.display = dd.style.display === 'none' ? 'grid' : 'none';
+}
+
+function pickMacroIcon(icon) {
+  macroSelectedIcon = icon;
+  document.getElementById('macro-icon-btn').textContent = icon;
+  document.getElementById('macro-icons-dd').style.display = 'none';
+}
+
+function renderMacroColorPresets() {
+  const el = document.getElementById('macro-color-presets');
+  if (!el) return;
+  el.innerHTML = COLOR_PRESETS.map(p => `
+    <div class="color-swatch${p.color.toLowerCase() === macroSelectedColor.toLowerCase() ? ' on' : ''}"
+      style="background:${p.color}"
+      title="${p.name}"
+      onclick="pickMacroColor('${p.color}')">
+    </div>`).join('');
+}
+
+function pickMacroColor(c) {
+  macroSelectedColor = c;
+  renderMacroColorPresets();
+}
+
+function toggleAddStepMenu(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('macro-add-dd');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('macro-add-dd');
+  if (dd) dd.style.display = 'none';
+});
+
+function addMacroStep(type) {
+  const step = { type };
+  if (type === 'delay') step.ms = 500;
+  else if (type === 'obs_scene') step.sceneName = (obsStatus.scenes && obsStatus.scenes[0]) || '';
+  else if (type === 'obs_source_visibility') {
+    step.sceneName = obsStatus.currentScene || '';
+    step.sceneItemId = (obsSceneItems[0] && obsSceneItems[0].sceneItemId) || 1;
+    step.sourceName = (obsSceneItems[0] && obsSceneItems[0].sourceName) || '';
+    step.action = 'toggle';
+  }
+  else if (type === 'obs_audio_mute') {
+    step.inputName = (obsAudioInputs[0] && obsAudioInputs[0].inputName) || '';
+    step.action = 'toggle';
+  }
+  else if (type === 'play_media') step.filename = (files[0] && files[0].name) || '';
+  else if (type === 'trigger_fx') step.fx = 'confetti';
+  else if (type === 'counter_op') {
+    step.filename = (counters[0] && counters[0].filename) || '';
+    step.op = 'inc';
+  }
+  macroCurrentSteps.push(step);
+  renderMacroStepsList();
+}
+
+function moveMacroStep(idx, dir) {
+  hapticFeedback();
+  const target = idx + dir;
+  if (target < 0 || target >= macroCurrentSteps.length) return;
+  const temp = macroCurrentSteps[idx];
+  macroCurrentSteps[idx] = macroCurrentSteps[target];
+  macroCurrentSteps[target] = temp;
+  renderMacroStepsList();
+}
+
+function removeMacroStep(idx) {
+  hapticFeedback();
+  macroCurrentSteps.splice(idx, 1);
+  renderMacroStepsList();
+}
+
+function updateMacroStepParam(idx, param, val) {
+  if (macroCurrentSteps[idx]) {
+    macroCurrentSteps[idx][param] = val;
+  }
+}
+
+function renderMacroStepsList() {
+  const container = document.getElementById('macro-steps-list');
+  if (!container) return;
+  if (!macroCurrentSteps.length) {
+    container.innerHTML = `<div style="font-size:0.65rem;color:var(--tx3);padding:14px;text-align:center;border:1px dashed var(--bd);border-radius:var(--r-sm);">Belum ada aksi. Klik "+ Tambah Aksi" di atas.</div>`;
+    return;
+  }
+
+  container.innerHTML = macroCurrentSteps.map((s, i) => {
+    let content = '';
+    if (s.type === 'delay') {
+      content = `<span style="font-size:0.65rem;font-weight:700;color:var(--tx2);">Jeda:</span>
+        <input type="number" min="50" max="30000" step="100" value="${s.ms || 500}" onchange="updateMacroStepParam(${i}, 'ms', parseInt(this.value,10)||500)" style="width:70px;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:4px 6px;border-radius:4px;font-size:0.7rem;"> ms`;
+    } else if (s.type === 'obs_scene') {
+      const sceneOpts = (obsStatus.scenes || []).map(sc => `<option value="${sc}" ${sc === s.sceneName ? 'selected' : ''}>${sc}</option>`).join('');
+      content = `<select onchange="updateMacroStepParam(${i}, 'sceneName', this.value)" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        ${sceneOpts || '<option value="">(Tidak ada scene / OBS offline)</option>'}
+      </select>`;
+    } else if (s.type === 'obs_source_visibility') {
+      const itemOpts = (obsSceneItems || []).map(it => `<option value="${it.sceneItemId}" ${it.sceneItemId === s.sceneItemId ? 'selected' : ''}>${it.sourceName}</option>`).join('');
+      content = `<select onchange="updateMacroStepParam(${i}, 'sceneItemId', parseInt(this.value,10))" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        ${itemOpts || '<option value="1">(Source di scene aktif)</option>'}
+      </select>
+      <select onchange="updateMacroStepParam(${i}, 'action', this.value)" style="width:75px;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 6px;border-radius:4px;font-size:0.68rem;">
+        <option value="toggle" ${s.action==='toggle'?'selected':''}>Toggle</option>
+        <option value="show" ${s.action==='show'?'selected':''}>Show</option>
+        <option value="hide" ${s.action==='hide'?'selected':''}>Hide</option>
+      </select>`;
+    } else if (s.type === 'obs_audio_mute') {
+      const inputOpts = (obsAudioInputs || []).map(inp => `<option value="${inp.inputName}" ${inp.inputName === s.inputName ? 'selected' : ''}>${inp.inputName}</option>`).join('');
+      content = `<select onchange="updateMacroStepParam(${i}, 'inputName', this.value)" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        ${inputOpts || '<option value="">(Input audio OBS)</option>'}
+      </select>
+      <select onchange="updateMacroStepParam(${i}, 'action', this.value)" style="width:75px;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 6px;border-radius:4px;font-size:0.68rem;">
+        <option value="toggle" ${s.action==='toggle'?'selected':''}>Toggle</option>
+        <option value="mute" ${s.action==='mute'?'selected':''}>Mute</option>
+        <option value="unmute" ${s.action==='unmute'?'selected':''}>Unmute</option>
+      </select>`;
+    } else if (s.type === 'play_media') {
+      const mediaOpts = files.map(f => `<option value="${f.name}" ${f.name === s.filename ? 'selected' : ''}>${getLabel(f)}</option>`).join('');
+      content = `<select onchange="updateMacroStepParam(${i}, 'filename', this.value)" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        ${mediaOpts || '<option value="">(Tidak ada media)</option>'}
+      </select>`;
+    } else if (s.type === 'trigger_fx') {
+      content = `<select onchange="updateMacroStepParam(${i}, 'fx', this.value)" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        <option value="confetti" ${s.fx==='confetti'?'selected':''}>🎉 Confetti</option>
+        <option value="shake" ${s.fx==='shake'?'selected':''}>📳 Screen Shake</option>
+        <option value="flash" ${s.fx==='flash'?'selected':''}>⚡ Flash</option>
+        <option value="glitch" ${s.fx==='glitch'?'selected':''}>👾 Glitch</option>
+      </select>`;
+    } else if (s.type === 'counter_op') {
+      const cOpts = counters.map(c => `<option value="${c.filename}" ${c.filename === s.filename ? 'selected' : ''}>${c.name}</option>`).join('');
+      content = `<select onchange="updateMacroStepParam(${i}, 'filename', this.value)" style="flex:1;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:4px;font-size:0.68rem;">
+        ${cOpts || '<option value="">(Tidak ada counter)</option>'}
+      </select>
+      <select onchange="updateMacroStepParam(${i}, 'op', this.value)" style="width:70px;background:var(--panel);border:1px solid var(--bd);color:var(--tx);padding:5px 6px;border-radius:4px;font-size:0.68rem;">
+        <option value="inc" ${s.op==='inc'?'selected':''}>+1</option>
+        <option value="dec" ${s.op==='dec'?'selected':''}>-1</option>
+        <option value="reset" ${s.op==='reset'?'selected':''}>Reset</option>
+      </select>`;
+    } else if (s.type === 'panic_stop') {
+      content = `<span style="font-size:0.68rem;font-weight:700;color:var(--rd);">🛑 Matikan semua media seketika</span>`;
+    }
+
+    const typeIcons = {
+      delay: '⏳',
+      obs_scene: '🎬',
+      obs_source_visibility: '👁️',
+      obs_audio_mute: '🎙️',
+      play_media: '🎵',
+      trigger_fx: '✨',
+      counter_op: '🏆',
+      panic_stop: '🛑'
+    };
+    const typeTitles = {
+      delay: 'Delay',
+      obs_scene: 'OBS Scene',
+      obs_source_visibility: 'OBS Source',
+      obs_audio_mute: 'OBS Audio',
+      play_media: 'Play Media',
+      trigger_fx: 'Screen FX',
+      counter_op: 'Counter',
+      panic_stop: 'Stop All'
+    };
+
+    return `<div class="macro-step-row">
+      <div class="macro-step-reorder">
+        <button type="button" class="macro-reorder-btn" onclick="moveMacroStep(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Pindah ke Atas">▲</button>
+        <button type="button" class="macro-reorder-btn" onclick="moveMacroStep(${i}, 1)" ${i === macroCurrentSteps.length - 1 ? 'disabled' : ''} title="Pindah ke Bawah">▼</button>
+      </div>
+      <span style="font-size:0.75rem;width:20px;text-align:center;">${typeIcons[s.type]||'⚡'}</span>
+      <div style="font-size:0.62rem;font-weight:800;color:var(--tx2);width:65px;">${typeTitles[s.type]||s.type}</div>
+      <div style="flex:1;display:flex;align-items:center;gap:6px;">${content}</div>
+      <button type="button" class="macro-step-del" onclick="removeMacroStep(${i})" title="Hapus step">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function saveCurrentMacro() {
+  hapticFeedback();
+  const name = document.getElementById('macro-name-inp').value.trim();
+  if (!name) { document.getElementById('macro-name-inp').focus(); return; }
+
+  const payload = {
+    id: editingMacroId || undefined,
+    name,
+    icon: macroSelectedIcon || '⚡',
+    color: macroSelectedColor || '#38bdf8',
+    tab: curTab || 'all',
+    steps: macroCurrentSteps,
+  };
+
+  try {
+    const r = await fetch('/api/macros', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (d.ok) {
+      await loadMacros();
+      closeMacroModal();
+      if (typeof toast === 'function') toast(KSK.t('toast_macro_saved') || '⚡ Macro berhasil disimpan');
+    }
+  } catch(e) {
+    if (typeof toast === 'function') toast('Gagal menyimpan macro');
+  }
+}
+
+async function deleteCurrentMacro(id) {
+  hapticFeedback();
+  if (!confirm(KSK.t('macro_delete_confirm') || 'Hapus macro ini?')) return;
+  try {
+    await fetch('/api/macros/' + encodeURIComponent(id), { method: 'DELETE' });
+    await loadMacros();
+    closeMacroModal();
+    if (typeof toast === 'function') toast(KSK.t('toast_macro_deleted') || 'Macro dihapus');
+  } catch(e) {}
+}
+
+async function triggerMacro(id) {
+  hapticFeedback();
+  const m = macros.find(x => x.id === id);
+  if (!m) return;
+  
+  const el = document.querySelector(`.macro-card[data-id="${CSS.escape(id)}"]`);
+  if (el) {
+    el.classList.add('macro-running');
+  }
+
+  try {
+    if (typeof toast === 'function') toast((KSK.t('toast_macro_triggered') || '⚡ Menjalankan: ') + m.name);
+    await fetch('/api/macros/' + encodeURIComponent(id) + '/trigger', { method: 'POST' });
+  } catch(e) {
+    if (typeof toast === 'function') toast('Gagal mengeksekusi macro');
+  } finally {
+    setTimeout(() => {
+      if (el) el.classList.remove('macro-running');
+    }, 1200);
+  }
+}
+
+// Socket listeners
+socket.on('macros-updated', (list) => {
+  if (list) { macros = list; render(); }
+});
+socket.on('macro-running', (data) => {
+  if (!data) return;
+  const el = document.querySelector(`.macro-card[data-id="${CSS.escape(data.id)}"]`);
+  if (el) el.classList.add('macro-running');
+});
+socket.on('macro-completed', (data) => {
+  if (!data) return;
+  const el = document.querySelector(`.macro-card[data-id="${CSS.escape(data.id)}"]`);
+  if (el) el.classList.remove('macro-running');
+});
+socket.on('obs-item-state-changed', (data) => {
+  if (!data) return;
+  const idx = obsSceneItems.findIndex(x => x.sceneItemId === data.sceneItemId);
+  if (idx >= 0) obsSceneItems[idx].sceneItemEnabled = data.sceneItemEnabled;
+  renderOBSSourcesDrawer();
+});
+socket.on('obs-input-mute-changed', (data) => {
+  if (!data) return;
+  const idx = obsAudioInputs.findIndex(x => x.inputName === data.inputName);
+  if (idx >= 0) obsAudioInputs[idx].inputMuted = data.inputMuted;
+  renderOBSSourcesDrawer();
+});
+socket.on('obs-scene-changed', (data) => {
+  if (!data) return;
+  obsStatus.currentScene = data.currentScene;
+  if (data.scenes) obsStatus.scenes = data.scenes;
+  renderOBSUI();
+  loadOBSSourcesAndAudio();
+});
+socket.on('obs-status-changed', (st) => {
+  if (st) {
+    obsStatus = st;
+    renderOBSUI();
+    if (st.connected) loadOBSSourcesAndAudio();
+  }
+});
+
+// ─── INIT ────────────────────────────────────────────────
+(async () => {
+  await loadSettingsFromServer();
+  applyGridSize();
+  applyMobileClean();
+  applyShortcutVisibility();
+  await loadCounters();
+  await loadOBSStatus();
+  await loadMacros();
+  loadFiles();
+  // Update counter sizes once layout is ready
+  requestAnimationFrame(() => { requestAnimationFrame(() => updateCounterDisplay()); });
+  setInterval(loadFiles, 4000);
+  // Re-calc counter sizes on window resize
+  window.addEventListener('resize', () => updateCounterDisplay());
+  // Listen for settings changes from other devices
+  // Dengarkan toggle dari tray Electron
+  if (window.kskElectron && window.kskElectron.onShortcutStateChanged) {
+    window.kskElectron.onShortcutStateChanged((enabled) => {
+      localStorage.setItem('shortcuts_enabled', String(enabled));
+      applyShortcutVisibility();
+      updateGlobalKeyListeners();
+      if (typeof toast === 'function') toast(enabled ? '⌨ Shortcut aktif' : '⌨ Shortcut dimatikan');
+    });
+  }
+
+  socket.on('deck-settings-updated', (data) => {
+    const wasTab = curTab;
+    settings = { ...defSettings(), ...data };
+    if (!settings.tabs.find(t => t.id === wasTab)) {
+      curTab = settings.hideAll ? (settings.tabs[0]?.id || 'all') : 'all';
+    }
+    renderTabs();
+    render();
+    applyMobileClean();
+    updateCounterDisplay();
+  });
+})();
+
+// ─── LONG-PRESS TO OPEN SETTINGS (mobile clean mode) ────
+let _lpTimer = null;
+document.querySelector('.gwrap').addEventListener('touchstart', (e) => {
+  if (!settings.hideMobileUI) return;
+  if (e.target.closest('.card') || e.target.closest('.counter-btn')) return;
+  _lpTimer = setTimeout(() => { openSettings(); }, 3000);
+}, { passive: true });
+document.querySelector('.gwrap').addEventListener('touchend', () => { clearTimeout(_lpTimer); });
+document.querySelector('.gwrap').addEventListener('touchmove', () => { clearTimeout(_lpTimer); });
+
+// Init KSK sidebar & language hook
+KSK.init('deck');
+KSK.onLangChange(() => {
+  renderTabs();
+  render();
+  updateCounterDisplay();
+  applyShortcutVisibility();
+  renderOBSUI();
+});
+
+// ─── Shortcut mode toggle (Fungsi yang tadi hilang) ─────────────────────────────
+function toggleShortcutMode() {
+  scMode = !scMode;
+  
+  // Matiin mode edit kalau mode shortcut dinyalain
+  if (scMode && editMode) toggleEditMode(); 
+  
+  const scBtn = document.getElementById('sc-mode-btn');
+  const grid = document.getElementById('grid');
+  const scBar = document.getElementById('shortcut-bar');
+  const gwrap = document.querySelector('.gwrap');
+
+  if(scBtn) scBtn.classList.toggle('active', scMode);
+  if(grid) grid.classList.toggle('sc-mode', scMode);
+  
+  // Munculin Shortcut bar (Biru)
+  if(scBar) scBar.style.display = scMode ? 'flex' : 'none';
+  
+  // Kasih jarak bawah biar meme nggak ketutupan bar
+  if(gwrap) gwrap.style.paddingBottom = (editMode || scMode) ? '56px' : '8px';
+  
+  // Tampilkan tombol Gear di Counter
+  const counterWrap = document.getElementById('counter-btn-wrap');
+  if(counterWrap) counterWrap.classList.toggle('sc-mode-counters', scMode);
+  
+  renderTabs();
+}
+</script>
+
+<script>
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('dmask').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('dmask').classList.remove('open');}
+
+async function clearThumbCache() {
+  try {
+    // Delete all cached thumbs by clearing the thumbnail folder via server
+    // We'll just reload all images (force re-fetch by busting img src cache)
+    const imgs = document.querySelectorAll('.card img, .sel-card img');
+    imgs.forEach(img => {
+      const src = img.src.split('?')[0];
+      img.src = src + '?t=' + Date.now();
+    });
+    closeSidebar();
+    alert(KSK.t('toast_cache_cleared') || 'Thumbnail cache cleared!');
+  } catch(e) { alert('Gagal clear cache'); }
+}
+
+// Mobile detection
+function applyMobileMode(){
+  const mob = window.innerWidth <= 640;
+  document.querySelectorAll('.desk-only').forEach(el=>el.style.display=mob?'none':'');
+}
+applyMobileMode();
+window.addEventListener('resize', applyMobileMode);
+
+// Socket status is now handled via .status-pill .sdot in main script block
+
+// ─── WAKE LOCK (layar HP ga mati) ────────────────────────
+let wakeLock = null;
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) return; // browser ga support, skip aja
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+  } catch {}
+}
+// Request wake lock pas halaman dibuka
+requestWakeLock();
+// Re-request kalau tab balik ke foreground (wake lock otomatis lepas kalau tab hidden)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') requestWakeLock();
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SHORTCUT SYSTEM
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let scMode = false;
+let _scContext  = null;  
+let _scTarget   = null;  
+let _scMods     = { Ctrl: false, Alt: false, Shift: false };
+let _scKey      = null;
+let _scKeyType  = 'alpha';
+let _editingTabShortcut = null;
+
+// ─── Format shortcut to readable string ─────────────────────────────────────
+function formatShortcut(sc) {
+  if (!sc || !sc.key) return '';
+  const mods = [sc.ctrl?'Ctrl':'', sc.alt?'Alt':'', sc.shift?'Shift':''].filter(Boolean);
+  return [...mods, sc.key].join('+');
+}
+
+function toggleShowShortcuts() {
+  settings.showShortcuts = !settings.showShortcuts;
+  saveSettings(); updateToggle(); render();
+}
+
+// ─── Open shortcut modal ─────────────────────────────────────────────────────
+function openShortcutModal(context, target) {
+  _scContext = context; _scTarget = target;
+  _scMods = { Ctrl: false, Alt: false, Shift: false }; _scKey = null;
+
+  let existing = null;
+  if (context === 'card') existing = (settings.shortcuts || {})[target];
+  if (context === 'counter_inc') existing = (settings.counterShortcuts || {})[target];
+  if (context === 'counter_dec') existing = (settings.counterDecShortcuts || {})[target];
+  if (context === 'counter_res') existing = (settings.counterResShortcuts || {})[target];
+  if (context === 'tab')  existing = _editingTabShortcut;
+
+  if (existing) {
+    _scMods.Ctrl = !!existing.ctrl; _scMods.Alt = !!existing.alt; _scMods.Shift = !!existing.shift;
+    _scKey = existing.key || null;
+    if (_scKey && _scKey.startsWith('F')) _scKeyType = 'fn';
+    else if (_scKey && /^\d$/.test(_scKey)) _scKeyType = 'num';
+    else _scKeyType = 'alpha';
+  }
+
+  let label = target || context;
+  if (context === 'card') label = getLabel(files.find(x => x.name === target)) || target;
+  if (context.startsWith('counter')) {
+    const act = context.split('_')[1];
+    const cName = target ? target.replace(/\.[^/.]+$/, '') : 'Counter';
+    label = `${cName} (${act === 'inc' ? '+1' : act === 'dec' ? '-1' : 'Reset'})`;
+  }
+  if (context === 'tab') label = (settings.tabs || []).find(t => t.id === target)?.name || 'Tab';
+  
+  document.getElementById('sc-for-name').textContent = label;
+  _scKeyType = _scKeyType || 'alpha';
+  
+  document.querySelectorAll('.sc-key-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.sc-key-tab').forEach(t => {
+    if (t.textContent.includes(_scKeyType === 'alpha' ? 'A' : _scKeyType === 'num' ? '0' : 'F')) t.classList.add('on');
+  });
+
+  updateScModUI(); renderScKeyGrid(_scKeyType); updateScPreview();
+  document.getElementById('sc-overlay').classList.add('open');
+}
+
+function closeShortcutModal() { document.getElementById('sc-overlay').classList.remove('open'); }
+
+// ─── Modifier & Key Grid ─────────────────────────────────────────────────────
+function toggleMod(mod) { _scMods[mod] = !_scMods[mod]; updateScModUI(); updateScPreview(); }
+function updateScModUI() {
+  document.getElementById('mod-ctrl').classList.toggle('on', !!_scMods.Ctrl);
+  document.getElementById('mod-alt').classList.toggle('on', !!_scMods.Alt);
+  document.getElementById('mod-shift').classList.toggle('on', !!_scMods.Shift);
+}
+function switchKeyTab(type, el) {
+  _scKeyType = type; _scKey = null;
+  document.querySelectorAll('.sc-key-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  renderScKeyGrid(type); updateScPreview();
+}
+function renderScKeyGrid(type) {
+  const grid = document.getElementById('sc-key-grid');
+  let keys = [];
+  if (type === 'alpha') {
+    keys = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    grid.className = 'sc-key-grid alpha';
+  } else if (type === 'num') {
+    keys = ['0','1','2','3','4','5','6','7','8','9','NumPad0','NumPad1','NumPad2','NumPad3','NumPad4','NumPad5','NumPad6','NumPad7','NumPad8','NumPad9'];
+    grid.className = 'sc-key-grid num';
+  } else {
+    keys = Array.from({length:24}, (_,i) => 'F'+(i+1));
+    grid.className = 'sc-key-grid fn';
+  }
+
+  grid.innerHTML = keys.map(k => {
+    const isUsed = checkShortcutInUse(k);
+    const usedClass = isUsed ? ' used' : '';
+    const activeClass = _scKey === k ? ' on' : '';
+    return `<button class="sc-key-btn${usedClass}${activeClass}" onclick="selectKey('${k}')">${k}</button>`;
+  }).join('');
+}
+// Fungsi untuk mengecek apakah kombinasi tombol sudah dipakai
+function checkShortcutInUse(k) {
+  const combo = (_scMods.Ctrl?'Ctrl+':'') + (_scMods.Alt?'Alt+':'') + (_scMods.Shift?'Shift+':'') + k;
+  const fmt = (sc) => (sc.ctrl?'Ctrl+':'') + (sc.alt?'Alt+':'') + (sc.shift?'Shift+':'') + sc.key;
+
+  // Cek di Shortcuts Meme
+  for (const [fn, sc] of Object.entries(settings.shortcuts || {})) {
+    if (fn !== _scTarget && fmt(sc) === combo) return getLabel(files.find(f => f.name === fn)) || fn;
+  }
+  // Cek di Shortcuts Counter
+  const cGroups = { inc: settings.counterShortcuts, dec: settings.counterDecShortcuts, res: settings.counterResShortcuts };
+  for (const [type, group] of Object.entries(cGroups)) {
+    for (const [fn, sc] of Object.entries(group || {})) {
+      if (fmt(sc) === combo) return `${fn.replace('.txt','')} (${type === 'inc' ? '+1' : type === 'dec' ? '-1' : 'Reset'})`;
+    }
+  }
+  // Cek di Shortcuts Tab
+  for (const [tabId, sc] of Object.entries(settings.tabShortcuts || {})) {
+    if (tabId !== editingTabId && fmt(sc) === combo) {
+      const tab = settings.tabs.find(t => t.id === tabId);
+      return `Tab: ${tab ? tab.name : tabId}`;
+    }
+  }
+  return null;
+}
+function selectKey(k) { _scKey = _scKey === k ? null : k; renderScKeyGrid(_scKeyType); updateScPreview(); }
+
+function updateScPreview() {
+  const el = document.getElementById('sc-preview');
+  const mods = [_scMods.Ctrl?'Ctrl':'', _scMods.Alt?'Alt':'', _scMods.Shift?'Shift':''].filter(Boolean);
+  
+  if (!_scKey && !mods.length) {
+    el.innerHTML = `<span style="color:var(--tx3)">${KSK.t('sc_pick_hint') || 'Pilih modifier + key'}</span>`;
+    return;
+  }
+
+  const comboStr = [...mods, _scKey || '?'].join('+');
+  let html = `<b>${comboStr}</b>`;
+
+  if (_scKey) {
+    const owner = checkShortcutInUse(_scKey);
+    if (owner) {
+      html += `<div style="color:#ef4444; font-size:.6rem; margin-top:4px; font-weight:700;">
+        ⚠️ ${(KSK.t('sc_linked_to') || 'Terhubung ke:')} ${owner}
+      </div>`;
+    }
+  }
+  
+  el.innerHTML = html;
+}
+
+function clearShortcutModal() {
+  _scMods = { Ctrl: false, Alt: false, Shift: false }; _scKey = null;
+  updateScModUI(); renderScKeyGrid(_scKeyType); updateScPreview();
+}
+
+function saveShortcutModal() {
+  if (!_scKey) { toast(KSK.t('toast_pick_key_first') || 'Pilih key terlebih dahulu'); return; }
+  const sc = { key: _scKey, ctrl: _scMods.Ctrl, alt: _scMods.Alt, shift: _scMods.Shift };
+
+  if (_scContext === 'card') {
+    if (!settings.shortcuts) settings.shortcuts = {};
+    settings.shortcuts[_scTarget] = sc;
+    saveSettings(); render();
+  } else if (_scContext.startsWith('counter_')) {
+    const act = _scContext.split('_')[1];
+    if (act === 'inc') {
+      if (!settings.counterShortcuts) settings.counterShortcuts = {};
+      settings.counterShortcuts[_scTarget] = sc;
+      document.getElementById('counter-sc-inc-preview').textContent = formatShortcut(sc);
+    } else if (act === 'dec') {
+      if (!settings.counterDecShortcuts) settings.counterDecShortcuts = {};
+      settings.counterDecShortcuts[_scTarget] = sc;
+      document.getElementById('counter-sc-dec-preview').textContent = formatShortcut(sc);
+    } else if (act === 'res') {
+      if (!settings.counterResShortcuts) settings.counterResShortcuts = {};
+      settings.counterResShortcuts[_scTarget] = sc;
+      document.getElementById('counter-sc-res-preview').textContent = formatShortcut(sc);
+    }
+    saveSettings();
+  } else if (_scContext === 'tab') {
+    _editingTabShortcut = sc; updateTabScPreview();
+  }
+
+  closeShortcutModal(); updateGlobalKeyListeners();
+  toast((KSK.t('toast_sc_saved') || 'Shortcut disimpan: ') + formatShortcut(sc));
+}
+
+function updateTabScPreview() {
+  const el = document.getElementById('tab-sc-preview');
+  if (el) el.textContent = _editingTabShortcut ? formatShortcut(_editingTabShortcut) : (KSK.t('sc_unset') || 'Belum diatur');
+}
+function clearTabShortcut() { _editingTabShortcut = null; updateTabScPreview(); }
+
+// ─── CLEAR COUNTER SHORTCUTS ─────────────────────────────────────────────────
+function clearCounterShortcut(type) {
+  if (!editingCounterFilename) return;
+  const unsetTxt = KSK.t('sc_unset') || 'Belum diatur';
+  if (type === 'inc' && settings.counterShortcuts) {
+    delete settings.counterShortcuts[editingCounterFilename];
+    document.getElementById('counter-sc-inc-preview').textContent = unsetTxt;
+  }
+  if (type === 'dec' && settings.counterDecShortcuts) {
+    delete settings.counterDecShortcuts[editingCounterFilename];
+    document.getElementById('counter-sc-dec-preview').textContent = unsetTxt;
+  }
+  if (type === 'res' && settings.counterResShortcuts) {
+    delete settings.counterResShortcuts[editingCounterFilename];
+    document.getElementById('counter-sc-res-preview').textContent = unsetTxt;
+  }
+  saveSettings(); updateGlobalKeyListeners();
+}
+
+// ─── GLOBAL KEYBOARD LISTENERS & ELECTRON SYNC ───────────────────────────────
+function updateGlobalKeyListeners() {
+  if (window._scKeyHandler) document.removeEventListener('keydown', window._scKeyHandler);
+
+  window._scKeyHandler = function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // Cek apakah shortcut diaktifkan
+    if (localStorage.getItem('shortcuts_enabled') === 'false') return;
+    const pressed = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + e.key.toUpperCase();
+    const fmt = (sc) => (sc.ctrl?'Ctrl+':'') + (sc.alt?'Alt+':'') + (sc.shift?'Shift+':'') + sc.key;
+
+    for (const [fn, sc] of Object.entries(settings.shortcuts || {})) {
+      if (pressed === fmt(sc)) { e.preventDefault(); trigger(fn); return; }
+    }
+    for (const [fn, sc] of Object.entries(settings.counterShortcuts || {})) {
+      if (pressed === fmt(sc)) { e.preventDefault(); triggerCounterAction(fn, 'inc'); return; }
+    }
+    for (const [fn, sc] of Object.entries(settings.counterDecShortcuts || {})) {
+      if (pressed === fmt(sc)) { e.preventDefault(); triggerCounterAction(fn, 'dec'); return; }
+    }
+    for (const [fn, sc] of Object.entries(settings.counterResShortcuts || {})) {
+      if (pressed === fmt(sc)) { e.preventDefault(); triggerCounterAction(fn, 'res'); return; }
+    }
+    for (const [tabId, sc] of Object.entries(settings.tabShortcuts || {})) {
+      if (pressed === fmt(sc)) { e.preventDefault(); switchTab(tabId); return; }
+    }
+  };
+  document.addEventListener('keydown', window._scKeyHandler);
+
+  // Daftarin shortcut ke OS via main.js
+  if (window.kskElectron && window.kskElectron.registerShortcuts) {
+    const scEnabled = localStorage.getItem('shortcuts_enabled') !== 'false';
+    if (!scEnabled) {
+      // Shortcut dimatikan — unregister semua dari OS
+      window.kskElectron.registerShortcuts([]);
+    } else {
+      let globalSc = [];
+      const mapSc = (sc) => (sc.ctrl?'CommandOrControl+':'')+(sc.alt?'Alt+':'')+(sc.shift?'Shift+':'')+sc.key;
+      
+      for (const [fn, sc] of Object.entries(settings.shortcuts || {})) globalSc.push({ combo: mapSc(sc), action: { type: 'card', target: fn } });
+      for (const [fn, sc] of Object.entries(settings.counterShortcuts || {})) globalSc.push({ combo: mapSc(sc), action: { type: 'counter_inc', target: fn } });
+      for (const [fn, sc] of Object.entries(settings.counterDecShortcuts || {})) globalSc.push({ combo: mapSc(sc), action: { type: 'counter_dec', target: fn } });
+      for (const [fn, sc] of Object.entries(settings.counterResShortcuts || {})) globalSc.push({ combo: mapSc(sc), action: { type: 'counter_res', target: fn } });
+      for (const [tabId, sc] of Object.entries(settings.tabShortcuts || {})) globalSc.push({ combo: mapSc(sc), action: { type: 'tab', target: tabId } });
+
+      window.kskElectron.registerShortcuts(globalSc);
+    }
+  }
+}
+
+// ─── EXECUTE COUNTER ACTION (+1, -1, 0) ──────────────────────────────────────
+async function triggerCounterAction(filename, action) {
+  try {
+    // Pakai /op agar atomic - server baca file, hitung, tulis, emit socket
+    const opMap = { inc: 'inc', dec: 'dec', res: 'reset' };
+    const r = await fetch('/api/counters/' + encodeURIComponent(filename) + '/op', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ op: opMap[action] || action })
+    });
+    const d = await r.json();
+    if (!d.ok) return;
+    // Update UI dari response langsung (socket juga update, tapi ini lebih cepat)
+    const counterList = getTabCounters(curTab);
+    const idx = counterList.findIndex(c => c.filename === filename);
+    if (idx >= 0) {
+      const el = document.getElementById('counter-btn-val-' + idx);
+      if (el) el.textContent = String(d.value);
+      const btn = document.getElementById('counter-btn-' + idx);
+      if (btn) { btn.style.transform = 'scale(0.9)'; setTimeout(() => btn.style.transform = '', 100); }
+    }
+  } catch (e) { console.error('triggerCounterAction:', e); }
+}
+
+// ─── Update counter shortcut preview when opening counter edit ───────────────
+const _origOpenCounterEdit = openCounterEdit;
+openCounterEdit = function(filename) {
+  _origOpenCounterEdit(filename);
+  const scInc = (settings.counterShortcuts || {})[filename];
+  const scDec = (settings.counterDecShortcuts || {})[filename];
+  const scRes = (settings.counterResShortcuts || {})[filename];
+  
+  const elInc = document.getElementById('counter-sc-inc-preview');
+  const elDec = document.getElementById('counter-sc-dec-preview');
+  const elRes = document.getElementById('counter-sc-res-preview');
+  
+  const unsetTxt = KSK.t('sc_unset') || 'Belum diatur';
+  if (elInc) elInc.textContent = scInc ? formatShortcut(scInc) : unsetTxt;
+  if (elDec) elDec.textContent = scDec ? formatShortcut(scDec) : unsetTxt;
+  if (elRes) elRes.textContent = scRes ? formatShortcut(scRes) : unsetTxt;
+};
+
+// ─── Init on load ─────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(updateGlobalKeyListeners, 1000); 
+
+  // Pakai kskElectron karena itu yang ada di preload lo
+  if (window.kskElectron && window.kskElectron.onShortcutTriggered && !window._globalScInit) {
+    window._globalScInit = true;
+    window.kskElectron.onShortcutTriggered((action) => {
+      // Cek toggle — kalau dimatikan, abaikan semua shortcut dari OS
+      if (localStorage.getItem('shortcuts_enabled') === 'false') return;
+      if (action.type === 'card') trigger(action.target);
+      else if (action.type && action.type.startsWith('counter_')) {
+          const act = action.type.split('_')[1];
+          triggerCounterAction(action.target, act);
+      }
+      else if (action.type === 'tab') switchTab(action.target);
+    });
+  }
+});
+
+</script>
+
+<!-- EDITOR MODE BAR -->
+<div id="editor-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:linear-gradient(90deg,rgba(9,9,13,.96) 0%,rgba(17,17,24,.98) 100%);
+  border-top:1px solid rgba(239,68,68,.3);
+  padding:0 16px;height:44px;
+  display:none;align-items:center;gap:12px;
+  box-shadow:0 -4px 24px rgba(239,68,68,.12);">
+  <!-- left: mode label -->
+  <div style="display:flex;align-items:center;gap:8px;flex:1;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;animation:edpulse 1.5s infinite;"></div>
+    <span style="font-size:.6rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#ef4444;font-family:'Syne',sans-serif;" data-i18n="editor_mode_title">EDITOR MODE</span>
+    <span style="font-size:.58rem;color:var(--tx3);font-family:'Syne',sans-serif;" data-i18n="editor_mode_desc">— drag card untuk ubah urutan · klik card untuk rename/edit tab</span>
+  </div>
+  <!-- right: done button -->
+  <button onclick="exitEditorMode()" style="
+    background:rgba(239,68,68,.12);
+    border:1px solid rgba(239,68,68,.4);
+    color:#ef4444;
+    padding:6px 18px;
+    border-radius:7px;
+    font-size:.65rem;font-weight:800;
+    font-family:'Syne',sans-serif;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:all .15s;
+    white-space:nowrap;
+    flex-shrink:0;"
+    onmouseover="this.style.background='rgba(239,68,68,.25)'"
+    onmouseout="this.style.background='rgba(239,68,68,.12)'">
+    ✓ <span data-i18n="btn_done">DONE</span>
+  </button>
+</div>
+<div id="shortcut-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:linear-gradient(90deg,rgba(9,9,13,.96) 0%,rgba(17,17,24,.98) 100%);
+  border-top:1px solid rgba(56,189,248,.3);
+  padding:0 16px;height:44px;
+  display:none;align-items:center;gap:12px;
+  box-shadow:0 -4px 24px rgba(56,189,248,.12);">
+  <div style="display:flex;align-items:center;gap:8px;flex:1;">
+    <div style="width:6px;height:6px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;animation:scpulse 1.5s infinite;"></div>
+    <span style="font-size:.6rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#38bdf8;font-family:'Syne',sans-serif;" data-i18n="shortcut_mode_title">SHORTCUT MODE</span>
+    <span style="font-size:.58rem;color:var(--tx3);font-family:'Syne',sans-serif;" data-i18n="shortcut_mode_desc">— klik icon shortcut pada card atau tombol pengaturan pada counter/tab</span>
+  </div>
+  <button onclick="toggleShortcutMode()" style="
+    background:rgba(56,189,248,.12);
+    border:1px solid rgba(56,189,248,.4);
+    color:#38bdf8;
+    padding:6px 18px;
+    border-radius:7px;
+    font-size:.65rem;font-weight:800;
+    font-family:'Syne',sans-serif;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:all .15s;
+    white-space:nowrap;
+    flex-shrink:0;"
+    onmouseover="this.style.background='rgba(56,189,248,.25)'"
+    onmouseout="this.style.background='rgba(56,189,248,.12)'">
+    ✓ <span data-i18n="btn_done">DONE</span>
+  </button>
+</div>
+</body>
+</html>

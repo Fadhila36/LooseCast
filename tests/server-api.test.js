@@ -1,0 +1,147 @@
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert/strict');
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
+
+const TEST_BASE = path.resolve(__dirname, 'temp_test_server');
+process.env.USER_DATA_DIR = TEST_BASE;
+process.env.PORT = '3099';
+
+describe('Server API Endpoints Integration Test', () => {
+  let appServer;
+
+  before(async () => {
+    if (fs.existsSync(TEST_BASE)) {
+      try { fs.rmSync(TEST_BASE, { recursive: true, force: true }); } catch {}
+    }
+    fs.mkdirSync(TEST_BASE, { recursive: true });
+    const { server } = require('../server');
+    appServer = server;
+  });
+
+  after(async () => {
+    if (appServer && appServer.close) {
+      await new Promise((resolve) => appServer.close(resolve));
+    }
+    if (fs.existsSync(TEST_BASE)) {
+      try {
+        fs.rmSync(TEST_BASE, { recursive: true, force: true });
+      } catch {}
+    }
+  });
+
+  function request(method, pathUrl, body = null) {
+    return new Promise((resolve, reject) => {
+      const payload = body ? JSON.stringify(body) : null;
+      const req = http.request(
+        {
+          hostname: '127.0.0.1',
+          port: 3099,
+          path: pathUrl,
+          method,
+          headers: payload
+            ? {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload),
+              }
+            : {},
+        },
+        (res) => {
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => {
+            try {
+              resolve({ status: res.statusCode, body: JSON.parse(data) });
+            } catch {
+              resolve({ status: res.statusCode, body: data });
+            }
+          });
+        }
+      );
+      req.on('error', reject);
+      if (payload) req.write(payload);
+      req.end();
+    });
+  }
+
+  it('GET /api/stats harus mengembalikan total triggers default 0', async () => {
+    const res = await request('GET', '/api/stats');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(typeof res.body.totalTriggers, 'number');
+  });
+
+  it('POST /api/counters harus menolak payload nama kosong', async () => {
+    const res = await request('POST', '/api/counters', { name: '' });
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+  });
+
+  it('POST /api/counters harus membuat counter baru dan mengizinkan atomic op inc/dec', async () => {
+    const uniqueName = `Victory_${Date.now()}`;
+    const createRes = await request('POST', '/api/counters', { name: uniqueName });
+    assert.strictEqual(createRes.status, 200);
+    assert.strictEqual(createRes.body.ok, true);
+
+    const incRes = await request('POST', `/api/counters/${createRes.body.filename}/op`, { op: 'inc' });
+    assert.strictEqual(incRes.status, 200);
+    assert.strictEqual(incRes.body.value, 1);
+
+    const valRes = await request('GET', `/api/counters/${createRes.body.filename}/value`);
+    assert.strictEqual(valRes.status, 200);
+    assert.strictEqual(valRes.body.value, '1');
+  });
+
+  it('DELETE /api/media/:filename harus menolak path traversal attack', async () => {
+    const res = await request('DELETE', '/api/media/..%2F..%2Fwindows%2Fcmd.exe');
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+  });
+
+  it('POST /api/panic harus berhasil mengembalikan status ok', async () => {
+    const res = await request('POST', '/api/panic');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.ok, true);
+  });
+
+  it('POST /api/master-volume harus memvalidasi rentang volume 0 - 100', async () => {
+    const badRes = await request('POST', '/api/master-volume', { volume: 150 });
+    assert.strictEqual(badRes.status, 400);
+    assert.strictEqual(badRes.body.ok, false);
+
+    const goodRes = await request('POST', '/api/master-volume', { volume: 75 });
+    assert.strictEqual(goodRes.status, 200);
+    assert.strictEqual(goodRes.body.ok, true);
+    assert.strictEqual(goodRes.body.volume, 75);
+  });
+
+  it('POST /api/fx harus memvalidasi jenis fx yang diizinkan', async () => {
+    const badRes = await request('POST', '/api/fx', { type: 'invalid-effect' });
+    assert.strictEqual(badRes.status, 400);
+    assert.strictEqual(badRes.body.ok, false);
+
+    const goodRes = await request('POST', '/api/fx', { type: 'confetti', intensity: 1 });
+    assert.strictEqual(goodRes.status, 200);
+    assert.strictEqual(goodRes.body.ok, true);
+    assert.strictEqual(goodRes.body.type, 'confetti');
+  });
+
+  it('GET /api/obs/status harus mengembalikan status obs', async () => {
+    const res = await request('GET', '/api/obs/status');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(typeof res.body.connected, 'boolean');
+    assert.ok(Array.isArray(res.body.scenes));
+  });
+
+  it('POST /api/obs/set-item-enabled harus memvalidasi payload sceneItemId', async () => {
+    const res = await request('POST', '/api/obs/set-item-enabled', {});
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+  });
+
+  it('POST /api/obs/toggle-mute harus memvalidasi payload inputName', async () => {
+    const res = await request('POST', '/api/obs/toggle-mute', {});
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+  });
+});

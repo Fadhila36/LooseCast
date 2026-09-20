@@ -1,0 +1,20 @@
+{
+  "name": "Tomatosuki Stream Kit Deck",
+  "short_name": "StreamDeck",
+  "description": "Smart Touch Stream Deck, OBS Controller & Soundboard for Streamers",
+  "start_url": "/deck.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e101a",
+  "theme_color": "#0e101a",
+  "categories": ["utilities", "entertainment", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

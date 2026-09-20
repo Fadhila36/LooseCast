@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomatosuki Stream Kit AIO</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="shell">
+<div id="dmask" onclick="closeSidebar()"></div>
+<aside id="sidebar"></aside>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <button class="burger" onclick="openSidebar()" title="Menu"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+    <div class="brand-text">TOMATOSUKI <span>STREAM KIT</span></div>
+    <div class="status-pill"><div class="sdot"></div><span data-i18n="topbar_running">RUNNING</span></div>
+    <div class="sp"></div>
+    <div class="url-chip"><code id="url-disp">localhost:3000</code><button class="copy-btn" onclick="copyUrl()" title="Copy URL"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></div>
+    <button class="burger" onclick="openSettings()" data-i18n-title="topbar_settings" title="Settings"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+
+  <div class="scroll-area">
+    <!-- Stats Overview -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;" class="fu d1">
+      <div class="stat-card">
+        <div class="stat-val" id="stat-files">—</div>
+        <div class="stat-lbl" data-i18n="stat_total_memes">Total Meme</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-size">—</div>
+        <div class="stat-lbl" data-i18n="stat_storage">Kapasitas Media</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-triggers">—</div>
+        <div class="stat-lbl" data-i18n="stat_total_triggers">Total Trigger</div>
+      </div>
+    </div>
+
+    <!-- Onboarding Guide Banner -->
+    <button class="ob-btn fu d2" onclick="openOnboarding()">
+      <div class="ob-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="10" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      </div>
+      <div>
+        <div class="ob-main" data-i18n="ob_guide_title">Panduan Cepat Stream Kit</div>
+        <div class="ob-sub" data-i18n="ob_guide_desc">Pelajari cara menghubungkan Meme Overlay ke OBS Studio dan kontrol via HP.</div>
+      </div>
+    </button>
+
+    <!-- Main Navigation Tools -->
+    <div class="menu-sec-label fu d2" data-i18n="sec_main_features">Fitur Utama</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;" class="fu d2">
+      <a href="/customdeck.html" class="menu-card feat">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.9a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_custom_deck_title">Custom Deck</div>
+        <div class="mc-desc" data-i18n="card_custom_deck_desc">Upload meme, atur durasi animasi, audio, dan tata letak overlay.</div>
+      </a>
+      <a href="/deck.html" class="menu-card">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_deck_title">Deck Controller</div>
+        <div class="mc-desc" data-i18n="card_deck_desc">Soundboard trigger instan untuk live stream OBS.</div>
+      </a>
+      <a href="#" class="menu-card" onclick="openConnect();return false;">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_connect_title">Koneksi Smartphone</div>
+        <div class="mc-desc" data-i18n="card_connect_desc">Jadikan smartphone sebagai remote deck nirkabel via WiFi lokal.</div>
+      </a>
+      <a href="/obs.html" target="_blank" class="menu-card">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" x2="12" y1="22.08" y2="12"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_obs_title">OBS Browser Source</div>
+        <div class="mc-desc" data-i18n="card_obs_desc">Buka URL overlay transparan untuk disalin ke OBS Studio.</div>
+      </a>
+    </div>
+
+    <!-- Supplementary Tools -->
+    <div class="menu-sec-label fu d3" data-i18n="sec_more_tools">Alat Tambahan</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;" class="fu d3">
+      <div class="menu-card" onclick="openKDSetup()" style="cursor:pointer;">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_kd_title">K/D · W/L Counter</div>
+        <div class="mc-desc" data-i18n="card_kd_desc">Pelacak skor Kill, Death, Win, dan Lose saat streaming game.</div>
+      </div>
+      <a href="#" class="menu-card" onclick="openShortcutSetup();return false;">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M6 12h.001M10 12h.001M14 12h.001M18 12h.001M7 16h10"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_hotkey_title">Pengaturan Hotkey</div>
+        <div class="mc-desc" data-i18n="card_hotkey_desc">Konfigurasi tombol keyboard cepat untuk memicu meme.</div>
+      </a>
+      <a href="#" class="menu-card" onclick="openBestPlugins();return false;">
+        <div class="mc-ic">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+        </div>
+        <div class="mc-title" data-i18n="card_plugins_title">Rekomendasi Plugin</div>
+        <div class="mc-desc" data-i18n="card_plugins_desc">Kumpulan plugin esensial untuk meningkatkan kualitas OBS.</div>
+      </a>
+    </div>
+
+    <!-- Active Counters List -->
+    <div id="active-counters" style="margin-bottom:10px;display:flex;flex-direction:column;gap:5px;"></div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <div class="footer-copy">
+      © Copyright by <strong>fadhila36</strong>
+    </div>
+    <div class="footer-links">
+      <a href="https://fadhilaabiyyu.my.id" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        https://fadhilaabiyyu.my.id
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </footer>
+</div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="modal-bg" id="feedback-modal">
+  <div class="modal-box" style="max-width:440px;padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
+      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <span data-i18n="feedback_modal_title">Feedback & Support</span>
+      </div>
+      <button onclick="closeFeedback()" class="ob-modal-close">✕</button>
+    </div>
+    <div style="font-size:0.75rem;color:var(--tx2);margin-bottom:18px;line-height:1.6;" data-i18n="feedback_modal_desc">Ada pertanyaan, bug report, atau saran pengembangan untuk <b>Tomatosuki Stream Kit AIO</b>? Hubungi kontak resmi:</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <a href="https://fadhilaabiyyu.my.id" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='var(--ac)';this.style.background='rgba(56,189,248,0.06)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);display:flex;align-items:center;justify-content:center;color:#38bdf8;flex-shrink:0;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem;font-weight:700;">Official Website</div>
+          <div style="font-size:0.68rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;">fadhilaabiyyu.my.id</div>
+        </div>
+      </a>
+      <a href="https://github.com/fadhila36" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='#a855f7';this.style.background='rgba(168,85,247,0.06)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;color:#a855f7;flex-shrink:0;">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem;font-weight:700;">GitHub Profile</div>
+          <div style="font-size:0.68rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;">github.com/fadhila36</div>
+        </div>
+      </a>
+    </div>
+    <button onclick="closeFeedback()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:11px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
+  </div>
+</div>
+
+<!-- KD COUNTER SETUP MODAL -->
+<div class="modal-bg" id="kd-modal">
+  <div class="modal-box" style="max-width:480px;width:100%;padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
+      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+        </div>
+        <span data-i18n="kd_modal_title">K/D · W/L Counter Tracker</span>
+      </div>
+      <button onclick="closeKDSetup()" class="ob-modal-close">✕</button>
+    </div>
+
+    <!-- Create Card -->
+    <div style="background:linear-gradient(145deg, rgba(26,28,42,0.8) 0%, rgba(16,17,26,0.95) 100%);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px;margin-bottom:18px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+      <div style="font-size:0.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <span data-i18n="kd_create_title">Buat Counter Baru</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="text" id="kd-name-inp" placeholder="Nama counter, e.g. Ranked Solo" data-i18n-placeholder="kd_input_placeholder" maxlength="40"
+          style="flex:1;background:rgba(8,9,14,0.9);border:1px solid rgba(255,255,255,0.12);color:var(--tx);border-radius:10px;padding:11px 14px;font-size:0.82rem;outline:none;"
+          onkeydown="if(event.key==='Enter')saveKDCounter()">
+        <button onclick="saveKDCounter()" style="background:linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);border:none;color:#040914;padding:11px 18px;border-radius:10px;font-size:0.76rem;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(56,189,248,0.35);transition:all var(--duration-fast);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'" data-i18n="kd_create_btn">+ Buat</button>
+      </div>
+      <div id="kd-error" style="font-size:0.68rem;color:#ef4444;margin-top:8px;display:none;font-weight:600;"></div>
+    </div>
+
+    <!-- Active List -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-size:0.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);" data-i18n="kd_active_title">Counter Aktif</div>
+    </div>
+    <div id="kd-list" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;padding-right:4px;">
+      <div style="font-size:0.75rem;color:var(--tx3);text-align:center;padding:24px 14px;background:rgba(255,255,255,0.02);border:1px dashed var(--bd2);border-radius:12px;" data-i18n="kd_empty_hint">Belum ada counter. Ketik nama di atas untuk membuat yang pertama!</div>
+    </div>
+
+    <button onclick="closeKDSetup()" style="width:100%;margin-top:20px;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:12px;border-radius:10px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal-box" style="max-width:440px;padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
+      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <span data-i18n="settings_modal_title">App Settings</span>
+      </div>
+      <button onclick="closeSettings()" class="ob-modal-close">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:16px;">
+        <div style="font-size:0.64rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+          <span data-i18n="settings_assets_title">Folder Assets</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--tx2);margin-bottom:10px;line-height:1.5;" data-i18n="settings_assets_desc">Lokasi penyimpanan meme & file audio. Default: AppData.</div>
+        <div id="assets-dir-disp" style="font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--ac);background:rgba(8,9,14,0.8);border:1px solid var(--bd2);border-radius:8px;padding:9px 12px;word-break:break-all;margin-bottom:10px;">(default: AppData)</div>
+        <button onclick="chooseAssetsFolder()" style="width:100%;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(56,189,248,0.2)'" onmouseout="this.style.background='var(--ac-dim)'" data-i18n="settings_choose_folder_btn">📂 Pilih Folder Baru</button>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:16px;">
+        <div style="font-size:0.64rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="settings_backup_title">Backup & Restore</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--tx2);margin-bottom:12px;line-height:1.5;" data-i18n="settings_backup_desc">Backup seluruh media dan konfigurasi ke satu file .zip.</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;">
+          <button onclick="doBackup()" id="backup-btn" style="flex:1;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#22c55e;padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;" data-i18n="settings_backup_btn">⬇ Backup Data</button>
+          <button onclick="document.getElementById('restore-input').click()" id="restore-btn" style="flex:1;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:#f59e0b;padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;" data-i18n="settings_restore_btn">⬆ Restore Data</button>
+          <input type="file" id="restore-input" accept=".zip" style="display:none" onchange="doRestore(this.files[0])">
+        </div>
+        <div id="backup-status" style="font-size:0.65rem;color:var(--tx3);line-height:1.5;display:none;margin-top:8px;"></div>
+      </div>
+    </div>
+    <button onclick="closeSettings()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:11px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
+  </div>
+</div>
+
+<!-- CONNECT MODAL -->
+<div class="modal-bg" id="connect-modal">
+  <div class="modal-box" style="max-width:400px;padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
+      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+        </div>
+        <span data-i18n="connect_modal_title">Connect to Phone</span>
+      </div>
+      <button onclick="closeConnect()" class="ob-modal-close">✕</button>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:0.65rem;color:var(--tx2);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;" data-i18n="connect_modal_hint">Scan QR Code dari HP (Satu WiFi)</div>
+      <div id="qr-container" style="margin:12px auto;width:160px;height:160px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <div id="qr-target" style="width:144px;height:144px;"></div>
+      </div>
+      <div class="mono" style="font-size:0.8rem;font-weight:700;color:var(--ac);margin-top:10px;word-break:break-all;" id="phone-url-disp">—</div>
+    </div>
+    <button onclick="copyPhoneUrl()" style="width:100%;background:linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);border:none;color:#040914;padding:12px;border-radius:10px;font-size:0.8rem;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 14px rgba(56,189,248,0.35);" data-i18n="connect_copy_url_btn">Copy URL</button>
+    <button onclick="closeConnect()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:11px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;" data-i18n="modal_close_btn">Tutup</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/qrcode.min.js"></script>
+<script src="/ksk-ui.js"></script>
+<script src="/js/shared.js"></script>
+
+<script>
+const socket = io();
+
+// Dengarkan toggle dari tray Electron (via IPC)
+if (window.kskElectron && window.kskElectron.onShortcutStateChanged) {
+  window.kskElectron.onShortcutStateChanged((enabled) => {
+    localStorage.setItem('shortcuts_enabled', String(enabled));
+    updateScToggleUI(enabled);
+  });
+}
+
+// Dengarkan toggle dari deck.html atau tray Electron
+try {
+  const _kskIdxChannel = new BroadcastChannel('ksk');
+  _kskIdxChannel.onmessage = (e) => {
+    if (e.data && e.data.type === 'shortcuts_toggle') {
+      localStorage.setItem('shortcuts_enabled', String(e.data.enabled));
+      updateScToggleUI(e.data.enabled);
+    }
+  };
+} catch {}
+
+// ── GLOBAL SHORTCUT LISTENER (Menerima dari main.js) ────────
+if (window.kskElectron && window.kskElectron.onShortcutTriggered && !window._globalScInit) {
+  window._globalScInit = true;
+  window.kskElectron.onShortcutTriggered((action) => {
+    // Kalau yang dipencet adalah shortcut meme (card)
+    if (action.type === 'card' || typeof action === 'string') {
+      const target = typeof action === 'string' ? action : action.target;
+      fetch('/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: target })
+      }).catch(err => console.error(err));
+      toast('Shortcut Triggered!');
+    } 
+// Kalau yang dipencet shortcut counter (3 jenis)
+    else if (action.type && action.type.startsWith('counter_')) {
+      fetch('/api/counters/' + encodeURIComponent(action.target) + '/value')
+        .then(r => r.json())
+        .then(d => {
+           let cur = parseInt(d.value, 10) || 0;
+           if (action.type === 'counter_inc') cur += 1;
+           else if (action.type === 'counter_dec') cur = Math.max(0, cur - 1);
+           else if (action.type === 'counter_res') cur = 0;
+           
+           fetch('/api/counters/' + encodeURIComponent(action.target) + '/value', {
+             method: 'POST', headers: {'Content-Type': 'application/json'},
+             body: JSON.stringify({ value: String(cur) })
+           });
+        });
+    }
+  });
+}
+// ────────────────────────────────────────────────────────────
+
+socket.on('connect', () => { document.querySelectorAll('.sdot').forEach(d=>d.classList.add('on')); });
+socket.on('disconnect', () => { document.querySelectorAll('.sdot').forEach(d=>d.classList.remove('on')); });
+socket.on('show-media', () => { setTimeout(loadStats, 400); }); // live refresh stats
+
+let baseUrl = 'http://127.0.0.1:3000';
+// Ambil IP LAN dari server
+(async ()=>{
+  try{
+    const r = await fetch('/api/local-ip');
+    const d = await r.json();
+    baseUrl = 'http://'+d.ip+':'+d.port;
+    document.getElementById('url-disp').textContent = d.ip+':'+d.port;
+    document.getElementById('phone-url-disp').textContent = baseUrl+'/deck.html';
+  }catch{
+    document.getElementById('url-disp').textContent = '127.0.0.1:3000';
+    document.getElementById('phone-url-disp').textContent = baseUrl+'/deck.html';
+  }
+})();
+
+function copyUrl(){ cp(baseUrl+'/'); }
+function copyPhoneUrl(){ cp(baseUrl+'/deck.html'); }
+function cp(url){
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Copied!'));
+  else{const t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Copied!');}
+}
+function toast(msg){const t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;bottom:70px;right:20px;background:var(--ac);color:#000;font-size:.7rem;font-weight:700;padding:7px 14px;border-radius:8px;z-index:999;';document.body.appendChild(t);setTimeout(()=>t.remove(),1500);}
+
+// (TYPO ASYNC DOUBLE SUDAH DIPERBAIKI DI SINI)
+async function loadStats(){
+  try{
+    const r=await fetch('/api/media'); const files=await r.json();
+    document.getElementById('stat-files').textContent=files.length;
+    let bytes=0; files.forEach(f=>bytes+=f.size||0);
+    const sizeEl=document.getElementById('stat-size');
+    if(sizeEl) sizeEl.textContent=bytes>1048576?(bytes/1048576).toFixed(1)+'MB':(bytes/1024).toFixed(0)+'KB';
+  }catch{}
+  try{
+    const rs=await fetch('/api/stats'); const s=await rs.json();
+    document.getElementById('stat-triggers').textContent=(s.totalTriggers||0).toLocaleString();
+  }catch{}
+}
+loadStats();
+
+let qrGenerated = false;
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('dmask').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('dmask').classList.remove('open');}
+
+// Init KSK sidebar
+KSK.init('dashboard');
+function openConnect(){
+  document.getElementById('connect-modal').classList.add('open');
+  const target = document.getElementById('qr-target');
+  if (target) {
+    target.innerHTML = '';
+    const url = baseUrl + '/deck.html';
+    try {
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(target, {
+          text: url,
+          width: 144,
+          height: 144,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        throw new Error('QRCode not loaded');
+      }
+    } catch(e) {
+      console.error('QR error:', e);
+      target.innerHTML = '<div style="font-size:.6rem;color:#333;text-align:center;padding:10px;">QR tidak bisa di-generate.<br>Copy URL manual.</div>';
+    }
+  }
+}
+function closeConnect(){document.getElementById('connect-modal').classList.remove('open');}
+// Pakai optional chaining (?.) supaya kalau ID-nya nggak ada, app nggak crash
+document.getElementById('phone-connect-modal')?.addEventListener('click', e => {
+  if(e.target === document.getElementById('phone-connect-modal')) closeConnect();
+});
+
+// ─── KD COUNTER ──────────────────────────────────────────
+async function loadKDCounters() {
+  try {
+    const r = await fetch('/api/counters');
+    const counters = await r.json();
+    renderKDList(counters);
+    renderActiveCounters(counters);
+  } catch(e) { renderKDList([]); renderActiveCounters([]); }
+}
+
+function renderKDList(counters) {
+  const el = document.getElementById('kd-list');
+  if (!counters.length) {
+    el.innerHTML = '<div style="font-size:0.75rem;color:var(--tx3);text-align:center;padding:24px 14px;background:rgba(255,255,255,0.02);border:1px dashed var(--bd2);border-radius:12px;">Belum ada counter. Ketik nama di atas untuk membuat yang pertama!</div>';
+    return;
+  }
+  el.innerHTML = counters.map(c => {
+    const fullPath = `assets/text/${c.filename}`;
+    const fn_esc = escAttr(c.filename);
+
+    return `
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(56,189,248,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--gn);flex-shrink:0;box-shadow:0 0 10px var(--gn);"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(c.name)}</div>
+        <div style="font-size:0.62rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fullPath}</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+        <button onclick="copyCounterPath('${fn_esc}')" title="Copy Full Path OBS Text" style="background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(56,189,248,.25)'" onmouseout="this.style.background='var(--ac-dim)'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        </button>
+        
+        <button onclick="openCounterFolder('${fn_esc}')" title="Buka lokasi file" style="background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(56,189,248,.25)'" onmouseout="this.style.background='var(--ac-dim)'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+        </button>
+        
+        <button onclick="deleteKDCounter('${fn_esc}')" title="Hapus Counter" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(239,68,68,.25)'" onmouseout="this.style.background='rgba(239,68,68,.12)'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Tambahkan fungsi pendukung ini di bawahnya
+async function copyCounterPath(filename) {
+  try {
+    // Kita ambil base path dari server supaya path-nya absolut (C:\Users\...)
+    const r = await fetch('/api/config');
+    const cfg = await r.json();
+    
+    // Logika penentuan path (sama kyk di server.js/paths.js)
+    const base = cfg.assetsDir || 'AppData/Roaming/Tomatosuki Stream kit AIO/assets';
+    const fullPath = `${base}/text/${filename}`;
+    
+    if(navigator.clipboard) {
+      await navigator.clipboard.writeText(fullPath);
+      toast('Path copied to clipboard!');
+    } else {
+      throw new Error();
+    }
+  } catch(e) {
+    // Fallback kalau API gagal, kasih path relatif aja
+    const relPath = `assets/text/${filename}`;
+    const t=document.createElement('textarea');t.value=relPath;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
+    toast('Relative path copied!');
+  }
+}
+
+function renderActiveCounters(counters) {
+  // Removed: counter available list on dashboard
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s){ return String(s).replace(/'/g,"\\'"); }
+
+async function saveKDCounter() {
+  const inp = document.getElementById('kd-name-inp');
+  const name = inp.value.trim();
+  const errEl = document.getElementById('kd-error');
+  errEl.style.display='none';
+  if (!name) { errEl.textContent='Nama tidak boleh kosong!'; errEl.style.display='block'; return; }
+  try {
+    const r = await fetch('/api/counters', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name})
+    });
+    const res = await r.json();
+    if (!res.ok) { errEl.textContent = res.error || 'Gagal menyimpan.'; errEl.style.display='block'; return; }
+    inp.value = '';
+    loadKDCounters();
+    toast('Counter "'+name+'" berhasil dibuat!');
+  } catch(e) { errEl.textContent='Error: '+e.message; errEl.style.display='block'; }
+}
+
+async function deleteKDCounter(filename) {
+  if (!confirm('Hapus counter ini?')) return;
+  try {
+    await fetch('/api/counters/'+encodeURIComponent(filename), {method:'DELETE'});
+    loadKDCounters();
+    toast('Counter dihapus.');
+  } catch(e) { toast('Gagal hapus counter'); }
+}
+
+function openKDSetup() {
+  document.getElementById('kd-modal').classList.add('open');
+  document.getElementById('kd-error').style.display='none';
+  loadKDCounters();
+}
+function closeKDSetup() { document.getElementById('kd-modal').classList.remove('open'); }
+document.getElementById('kd-modal').addEventListener('click', e => { if(e.target===document.getElementById('kd-modal')) closeKDSetup(); });
+
+loadKDCounters();
+
+function openFeedback() { document.getElementById('feedback-modal').classList.add('open'); }
+function closeFeedback() { document.getElementById('feedback-modal').classList.remove('open'); }
+document.getElementById('feedback-modal').addEventListener('click', e => { if(e.target===document.getElementById('feedback-modal')) closeFeedback(); });
+
+function openCounterFolder(filename) {
+  if(window.kskElectron) {
+    window.kskElectron.openTextFolder();
+  } else {
+    toast('Folder: AppData/Roaming/Tomatosuki Stream kit AIO/assets/text/');
+  }
+}
+
+// Settings modal
+function openSettings() { document.getElementById('settings-modal').classList.add('open'); loadSettingsState(); }
+function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
+document.getElementById('settings-modal').addEventListener('click', e => { if(e.target===document.getElementById('settings-modal')) closeSettings(); });
+
+async function loadSettingsState() {
+  try {
+    let cfg;
+    if (window.kskElectron) {
+      cfg = await window.kskElectron.getConfig();
+    } else {
+      const r = await fetch('/api/config');
+      cfg = await r.json();
+    }
+    const el = document.getElementById('assets-dir-disp');
+    if(el) el.textContent = cfg.assetsDir || '(default: AppData)';
+  } catch {}
+}
+
+async function chooseAssetsFolder() {
+  if (!window.kskElectron) {
+    toast('Fitur ini hanya tersedia di app Electron (bukan browser).');
+    return;
+  }
+  try {
+    const folderPath = await window.kskElectron.chooseFolder();
+    if (!folderPath) return; // user cancelled
+
+    // Save to config
+    const cfg = await window.kskElectron.getConfig() || {};
+    cfg.assetsDir = folderPath;
+    await window.kskElectron.saveConfig(cfg);
+
+    document.getElementById('assets-dir-disp').textContent = folderPath;
+    toast('Folder dipilih! Restart app untuk menggunakan folder baru.');
+  } catch(e) {
+    toast('Gagal pilih folder: ' + (e.message || e));
+  }
+}
+
+// ─── BACKUP & RESTORE ───────────────────────────────────
+function backupStatus(msg, color) {
+  const el = document.getElementById('backup-status');
+  el.style.display = 'block';
+  el.style.color = color || 'var(--tx3)';
+  el.textContent = msg;
+}
+
+async function doBackup() {
+  const btn = document.getElementById('backup-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Memproses...';
+  backupStatus('Membuat backup, mohon tunggu...', 'var(--ac)');
+
+  try {
+    const r = await fetch('/api/backup');
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      throw new Error(err.error || 'Backup gagal');
+    }
+    const blob = await r.blob();
+    const cd = r.headers.get('content-disposition') || '';
+    const match = cd.match(/filename="?([^"]+)"?/);
+    const filename = match ? match[1] : 'KSK-Backup.zip';
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    const sizeMB = (blob.size / 1024 / 1024).toFixed(1);
+    backupStatus('✅ Backup berhasil! (' + sizeMB + ' MB)', '#22c55e');
+    toast('Backup berhasil!');
+  } catch(e) {
+    backupStatus('❌ ' + e.message, '#ef4444');
+    toast('Backup gagal: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇ Backup';
+  }
+}
+
+async function doRestore(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.zip')) { toast('File harus .zip'); return; }
+
+  const ok = confirm('⚠️ Restore akan menimpa data yang sudah ada.\n\nLanjutkan?');
+  if (!ok) { document.getElementById('restore-input').value = ''; return; }
+
+  const btn = document.getElementById('restore-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Restoring...';
+  backupStatus('Restoring data, mohon tunggu...', '#f59e0b');
+
+  try {
+    const form = new FormData();
+    form.append('backup', file);
+
+    const r = await fetch('/api/restore', { method: 'POST', body: form });
+    const d = await r.json();
+
+    if (!d.ok) throw new Error(d.error || 'Restore gagal');
+
+    backupStatus('✅ Restore berhasil! ' + d.restoredFiles + ' file + ' + d.restoredConfigs + ' config dipulihkan. Reload halaman...', '#22c55e');
+    toast('Restore berhasil!');
+    setTimeout(() => location.reload(), 2000);
+  } catch(e) {
+    backupStatus('❌ ' + e.message, '#ef4444');
+    toast('Restore gagal: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆ Restore';
+    document.getElementById('restore-input').value = '';
+  }
+}
+</script>
+
+<script>
+function openOnboarding() { document.getElementById('ob-modal').classList.add('open'); }
+function closeOnboarding() { document.getElementById('ob-modal').classList.remove('open'); }
+// Pakai pengecekan 'if' biar script di bawahnya gak ikut mati kalau modal ga ada
+const obModal = document.getElementById('ob-modal');
+if (obModal) {
+  obModal.addEventListener('click', function(e) { 
+    if(e.target === this) closeOnboarding(); 
+  });
+}
+
+function openShortcutSetup() {
+  const modalHtml = `
+    <div id="sc-tutor-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Inter',sans-serif;">
+      <div style="background:var(--s1);border:1px solid var(--bd2);border-radius:20px;width:100%;max-width:460px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6);">
+        
+        <div style="padding:18px 24px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:900;font-size:.8rem;letter-spacing:1.5px;color:var(--ac);">${KSK.t('sc_tutor_title', 'SHORTCUT TUTORIAL')}</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="sc-toggle-wrap" onclick="toggleShortcutEnabled()" style="display:flex;align-items:center;gap:7px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:20px;padding:5px 10px 5px 7px;transition:all .15s;"
+              onmouseover="this.style.borderColor='var(--ac)'" onmouseout="this.style.borderColor='var(--bd2)'">
+              <div id="sc-toggle-dot" style="width:28px;height:16px;border-radius:8px;background:#2a2a38;position:relative;transition:background .2s;flex-shrink:0;">
+                <div id="sc-toggle-knob" style="position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;"></div>
+              </div>
+              <span id="sc-toggle-label" style="font-size:.6rem;font-weight:700;color:var(--tx2);letter-spacing:.5px;">OFF</span>
+            </div>
+            <button onclick="document.getElementById('sc-tutor-overlay').remove()" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:1.4rem;">✕</button>
+          </div>
+        </div>
+
+        <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--tx);">
+              <span style="background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;flex-shrink:0;">1</span>
+              <span>${KSK.t('sc_tutor_step1', 'Aktifkan <b>Shortcut Mode</b> di bar pencarian Deck View.')}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--tx);">
+              <span style="background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;flex-shrink:0;">2</span>
+              <span>${KSK.t('sc_tutor_step2', 'Klik icon <b>Keyboard (⌨)</b> pada kartu meme untuk set tombol.')}</span>
+            </div>
+          </div>
+
+          <div style="position:relative; background:#0a0a0f; border:1px solid #1a1a24; border-radius:14px; padding:12px; display:flex; flex-direction:column; gap:12px;">
+            
+            <div style="position:absolute; top:-15px; right:15px; color:#ef4444; font-size:1.4rem; font-weight:900; display:flex; flex-direction:column; align-items:center; z-index:10;">
+              <span style="background:#ef4444; color:#fff; font-size:.5rem; padding:2px 5px; border-radius:4px; margin-bottom:2px;">1</span>
+              <span style="transform: rotate(90deg); display:inline-block;">➔</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:6px; border-bottom:1px solid #1a1a24; padding-bottom:10px;">
+              <div style="background:var(--adim); color:var(--ac); padding:4px 10px; border-radius:6px; font-size:.55rem; font-weight:800;">ALL</div>
+              <div style="background:rgba(255,255,255,.03); color:var(--tx3); padding:4px 10px; border-radius:6px; font-size:.55rem; font-weight:700;">😂KOCAK</div>
+              <div style="flex:1;"></div>
+              <div style="width:30px; height:30px; background:var(--adim); border:1px solid var(--ac); color:var(--ac); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.9rem; box-shadow:0 0 12px rgba(56,189,248,.3);">⌨</div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+              <div style="position:relative; aspect-ratio:1; background:#14141d; border:1px solid #222; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;">
+                
+                <div style="position:absolute; top:4px; right:4px; width:18px; height:18px; background:rgba(0,0,0,.7); border:1px solid var(--ac); color:var(--ac); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:.5rem; z-index:2;">⌨</div>
+                
+                <div style="position:absolute; top:-2px; right:24px; color:#ef4444; font-size:1.1rem; font-weight:900; display:flex; align-items:center; z-index:10;">
+                   <span style="background:#ef4444; color:#fff; font-size:.45rem; padding:1px 4px; border-radius:3px; margin-right:2px;">2</span>
+                   <span>➔</span>
+                </div>
+
+                <span style="font-size:1.4rem;">😂</span>
+                <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.8); font-size:.45rem; padding:4px; text-align:center; color:var(--tx2); font-weight:600;">WKWK.MP3</div>
+              </div>
+
+              <div style="aspect-ratio:1; background:#14141d; border:1px solid #1a1a24; border-radius:10px; opacity:.2;"></div>
+              <div style="aspect-ratio:1; background:#14141d; border:1px solid #1a1a24; border-radius:10px; opacity:.1;"></div>
+            </div>
+          </div>
+
+          <div style="background:rgba(56,189,248,.05); border-left:3px solid var(--ac); padding:12px; border-radius:4px 10px 10px 4px;">
+            <p style="font-size:.7rem; color:var(--tx); line-height:1.5; margin:0;">
+              ${KSK.t('sc_tutor_tips', '💡 <b>Tips:</b> Kamu juga bisa atur Shortcut untuk tombol <b>Win / Lose / Death Counter</b> dan <b>Custom Tab</b> melalui icon gear ⚙️ yang muncul saat Shortcut Mode aktif.')}
+            </p>
+          </div>
+
+          <p style="font-size:.62rem; color:var(--tx3); font-style:italic; line-height:1.4; text-align:center;">
+            ${KSK.t('sc_tutor_hint', 'Pastikan Shortcut Mode (bar biru di bawah) menyala untuk melihat icon pengaturannya.')}
+          </p>
+        </div>
+
+        <div style="padding:16px 24px; background:rgba(255,255,255,.02); border-top:1px solid var(--bd); display:flex;">
+          <a href="/deck.html" style="flex:1; background:var(--ac); color:#000; text-decoration:none; text-align:center; padding:12px; border-radius:10px; font-size:.75rem; font-weight:900; letter-spacing:1px; box-shadow:0 4px 15px rgba(56,189,248,.2); transition:all .15s;" 
+             onmouseover="this.style.transform='translateY(-2px)'" 
+             onmousedown="this.style.transform='translateY(1px)'">
+            ${KSK.t('sc_tutor_launch', 'LUNCURKAN DECK VIEW')}
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  initScToggle();
+}
+function toggleShortcutEnabled() {
+  const cur = localStorage.getItem('shortcuts_enabled') !== 'false';
+  const newVal = !cur;
+  localStorage.setItem('shortcuts_enabled', String(newVal));
+  updateScToggleUI(newVal);
+  // Notify deck.html kalau lagi terbuka di tab lain (via BroadcastChannel)
+  try { new BroadcastChannel('ksk').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
+  try { if (window.kskElectron && window.kskElectron.setShortcutEnabled) window.kskElectron.setShortcutEnabled(newVal); } catch {}
+  toast(newVal ? KSK.t('toast_sc_on', '⌨ Shortcut aktif') : KSK.t('toast_sc_off', '⌨ Shortcut dimatikan'));
+}
+
+function updateScToggleUI(enabled) {
+  const dot = document.getElementById('sc-toggle-dot');
+  const knob = document.getElementById('sc-toggle-knob');
+  const label = document.getElementById('sc-toggle-label');
+  const wrap = document.getElementById('sc-toggle-wrap');
+  if (!dot) return;
+  if (enabled) {
+    dot.style.background = 'var(--ac)';
+    knob.style.left = '14px';
+    label.style.color = 'var(--ac)';
+    label.textContent = 'ON';
+    wrap.style.borderColor = 'rgba(56,189,248,.3)';
+    wrap.style.background = 'rgba(56,189,248,.06)';
+  } else {
+    dot.style.background = '#2a2a38';
+    knob.style.left = '2px';
+    label.style.color = 'var(--tx2)';
+    label.textContent = 'OFF';
+    wrap.style.borderColor = 'var(--bd2)';
+    wrap.style.background = 'rgba(255,255,255,.04)';
+  }
+}
+
+// Init toggle state saat modal dibuka — dipanggil dari openShortcutSetup setelah insertAdjacentHTML
+function initScToggle() {
+  // Default OFF kalau belum pernah di-set
+  if (localStorage.getItem('shortcuts_enabled') === null) {
+    localStorage.setItem('shortcuts_enabled', 'false');
+  }
+  const enabled = localStorage.getItem('shortcuts_enabled') !== 'false';
+  updateScToggleUI(enabled);
+}
+
+function openBestPlugins() { toast(KSK.t('card_plugins_desc', 'Coming soon — Best OBS Plugins')); }
+</script>
+<!-- ONBOARDING MODAL -->
+<div class="ob-modal-bk" id="ob-modal">
+  <div class="ob-modal">
+    <div class="ob-modal-hd">
+      <div class="ob-modal-title" style="display:flex;align-items:center;gap:8px;">
+        <svg width="18" height="18" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4.5c1.62-1.63 5-2.5 5-2.5"/><path d="M12 15v5s3.03-.55 4.5-2c1.63-1.62 2.5-5 2.5-5"/></svg>
+        <span data-i18n="ob_modal_title">Mulai di Sini</span>
+      </div>
+      <button class="ob-modal-close" onclick="closeOnboarding()">✕</button>
+    </div>
+    <a href="https://fadhilaabiyyu.my.id" target="_blank" class="ob-yt-btn" onclick="window.open('https://fadhilaabiyyu.my.id','_blank');">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <div>
+        <div style="font-size:.68rem;font-weight:800;" data-i18n="ob_doc_btn">Dokumentasi & Website Resmi</div>
+        <div style="font-size:.56rem;opacity:.75;margin-top:1px;">fadhilaabiyyu.my.id</div>
+      </div>
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-left:auto;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+    <div class="ob-features">
+      <div class="ob-feat" onclick="location.href='/customdeck.html'">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.9a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_custom_title">Custom Deck</div><div class="ob-feat-desc" data-i18n="ob_feat_custom_desc">Upload gambar, video, atau audio. Atur animasi masuk/keluar, ukuran, posisi, durasi — semua per-meme.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="location.href='/deck.html'">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_deck_title">Deck View</div><div class="ob-feat-desc" data-i18n="ob_feat_deck_desc">Tampilan trigger button. Klik card untuk langsung trigger meme ke OBS. Kelompokkan per tab, drag & drop untuk reorder.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="closeOnboarding();openConnect();">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_phone_title">Connect to Phone</div><div class="ob-feat-desc" data-i18n="ob_feat_phone_desc">Buka Deck View di HP lewat browser via WiFi yang sama. Trigger meme langsung dari HP tanpa alt-tab.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="window.open('/obs.html','_blank')">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" x2="12" y1="22.08" y2="12"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_obs_title">OBS Overlay</div><div class="ob-feat-desc" data-i18n="ob_feat_obs_desc">Tambahkan Browser Source di OBS dengan URL yang tersedia. Meme langsung muncul di output stream.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="location.href='/customdeck.html'">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="#22c55e" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_chroma_title">Chroma Key</div><div class="ob-feat-desc" data-i18n="ob_feat_chroma_desc">Upload video green screen — aktifkan Chroma Key di settings meme untuk otomatis hapus background hijau.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="closeOnboarding();openKDSetup();">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_kd_title">K/D Counter</div><div class="ob-feat-desc" data-i18n="ob_feat_kd_desc">Buat counter kill/death atau apapun. Nilai tersimpan ke .txt — tambahkan sebagai Text Source di OBS.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+      <div class="ob-feat" onclick="closeOnboarding();openShortcutSetup();">
+        <div class="ob-feat-ic">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M6 12h.001M10 12h.001M14 12h.001M18 12h.001M7 16h10"/></svg>
+        </div>
+        <div style="flex:1;"><div class="ob-feat-title" data-i18n="ob_feat_sc_title">Keyboard Shortcut</div><div class="ob-feat-desc" data-i18n="ob_feat_sc_desc">Setup hotkey untuk trigger meme tanpa klik — langsung dari keyboard saat sedang gaming.</div></div>
+        <div class="ob-feat-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</div>

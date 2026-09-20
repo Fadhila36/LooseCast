@@ -74,6 +74,7 @@
       "icon": "build/icon.ico"
     },
     "nsis": {
+      "artifactName": "${productName}-Setup-${version}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
@@ -85,6 +86,9 @@
       "shortcutName": "Tomatosuki Stream Kit AIO",
       "displayLanguageSelector": false,
       "language": "1057"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
     },
     "directories": {
       "output": "dist",

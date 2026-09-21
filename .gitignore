@@ -1,71 +1,37 @@
-# Additional files to exclude
-*.cache
-*.pyc
-*.pyo
-*.pyd
-*.egg-info
-*.egg
-*.whl
-*.dist-info
-*.egg-info/
-*.egg/
-*.whl/
-*.dist-info/
-*.log
-*.sqlite
-*.db
-*.sqlite3
-*.db3
-*.sqlite-journal
-*.db-journal
-*.sqlite-shm
-*.db-shm
-*.sqlite-wal
-*.db-wal
-*.sqlite-lock
-*.db-lock
-*.sqlite-temp
-*.db-temp
-*.sqlite-temp-journal
-*.db-temp-journal
-*.sqlite-temp-shm
-*.db-temp-shm
-*.sqlite-temp-wal
-*.db-temp-wal
-*.sqlite-temp-lock
-*.db-temp-lock
-*.sqlite-temp-db
-*.db-temp-db
-*.sqlite-temp-db-journal
-*.db-temp-db-journal
-*.sqlite-temp-db-shm
-*.db-temp-db-shm
-*.sqlite-temp-db-wal
-*.db-temp-db-wal
-*.sqlite-temp-db-lock
-*.db-temp-db-lock
-
-# Local and unnecessary files/directories
-_restore_tmp/
-assets/
-build/
-dist/
-electron/
-lang/
+# Dependencies
 node_modules/
-public/
-src/
-tests/
+
+# Build and Packaging Outputs
+dist/
+
+# User Data & Media Directories (Generated/Local)
+assets/
 thumbs/
-.gitignore
-audit_report.md
+_restore_tmp/
+
+# User Runtime Data & Secret Configurations
+config.json
+deck_settings.json
 counters.json
-ksk-ui.js
 macros.json
 meta.json
 obs_config.json
-package-lock.json
-package.json
-readme.md
-server.js
 stats.json
+
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+app.log
+*.cache
+
+# Environment & Secret Files
+.env
+.env.local
+.env.*.local
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db

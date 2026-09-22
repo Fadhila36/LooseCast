@@ -17,6 +17,7 @@ const {
   FALLBACK_SERVER_PORT,
   MAX_UPLOAD_SIZE_BYTES,
   DEFAULT_DECK_SETTINGS,
+  SUPPORTED_MEDIA_EXTENSIONS,
 } = require('./src/config/constants');
 const { sanitizeFilename } = require('./src/utils/path-security');
 const { readJsonAsync, writeJsonAtomic } = require('./src/utils/file-store');
@@ -153,7 +154,19 @@ const storage = multer.diskStorage({
     cb(null, safe);
   },
 });
-const upload = multer({ storage, limits: { fileSize: MAX_UPLOAD_SIZE_BYTES } });
+const upload = multer({
+  storage,
+  limits: { fileSize: MAX_UPLOAD_SIZE_BYTES },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (SUPPORTED_MEDIA_EXTENSIONS.includes(ext)) {
+      return cb(null, true);
+    }
+    const err = new Error(`Tipe file "${ext}" tidak didukung. Hanya format media streaming yang diizinkan.`);
+    err.status = 400;
+    cb(err);
+  },
+});
 
 // Middlewares
 app.use(express.json({ limit: '50mb' }));
@@ -375,6 +388,16 @@ app.post('/api/app-settings', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Global error middleware (e.g. Multer fileFilter / payload limit rejection)
+app.use((err, req, res, next) => {
+  if (err) {
+    const status = err.status || (err.name === 'MulterError' ? 400 : 500);
+    logger.warn(MODULE_NAME, `HTTP Error [${status}]: ${err.message}`);
+    return res.status(status).json({ ok: false, error: err.message });
+  }
+  next();
 });
 
 // Realtime socket events

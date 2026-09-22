@@ -65,6 +65,56 @@ describe('Server API Endpoints Integration Test', () => {
     });
   }
 
+  function uploadFile(pathUrl, fieldName, filename, fileBuffer) {
+    return new Promise((resolve, reject) => {
+      const boundary = '----TestBoundary' + Date.now();
+      const header = `--${boundary}\r\nContent-Disposition: form-data; name="${fieldName}"; filename="${filename}"\r\nContent-Type: application/octet-stream\r\n\r\n`;
+      const footer = `\r\n--${boundary}--\r\n`;
+      const payload = Buffer.concat([Buffer.from(header, 'utf8'), fileBuffer, Buffer.from(footer, 'utf8')]);
+
+      const req = http.request(
+        {
+          hostname: '127.0.0.1',
+          port: 3099,
+          path: pathUrl,
+          method: 'POST',
+          headers: {
+            'Content-Type': `multipart/form-data; boundary=${boundary}`,
+            'Content-Length': payload.length,
+          },
+        },
+        (res) => {
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => {
+            try {
+              resolve({ status: res.statusCode, body: JSON.parse(data) });
+            } catch {
+              resolve({ status: res.statusCode, body: data });
+            }
+          });
+        }
+      );
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+  }
+
+  it('POST /upload harus menolak file berekstensi berbahaya/tidak didukung (.exe, .html)', async () => {
+    const res = await uploadFile('/upload', 'files', 'evil.exe', Buffer.from('malicious payload'));
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+    assert.match(res.body.error, /tidak didukung/i);
+  });
+
+  it('POST /upload harus menerima file berekstensi media yang didukung (.mp3, .png)', async () => {
+    const res = await uploadFile('/upload', 'files', 'sample.mp3', Buffer.from('valid mp3 audio content'));
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.ok, true);
+    assert.ok(res.body.files.includes('sample.mp3'));
+  });
+
   it('GET /api/stats harus mengembalikan total triggers default 0', async () => {
     const res = await request('GET', '/api/stats');
     assert.strictEqual(res.status, 200);

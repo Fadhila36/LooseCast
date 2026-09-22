@@ -144,4 +144,24 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(res.status, 400);
     assert.strictEqual(res.body.ok, false);
   });
+
+  it('POST /api/macros/import dan GET /api/macros/:id/export harus mengimpor dan mengekspor single macro dengan benar', async () => {
+    const macroPayload = {
+      name: 'Integration Test Macro',
+      icon: '⚡',
+      color: '#ef4444',
+      steps: [{ type: 'delay', ms: 100 }]
+    };
+
+    const importRes = await request('POST', '/api/macros/import', macroPayload);
+    assert.strictEqual(importRes.status, 200);
+    assert.strictEqual(importRes.body.ok, true);
+    assert.ok(importRes.body.macro.id);
+    const macroId = importRes.body.macro.id;
+
+    const exportRes = await request('GET', `/api/macros/${macroId}/export`);
+    assert.strictEqual(exportRes.status, 200);
+    assert.strictEqual(exportRes.body.name, 'Integration Test Macro');
+    assert.strictEqual(exportRes.body.steps.length, 1);
+  });
 });

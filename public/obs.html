@@ -16,8 +16,8 @@ html,body{width:100%;height:100%;background:transparent;overflow:hidden;}
   pointer-events:none;
 }
 #mw{position:absolute;display:none;pointer-events:none;}
-#mw img{display:block;width:100%;height:100%;object-fit:fill;}
-#mw video{display:none;width:100%;height:100%;object-fit:fill;}
+#mw img{display:block;width:100%;height:100%;object-fit:contain;}
+#mw video{display:none;width:100%;height:100%;object-fit:contain;}
 #mw canvas{display:none;width:100%;height:100%;}
 
 /* FX Layer */
@@ -100,6 +100,8 @@ function scaleStage(){
 }
 scaleStage();
 window.addEventListener('resize', scaleStage);
+window.addEventListener('load', scaleStage);
+document.addEventListener('DOMContentLoaded', scaleStage);
 
 const socket = io();
 const stage = document.getElementById('stage');
@@ -298,17 +300,36 @@ function stopChroma(){
 function doShow(data){
   hiding=false;
   curData=data;
-  const{filename,animIn='pop',animOut='fade',animInSpeed=400,animOutSpeed=350,
-        duration=5,posX=0,posY=0,maxW=600,maxH=400,volume=80,companionAudio='',
-        chromaKey=false,cropTop=0,cropBottom=0,cropLeft=0,cropRight=0,
-        fx='', multiPlay=false, isSoundboard=false}=data;
+  const filename = data.filename;
+  if (!filename) return;
 
-  const type=getType(filename);
-  const url='/assets/'+encodeURIComponent(filename);
-  const baseVol=Math.max(0,Math.min(1,(Number(volume)||80)/100));
-  const effectiveVol = baseVol * masterVolume;
-  const dur=Number(duration)||0;
-  const outAnim=OUT[animOut]||'fadeOut';
+  const animIn = data.animIn || 'pop';
+  const animOut = data.animOut || 'fade';
+  const animInSpeed = Number(data.animInSpeed) || 400;
+  const animOutSpeed = Number(data.animOutSpeed) || 350;
+  const maxW = data.maxW != null && Number(data.maxW) > 0 ? Number(data.maxW) : 600;
+  const maxH = data.maxH != null && Number(data.maxH) > 0 ? Number(data.maxH) : 400;
+  const posX = data.posX != null ? Number(data.posX) : Math.round((1920 - maxW) / 2);
+  const posY = data.posY != null ? Number(data.posY) : Math.round((1080 - maxH) / 2);
+
+  const vol = data.volume != null ? Number(data.volume) : 80;
+  const gain = data.gain != null ? Number(data.gain) : 1;
+  const baseVol = Math.max(0, Math.min(1, (vol / 100) * gain));
+  const effectiveVol = Math.max(0, Math.min(1, baseVol * masterVolume));
+
+  const companionAudio = data.companionAudio || '';
+  const chromaKey = Boolean(data.chromaKey);
+  const cropTop = Number(data.cropTop) || 0;
+  const cropBottom = Number(data.cropBottom) || 0;
+  const cropLeft = Number(data.cropLeft) || 0;
+  const cropRight = Number(data.cropRight) || 0;
+  const fx = data.fx || '';
+  const multiPlay = Boolean(data.multiPlay);
+  const isSoundboard = Boolean(data.isSoundboard);
+
+  const type = getType(filename);
+  const url = '/assets/' + encodeURIComponent(filename);
+  const outAnim = OUT[animOut] || 'fadeOut';
 
   // Trigger attached FX if configured
   if(fx === 'shake') triggerScreenShake(500);
@@ -346,22 +367,58 @@ function doShow(data){
 
   if(companionAudio){
     ma.src='/assets/'+encodeURIComponent(companionAudio);
-    ma.volume=effectiveVol;
-    ma.play().catch(()=>{});
+    ma.volume=Math.max(0, Math.min(1, effectiveVol));
+    ma.onerror=()=>{ console.warn('[OBS Overlay] Companion audio error'); };
+    ma.onended=()=>{
+      if(type==='image' && !data.customDuration && !data.duration){
+        if(!hiding) doHide(outAnim, animOutSpeed);
+      }
+    };
+    ma.play().catch((e)=>{ console.warn('[OBS Overlay] Companion audio play error:', e); });
   }
 
   if(type==='audio'){
-    ma.src=url; ma.volume=effectiveVol;
-    ma.play().catch(()=>{});
+    console.log('[OBS Overlay] Playing audio:', url, 'effectiveVol:', effectiveVol);
+    ma.src=url;
+    ma.volume=Math.max(0, Math.min(1, effectiveVol));
+    ma.onerror=(e)=>{
+      console.warn('[OBS Overlay] Audio load error for:', url, e);
+      if(!hiding) doHide(outAnim, animOutSpeed);
+    };
+    ma.onended=()=>{ if(!hiding) doHide(outAnim, animOutSpeed); };
+    ma.play().catch((err)=>{
+      console.warn('[OBS Overlay] Audio play promise rejected:', err);
+      if(!hiding) doHide(outAnim, animOutSpeed);
+    });
     mw.style.display='none'; return;
   }
 
   if(type==='image'){
+    console.log('[OBS Overlay] Showing image:', url);
     mi.src=url; mi.style.display='block';
+    mi.onerror=(e)=>{
+      console.warn('[OBS Overlay] Image load error for:', url, e);
+      if(!hiding) doHide(outAnim, animOutSpeed);
+    };
     playShow();
+
+    const imgDuration = Number(data.customDuration || data.duration) || 5;
+    if(imgDuration > 0){
+      hideTimer=setTimeout(()=>{
+        if(!hiding) doHide(outAnim, animOutSpeed);
+      }, imgDuration * 1000);
+    }
   } else {
-    mv.src=url; mv.volume=effectiveVol;
-    mv.play().catch(()=>{});
+    console.log('[OBS Overlay] Playing video:', url, 'effectiveVol:', effectiveVol);
+    mv.src=url;
+    mv.volume=Math.max(0, Math.min(1, effectiveVol));
+    mv.onerror=(e)=>{
+      console.warn('[OBS Overlay] Video load error for:', url, e);
+      if(!hiding) doHide(outAnim, animOutSpeed);
+    };
+    mv.play().catch((err)=>{
+      console.warn('[OBS Overlay] Video play promise rejected:', err);
+    });
     if(chromaKey){
       mv.style.display='none';
       mw.style.display='none';
@@ -374,6 +431,19 @@ function doShow(data){
       playShow();
     }
     mv.onended=()=>{ if(!hiding) doHide(outAnim, animOutSpeed); };
+    
+    // Custom video duration override if specified, otherwise safety fallback 180s
+    if (data.customDuration && Number(data.customDuration) > 0) {
+      hideTimer = setTimeout(()=>{
+        if(!hiding) doHide(outAnim, animOutSpeed);
+      }, Number(data.customDuration) * 1000);
+    } else {
+      hideTimer = setTimeout(()=>{
+        if(!hiding && (mv.ended || mv.paused)) {
+          doHide(outAnim, animOutSpeed);
+        }
+      }, 180000);
+    }
     return;
   }
 
@@ -382,12 +452,6 @@ function doShow(data){
     mw.style.animation='';
     void mw.offsetWidth;
     mw.style.animation=`${IN[animIn]||'fadeIn'} ${animInSpeed}ms cubic-bezier(0.34,1.56,0.64,1) forwards`;
-  }
-
-  if(type==='image' && dur>0){
-    hideTimer=setTimeout(()=>{
-      if(!hiding) doHide(outAnim, animOutSpeed);
-    }, dur*1000);
   }
 }
 

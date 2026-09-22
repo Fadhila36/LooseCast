@@ -321,7 +321,10 @@
       </div>
 
       <div style="margin-top:10px;">
-        <div class="fl" data-i18n="obs_pwd_label">Password WebSocket</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="fl" data-i18n="obs_pwd_label">Password WebSocket</div>
+          <button id="obs-pwd-clear-btn" type="button" onclick="clearOBSPasswordInput()" style="display:none;background:none;border:none;color:#ef4444;font-size:0.58rem;font-weight:700;cursor:pointer;" data-i18n="obs_clear_pwd_btn">Hapus Password</button>
+        </div>
         <input type="password" class="tab-name-inp" id="obs-pwd-inp" placeholder="Password OBS (opsional)" style="width:100%;">
       </div>
 
@@ -331,6 +334,8 @@
           <div class="toggle on" id="obs-autoconnect-toggle"></div>
         </div>
       </div>
+
+      <div id="obs-modal-err-box" style="display:none;margin-top:10px;padding:9px 12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:8px;font-size:0.68rem;color:#fca5a5;line-height:1.4;"></div>
 
       <div style="font-size:0.56rem;color:var(--tx3);line-height:1.5;margin-top:10px;" data-i18n="obs_quick_connect_hint">
         Aktifkan Server WebSocket di menu Tools > WebSocket Server Settings di OBS Studio.
@@ -384,17 +389,21 @@
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;position:relative;">
           <div class="fl" style="margin-bottom:0;" data-i18n="macro_steps_label">Langkah Aksi (Actions)</div>
-          <div class="macro-add-menu-wrap">
-            <button type="button" class="setbtn" onclick="toggleAddStepMenu(event)" style="font-size:0.65rem;font-weight:800;padding:4px 10px;color:var(--brand);border-color:var(--brand);" data-i18n="macro_add_step">+ Tambah Aksi</button>
-            <div class="macro-add-dropdown" id="macro-add-dd" style="display:none;">
-              <div onclick="addMacroStep('obs_scene')">🎬 Ganti Scene OBS</div>
-              <div onclick="addMacroStep('obs_source_visibility')">👁️ Toggle Source OBS</div>
-              <div onclick="addMacroStep('obs_audio_mute')">🎙️ Mute / Unmute Audio OBS</div>
-              <div onclick="addMacroStep('play_media')">🎵 Putar Meme / Media</div>
-              <div onclick="addMacroStep('trigger_fx')">✨ Trigger Layar FX</div>
-              <div onclick="addMacroStep('counter_op')">🏆 Ubah Counter (+1/Reset)</div>
-              <div onclick="addMacroStep('delay')">⏳ Tunggu / Jeda (Delay)</div>
-              <div onclick="addMacroStep('panic_stop')">🛑 Stop All Media</div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button type="button" class="setbtn" onclick="triggerImportMacro()" style="font-size:0.65rem;font-weight:700;padding:4px 9px;color:var(--tx2);border-color:var(--bd);" title="Import Macro dari file JSON" data-i18n="macro_import_btn">📥 Impor</button>
+            <input type="file" id="macro-import-input" accept=".json" style="display:none" onchange="importMacroFile(this.files[0])">
+            <div class="macro-add-menu-wrap">
+              <button type="button" class="setbtn" onclick="toggleAddStepMenu(event)" style="font-size:0.65rem;font-weight:800;padding:4px 10px;color:var(--brand);border-color:var(--brand);" data-i18n="macro_add_step">+ Tambah Aksi</button>
+              <div class="macro-add-dropdown" id="macro-add-dd" style="display:none;">
+                <div onclick="addMacroStep('obs_scene')">🎬 Ganti Scene OBS</div>
+                <div onclick="addMacroStep('obs_source_visibility')">👁️ Toggle Source OBS</div>
+                <div onclick="addMacroStep('obs_audio_mute')">🎙️ Mute / Unmute Audio OBS</div>
+                <div onclick="addMacroStep('play_media')">🎵 Putar Meme / Media</div>
+                <div onclick="addMacroStep('trigger_fx')">✨ Trigger Layar FX</div>
+                <div onclick="addMacroStep('counter_op')">🏆 Ubah Counter (+1/Reset)</div>
+                <div onclick="addMacroStep('delay')">⏳ Tunggu / Jeda (Delay)</div>
+                <div onclick="addMacroStep('panic_stop')">🛑 Stop All Media</div>
+              </div>
             </div>
           </div>
         </div>
@@ -409,7 +418,7 @@
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/ksk-ui.js"></script>
+<script src="/stream-kit-ui.js"></script>
 <script src="/js/shared.js"></script>
 <script>
 const socket = io();
@@ -418,16 +427,17 @@ socket.on('disconnect', () => { document.querySelectorAll('.status-pill .sdot').
 
 // Dengarkan toggle shortcut dari index.html (BroadcastChannel)
 try {
-  const _kskChannel = new BroadcastChannel('ksk');
-  _kskChannel.onmessage = (e) => {
+  const onScToggle = (e) => {
     if (e.data && e.data.type === 'shortcuts_toggle') {
-      // Re-register shortcut ke OS sesuai state baru
-      // (keydown handler sudah auto-check localStorage, tapi Electron global shortcut perlu di-update manual)
       updateGlobalKeyListeners();
       applyShortcutVisibility();
       if (typeof toast === 'function') toast(e.data.enabled ? '⌨ Shortcut aktif' : '⌨ Shortcut dimatikan');
     }
   };
+  const _streamKitChannel = new BroadcastChannel('streamkit');
+  _streamKitChannel.onmessage = onScToggle;
+  const _legacyChannel = new BroadcastChannel('ksk');
+  _legacyChannel.onmessage = onScToggle;
 } catch {}
 
 // Register Service Worker for PWA (Progressive Web App)
@@ -693,14 +703,45 @@ async function switchOBSScene(name) {
   }
 }
 
+let _obsPasswordCleared = false;
+
 function openOBSModal() {
+  _obsPasswordCleared = false;
+  const errBox = document.getElementById('obs-modal-err-box');
+  if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+
   if (obsStatus.config) {
     document.getElementById('obs-host-inp').value = obsStatus.config.ip || '127.0.0.1';
     document.getElementById('obs-port-inp').value = obsStatus.config.port || 4455;
     document.getElementById('obs-autoconnect-toggle').classList.toggle('on', obsStatus.config.autoConnect !== false);
+    
+    const pwdInp = document.getElementById('obs-pwd-inp');
+    const clearBtn = document.getElementById('obs-pwd-clear-btn');
+    if (pwdInp) {
+      pwdInp.value = '';
+      if (obsStatus.config.hasPassword) {
+        pwdInp.placeholder = KSK.t('obs_pwd_saved_placeholder') || '•••••••• (Password tersimpan)';
+        if (clearBtn) clearBtn.style.display = 'inline';
+      } else {
+        pwdInp.placeholder = 'Password OBS (opsional)';
+        if (clearBtn) clearBtn.style.display = 'none';
+      }
+    }
   }
   renderOBSUI();
   document.getElementById('obs-overlay').classList.add('open');
+}
+
+function clearOBSPasswordInput() {
+  _obsPasswordCleared = true;
+  const pwdInp = document.getElementById('obs-pwd-inp');
+  const clearBtn = document.getElementById('obs-pwd-clear-btn');
+  if (pwdInp) {
+    pwdInp.value = '';
+    pwdInp.placeholder = 'Password dihapus (kosong)';
+    pwdInp.focus();
+  }
+  if (clearBtn) clearBtn.style.display = 'none';
 }
 
 function closeOBSModal() {
@@ -727,25 +768,44 @@ async function saveAndConnectOBS() {
   const autoConnect = document.getElementById('obs-autoconnect-toggle').classList.contains('on');
 
   const actionBtn = document.getElementById('obs-modal-action-btn');
+  const errBox = document.getElementById('obs-modal-err-box');
+  if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
   if (actionBtn) { actionBtn.textContent = 'Connecting...'; actionBtn.disabled = true; }
 
   try {
     const r = await fetch('/api/obs/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ip, port, password, autoConnect })
+      body: JSON.stringify({
+        ip,
+        port,
+        password,
+        clearPassword: _obsPasswordCleared,
+        autoConnect
+      })
     });
     const d = await r.json();
-    if (d.success) {
-      obsStatus = d.status;
+    if (d.success || d.ok) {
+      obsStatus = d.status || obsStatus;
+      obsStatus.connected = true;
       renderOBSUI();
       if (typeof toast === 'function') toast(KSK.t('toast_obs_connected') || '✅ Berhasil terhubung ke OBS Studio!');
       closeOBSModal();
     } else {
-      if (typeof toast === 'function') toast(KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.');
+      const errMsg = d.error || d.message || KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.';
+      if (errBox) {
+        errBox.textContent = errMsg;
+        errBox.style.display = 'block';
+      }
+      if (typeof toast === 'function') toast('❌ ' + errMsg);
     }
   } catch(e) {
-    if (typeof toast === 'function') toast(KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.');
+    const errMsg = e.message || KSK.t('toast_obs_connect_failed') || '❌ Gagal terhubung ke OBS.';
+    if (errBox) {
+      errBox.textContent = errMsg;
+      errBox.style.display = 'block';
+    }
+    if (typeof toast === 'function') toast('❌ ' + errMsg);
   } finally {
     if (actionBtn) actionBtn.disabled = false;
     renderOBSUI();
@@ -819,7 +879,7 @@ let editingTabId = null;
 let settings = defSettings();
 let settingsSaveTimer = null;
 function defSettings() {
-  return { cols: 4, rows: 4, hideAll: false, hideMobileUI: false, showShortcuts: false, tabs: [], counterColors: {}, shortcuts: {}, counterShortcuts: {}, tabShortcuts: {} };
+  return { cols: 4, rows: 4, hideAll: false, hideMobileUI: false, showShortcuts: false, tabs: [], favorites: [], counterColors: {}, shortcuts: {}, counterShortcuts: {}, tabShortcuts: {} };
 }
 async function loadSettingsFromServer() {
   try {
@@ -862,7 +922,13 @@ function getThumb(f) {
 
 // ─── LOAD FILES ──────────────────────────────────────────
 async function loadFiles() {
-  try { const r = await fetch('/api/media'); files = await r.json(); } catch { files = []; }
+  try {
+    const r = await fetch('/api/media');
+    const data = await r.json();
+    files = Array.isArray(data) ? data : [];
+  } catch {
+    files = [];
+  }
   const sig = files.map(f => f.name + (f.settings ? (f.settings.displayName||'')+(f.settings.thumbnailData?'1':'0') : '0')).join('|');
   if (sig !== lastSig) { lastSig = sig; renderTabs(); render(); return; }
   // Just update active highlights
@@ -910,6 +976,9 @@ function renderTabs() {
     curTab = tabs[0].id;
   }
 
+  const favCount = (settings.favorites || []).length;
+  html += `<div class="tab${curTab==='fav'?' on':''}" onclick="switchTab('fav')" title="Meme Favorit">⭐ Fav${favCount ? ` (${favCount})` : ''}</div>`;
+
   tabs.forEach(t => {
     // Tampilkan tombol Gear kalau di mode Edit ATAU mode Shortcut
     if (editMode || scMode) {
@@ -952,7 +1021,10 @@ function render() {
   }
 
 // Filter by tab
-  if (curTab !== 'all') {
+  if (curTab === 'fav') {
+    const favSet = new Set(settings.favorites || []);
+    fs = fs.filter(f => favSet.has(f.name));
+  } else if (curTab !== 'all') {
     const tab = (settings.tabs || []).find(t => t.id === curTab);
     if (tab) {
       // HANYA tampilkan item yang dipilih saat bikin tab, sesuai urutannya
@@ -981,6 +1053,8 @@ function render() {
   let tabMacros = [];
   if (curTab === 'all') {
     tabMacros = [...macros];
+  } else if (curTab === 'fav') {
+    tabMacros = [];
   } else {
     tabMacros = macros.filter(m => m.tab === curTab || m.tab === 'all');
   }
@@ -1016,6 +1090,9 @@ function render() {
     const nm = f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     const label = getLabel(f);
     const isAct = f.name === active, hasCfg = !!f.settings;
+    const isFav = (settings.favorites || []).includes(f.name);
+    const favTitle = isFav ? 'Hapus dari Favorit' : 'Tambah ke Favorit';
+    const favBtn = `<div class="card-fav-btn${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFavoriteMeme('${nm}')" title="${favTitle}">${isFav ? '★' : '☆'}</div>`;
     const t = getType(f.name);
     const thumb = getThumb(f);
     const hasAudio = !!(f.settings && f.settings.companionAudio);
@@ -1053,6 +1130,7 @@ function render() {
       <div class="sc-handle" title="${scHint}">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M7 16h10"/></svg>
       </div>
+      ${favBtn}
       <div class="clive">● LIVE</div>${soundBadge}${media}
       <div class="card-label clbl">${label}</div>
       <div class="card-shortcut-badge">${scText}</div></div>`;
@@ -1144,6 +1222,13 @@ function dropOn(e, targetName) {
 async function trigger(name) {
   hapticFeedback();
   const f = files.find(x => x.name === name); if (!f) return;
+
+  // Jika kartu yang sama sedang aktif (LIVE), klik lagi untuk Pause / Stop
+  if (active === name) {
+    await stopActiveTrigger();
+    return;
+  }
+
   active = name;
   
   // Card visual feedback & cooldown animation
@@ -1161,6 +1246,15 @@ async function trigger(name) {
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ filename: name, ...(f.settings || {}) })
   });
+}
+
+async function stopActiveTrigger() {
+  active = null;
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('act'));
+  try {
+    await fetch('/hide', { method: 'POST' });
+    if (typeof toast === 'function') toast(KSK.t('toast_preview_stopped') || '⏹ Media dihentikan');
+  } catch(e) {}
 }
 
 // Panic / Emergency Stop All
@@ -1811,6 +1905,7 @@ function openEditMacroModal(id) {
   renderMacroStepsList();
   document.getElementById('macro-footer').innerHTML = `
     <button class="bdel" onclick="deleteCurrentMacro('${id}')">${KSK.t('macro_delete_btn') || 'Hapus'}</button>
+    <button type="button" class="setbtn" onclick="exportCurrentMacro()" style="font-size:0.65rem;font-weight:700;padding:6px 12px;color:var(--ac);border-color:rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);" title="Ekspor file JSON macro">📥 ${KSK.t('macro_export_btn') || 'Ekspor'}</button>
     <div style="flex:1"></div>
     <button class="bcnl" onclick="closeMacroModal()">${KSK.t('modal_cancel_btn') || 'Batal'}</button>
     <button class="bsave" onclick="saveCurrentMacro()">${KSK.t('modal_save_btn') || 'Simpan'}</button>
@@ -2068,6 +2163,55 @@ async function triggerMacro(id) {
       if (el) el.classList.remove('macro-running');
     }, 1200);
   }
+}
+
+function exportCurrentMacro() {
+  if (!editingMacroId) return;
+  window.open('/api/macros/' + encodeURIComponent(editingMacroId) + '/export', '_blank');
+}
+
+function triggerImportMacro() {
+  const inp = document.getElementById('macro-import-input');
+  if (inp) { inp.value = ''; inp.click(); }
+}
+
+async function importMacroFile(file) {
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const json = JSON.parse(text);
+    const res = await fetch('/api/macros/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(json)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      await loadMacros();
+      render();
+      if (typeof toast === 'function') toast((KSK.t('macro_import_success') || '⚡ Macro berhasil diimpor: ') + (data.macro?.name || ''));
+    } else {
+      if (typeof toast === 'function') toast('Gagal impor: ' + (data.error || 'Format macro salah'));
+    }
+  } catch (e) {
+    if (typeof toast === 'function') toast('Gagal membaca file: ' + e.message);
+  }
+}
+
+function toggleFavoriteMeme(name) {
+  hapticFeedback();
+  if (!settings.favorites) settings.favorites = [];
+  const idx = settings.favorites.indexOf(name);
+  if (idx >= 0) {
+    settings.favorites.splice(idx, 1);
+    if (typeof toast === 'function') toast('Dihapus dari Favorit');
+  } else {
+    settings.favorites.push(name);
+    if (typeof toast === 'function') toast('⭐ Ditambahkan ke Favorit');
+  }
+  saveSettings();
+  renderTabs();
+  render();
 }
 
 // Socket listeners

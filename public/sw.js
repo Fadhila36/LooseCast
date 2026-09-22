@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ksk-pwa-v1';
+const CACHE_NAME = 'streamkit-pwa-v1';
 const STATIC_ASSETS = [
   '/',
   '/deck.html',
@@ -7,7 +7,7 @@ const STATIC_ASSETS = [
   '/icon.png',
   '/css/base.css',
   '/css/deck.css',
-  '/ksk-ui.js',
+  '/stream-kit-ui.js',
   '/js/shared.js'
 ];
 

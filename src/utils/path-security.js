@@ -1,34 +1,42 @@
+/**
+ * Path Security & Sanitization Utilities
+ * Prevents Directory/Path Traversal vulnerabilities (CWE-22) when interacting with the host filesystem.
+ * @module utils/path-security
+ */
+
 const path = require('path');
 
 /**
- * Membersihkan nama file dari karakter berbahaya dan mengembalikan nama file yang aman.
- * @param {string} originalName
- * @returns {string}
+ * Sanitizes a filename by removing illegal or dangerous filesystem characters.
+ * @param {string} originalName - User-supplied or untrusted filename
+ * @returns {string} Sanitized ASCII-safe filename
  */
 function sanitizeFilename(originalName) {
-  if (!originalName || typeof originalName !== 'string') return '';
+  if (!originalName || typeof originalName !== 'string') {
+    return '';
+  }
   return originalName.replace(/[^a-zA-Z0-9._\-]/g, '_');
 }
 
 /**
- * Memvalidasi apakah nama file yang diminta tetap berada di dalam direktori dasar (Mencegah Path Traversal).
- * Menolak traversal seperti `../`, `..\\`, null bytes, atau karakter traversal ter-encode.
+ * Validates and resolves a requested file path against a trusted base directory.
+ * Rejects traversal sequences (e.g., `../`, `..\\`), null bytes, and non-canonical paths.
  * 
- * @param {string} baseDir Direktori root yang sah (misal MEDIA_DIR)
- * @param {string} userInputFilename Nama file input dari user/request
- * @returns {string|null} Path absolut yang valid atau null jika traversal terdeteksi
+ * @param {string} baseDir - Trusted base directory path (e.g. MEDIA_DIR)
+ * @param {string} userInputFilename - User-supplied filename or relative path
+ * @returns {string|null} Resolved absolute path within baseDir, or null if traversal attempt detected
  */
 function resolveSafePath(baseDir, userInputFilename) {
-  if (!baseDir || !userInputFilename || typeof userInputFilename !== 'string') {
+  if (!baseDir || !userInputFilename || typeof userInputFilename !== 'string' || typeof baseDir !== 'string') {
     return null;
   }
 
-  // Cek null byte injection
+  // Reject null-byte injection attempts
   if (userInputFilename.includes('\0')) {
     return null;
   }
 
-  // Decode URI jika URL encoded
+  // Safely decode potential percent-encoded URI strings
   let decoded = userInputFilename;
   try {
     decoded = decodeURIComponent(userInputFilename);
@@ -36,7 +44,7 @@ function resolveSafePath(baseDir, userInputFilename) {
     return null;
   }
 
-  // Jika mengandung pola path traversal `..` atau separator path, tolak traversal
+  // Reject explicit path traversal patterns and directory separators
   if (decoded.includes('..') || decoded.includes('/') || decoded.includes('\\')) {
     return null;
   }
@@ -49,7 +57,7 @@ function resolveSafePath(baseDir, userInputFilename) {
   const resolvedBase = path.resolve(baseDir);
   const resolvedTarget = path.resolve(resolvedBase, baseName);
 
-  // Pastikan target berada di bawah resolvedBase
+  // Enforce that target path is strictly contained within resolvedBase
   if (resolvedTarget.startsWith(resolvedBase + path.sep)) {
     return resolvedTarget;
   }

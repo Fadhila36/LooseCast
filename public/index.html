@@ -20,7 +20,7 @@
     <div class="status-pill"><div class="sdot"></div><span data-i18n="topbar_running">RUNNING</span></div>
     <div class="sp"></div>
     <div class="url-chip"><code id="url-disp">localhost:3000</code><button class="copy-btn" onclick="copyUrl()" title="Copy URL"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></div>
-    <button class="burger" onclick="openSettings()" data-i18n-title="topbar_settings" title="Settings"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <button class="burger" onclick="StreamKitUI.openHub('settings')" data-i18n-title="topbar_settings" title="Settings"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
   </header>
 
   <div class="scroll-area">
@@ -208,46 +208,7 @@
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-bg" id="settings-modal">
-  <div class="modal-box" style="max-width:440px;padding:24px 28px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
-      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
-        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        </div>
-        <span data-i18n="settings_modal_title">App Settings</span>
-      </div>
-      <button onclick="closeSettings()" class="ob-modal-close">✕</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
-      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:16px;">
-        <div style="font-size:0.64rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
-          <span data-i18n="settings_assets_title">Folder Assets</span>
-        </div>
-        <div style="font-size:0.7rem;color:var(--tx2);margin-bottom:10px;line-height:1.5;" data-i18n="settings_assets_desc">Lokasi penyimpanan meme & file audio. Default: AppData.</div>
-        <div id="assets-dir-disp" style="font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--ac);background:rgba(8,9,14,0.8);border:1px solid var(--bd2);border-radius:8px;padding:9px 12px;word-break:break-all;margin-bottom:10px;">(default: AppData)</div>
-        <button onclick="chooseAssetsFolder()" style="width:100%;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(56,189,248,0.2)'" onmouseout="this.style.background='var(--ac-dim)'" data-i18n="settings_choose_folder_btn">📂 Pilih Folder Baru</button>
-      </div>
 
-      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:16px;">
-        <div style="font-size:0.64rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-i18n="settings_backup_title">Backup & Restore</span>
-        </div>
-        <div style="font-size:0.7rem;color:var(--tx2);margin-bottom:12px;line-height:1.5;" data-i18n="settings_backup_desc">Backup seluruh media dan konfigurasi ke satu file .zip.</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px;">
-          <button onclick="doBackup()" id="backup-btn" style="flex:1;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#22c55e;padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;" data-i18n="settings_backup_btn">⬇ Backup Data</button>
-          <button onclick="document.getElementById('restore-input').click()" id="restore-btn" style="flex:1;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:#f59e0b;padding:10px;border-radius:8px;font-size:0.74rem;font-weight:800;cursor:pointer;" data-i18n="settings_restore_btn">⬆ Restore Data</button>
-          <input type="file" id="restore-input" accept=".zip" style="display:none" onchange="doRestore(this.files[0])">
-        </div>
-        <div id="backup-status" style="font-size:0.65rem;color:var(--tx3);line-height:1.5;display:none;margin-top:8px;"></div>
-      </div>
-    </div>
-    <button onclick="closeSettings()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:11px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
-  </div>
-</div>
 
 <!-- CONNECT MODAL -->
 <div class="modal-bg" id="connect-modal">
@@ -275,15 +236,16 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/ksk-ui.js"></script>
+<script src="/stream-kit-ui.js"></script>
 <script src="/js/shared.js"></script>
 
 <script>
 const socket = io();
 
 // Dengarkan toggle dari tray Electron (via IPC)
-if (window.kskElectron && window.kskElectron.onShortcutStateChanged) {
-  window.kskElectron.onShortcutStateChanged((enabled) => {
+const electronBridge = window.streamKitElectron || window.kskElectron;
+if (electronBridge && electronBridge.onShortcutStateChanged) {
+  electronBridge.onShortcutStateChanged((enabled) => {
     localStorage.setItem('shortcuts_enabled', String(enabled));
     updateScToggleUI(enabled);
   });
@@ -291,8 +253,15 @@ if (window.kskElectron && window.kskElectron.onShortcutStateChanged) {
 
 // Dengarkan toggle dari deck.html atau tray Electron
 try {
-  const _kskIdxChannel = new BroadcastChannel('ksk');
-  _kskIdxChannel.onmessage = (e) => {
+  const _streamKitChannel = new BroadcastChannel('streamkit');
+  _streamKitChannel.onmessage = (e) => {
+    if (e.data && e.data.type === 'shortcuts_toggle') {
+      localStorage.setItem('shortcuts_enabled', String(e.data.enabled));
+      updateScToggleUI(e.data.enabled);
+    }
+  };
+  const _legacyIdxChannel = new BroadcastChannel('ksk');
+  _legacyIdxChannel.onmessage = (e) => {
     if (e.data && e.data.type === 'shortcuts_toggle') {
       localStorage.setItem('shortcuts_enabled', String(e.data.enabled));
       updateScToggleUI(e.data.enabled);
@@ -301,9 +270,9 @@ try {
 } catch {}
 
 // ── GLOBAL SHORTCUT LISTENER (Menerima dari main.js) ────────
-if (window.kskElectron && window.kskElectron.onShortcutTriggered && !window._globalScInit) {
+if (electronBridge && electronBridge.onShortcutTriggered && !window._globalScInit) {
   window._globalScInit = true;
-  window.kskElectron.onShortcutTriggered((action) => {
+  electronBridge.onShortcutTriggered((action) => {
     // Kalau yang dipencet adalah shortcut meme (card)
     if (action.type === 'card' || typeof action === 'string') {
       const target = typeof action === 'string' ? action : action.target;
@@ -314,7 +283,7 @@ if (window.kskElectron && window.kskElectron.onShortcutTriggered && !window._glo
       }).catch(err => console.error(err));
       toast('Shortcut Triggered!');
     } 
-// Kalau yang dipencet shortcut counter (3 jenis)
+    // Kalau yang dipencet shortcut counter (3 jenis)
     else if (action.type && action.type.startsWith('counter_')) {
       fetch('/api/counters/' + encodeURIComponent(action.target) + '/value')
         .then(r => r.json())
@@ -381,8 +350,8 @@ let qrGenerated = false;
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('dmask').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('dmask').classList.remove('open');}
 
-// Init KSK sidebar
-KSK.init('dashboard');
+// Init StreamKit sidebar
+StreamKitUI.init('dashboard');
 function openConnect(){
   document.getElementById('connect-modal').classList.add('open');
   const target = document.getElementById('qr-target');
@@ -533,128 +502,32 @@ function closeFeedback() { document.getElementById('feedback-modal').classList.r
 document.getElementById('feedback-modal').addEventListener('click', e => { if(e.target===document.getElementById('feedback-modal')) closeFeedback(); });
 
 function openCounterFolder(filename) {
-  if(window.kskElectron) {
-    window.kskElectron.openTextFolder();
+  const bridge = window.streamKitElectron || window.kskElectron;
+  if(bridge) {
+    bridge.openTextFolder();
   } else {
     toast('Folder: AppData/Roaming/Tomatosuki Stream kit AIO/assets/text/');
   }
 }
 
 // Settings modal
-function openSettings() { document.getElementById('settings-modal').classList.add('open'); loadSettingsState(); }
-function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
-document.getElementById('settings-modal').addEventListener('click', e => { if(e.target===document.getElementById('settings-modal')) closeSettings(); });
-
-async function loadSettingsState() {
-  try {
-    let cfg;
-    if (window.kskElectron) {
-      cfg = await window.kskElectron.getConfig();
-    } else {
-      const r = await fetch('/api/config');
-      cfg = await r.json();
-    }
-    const el = document.getElementById('assets-dir-disp');
-    if(el) el.textContent = cfg.assetsDir || '(default: AppData)';
-  } catch {}
-}
-
-async function chooseAssetsFolder() {
-  if (!window.kskElectron) {
-    toast('Fitur ini hanya tersedia di app Electron (bukan browser).');
-    return;
-  }
-  try {
-    const folderPath = await window.kskElectron.chooseFolder();
-    if (!folderPath) return; // user cancelled
-
-    // Save to config
-    const cfg = await window.kskElectron.getConfig() || {};
-    cfg.assetsDir = folderPath;
-    await window.kskElectron.saveConfig(cfg);
-
-    document.getElementById('assets-dir-disp').textContent = folderPath;
-    toast('Folder dipilih! Restart app untuk menggunakan folder baru.');
-  } catch(e) {
-    toast('Gagal pilih folder: ' + (e.message || e));
-  }
-}
+function openSettings() { StreamKitUI.openHub('settings'); }
 
 // ─── BACKUP & RESTORE ───────────────────────────────────
 function backupStatus(msg, color) {
   const el = document.getElementById('backup-status');
+  if (!el) return;
   el.style.display = 'block';
   el.style.color = color || 'var(--tx3)';
   el.textContent = msg;
 }
 
 async function doBackup() {
-  const btn = document.getElementById('backup-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Memproses...';
-  backupStatus('Membuat backup, mohon tunggu...', 'var(--ac)');
-
-  try {
-    const r = await fetch('/api/backup');
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      throw new Error(err.error || 'Backup gagal');
-    }
-    const blob = await r.blob();
-    const cd = r.headers.get('content-disposition') || '';
-    const match = cd.match(/filename="?([^"]+)"?/);
-    const filename = match ? match[1] : 'KSK-Backup.zip';
-
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-
-    const sizeMB = (blob.size / 1024 / 1024).toFixed(1);
-    backupStatus('✅ Backup berhasil! (' + sizeMB + ' MB)', '#22c55e');
-    toast('Backup berhasil!');
-  } catch(e) {
-    backupStatus('❌ ' + e.message, '#ef4444');
-    toast('Backup gagal: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '⬇ Backup';
-  }
+  StreamKitUI.doBackup();
 }
 
 async function doRestore(file) {
-  if (!file) return;
-  if (!file.name.endsWith('.zip')) { toast('File harus .zip'); return; }
-
-  const ok = confirm('⚠️ Restore akan menimpa data yang sudah ada.\n\nLanjutkan?');
-  if (!ok) { document.getElementById('restore-input').value = ''; return; }
-
-  const btn = document.getElementById('restore-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Restoring...';
-  backupStatus('Restoring data, mohon tunggu...', '#f59e0b');
-
-  try {
-    const form = new FormData();
-    form.append('backup', file);
-
-    const r = await fetch('/api/restore', { method: 'POST', body: form });
-    const d = await r.json();
-
-    if (!d.ok) throw new Error(d.error || 'Restore gagal');
-
-    backupStatus('✅ Restore berhasil! ' + d.restoredFiles + ' file + ' + d.restoredConfigs + ' config dipulihkan. Reload halaman...', '#22c55e');
-    toast('Restore berhasil!');
-    setTimeout(() => location.reload(), 2000);
-  } catch(e) {
-    backupStatus('❌ ' + e.message, '#ef4444');
-    toast('Restore gagal: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '⬆ Restore';
-    document.getElementById('restore-input').value = '';
-  }
+  StreamKitUI.doRestore(file);
 }
 </script>
 
@@ -675,7 +548,7 @@ function openShortcutSetup() {
       <div style="background:var(--s1);border:1px solid var(--bd2);border-radius:20px;width:100%;max-width:460px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6);">
         
         <div style="padding:18px 24px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-weight:900;font-size:.8rem;letter-spacing:1.5px;color:var(--ac);">${KSK.t('sc_tutor_title', 'SHORTCUT TUTORIAL')}</div>
+          <div style="font-weight:900;font-size:.8rem;letter-spacing:1.5px;color:var(--ac);">${StreamKitUI.t('sc_tutor_title', 'SHORTCUT TUTORIAL')}</div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div id="sc-toggle-wrap" onclick="toggleShortcutEnabled()" style="display:flex;align-items:center;gap:7px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:20px;padding:5px 10px 5px 7px;transition:all .15s;"
               onmouseover="this.style.borderColor='var(--ac)'" onmouseout="this.style.borderColor='var(--bd2)'">
@@ -692,11 +565,11 @@ function openShortcutSetup() {
           <div style="display:flex;flex-direction:column;gap:8px;">
             <div style="display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--tx);">
               <span style="background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;flex-shrink:0;">1</span>
-              <span>${KSK.t('sc_tutor_step1', 'Aktifkan <b>Shortcut Mode</b> di bar pencarian Deck View.')}</span>
+              <span>${StreamKitUI.t('sc_tutor_step1', 'Aktifkan <b>Shortcut Mode</b> di bar pencarian Deck View.')}</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--tx);">
               <span style="background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;flex-shrink:0;">2</span>
-              <span>${KSK.t('sc_tutor_step2', 'Klik icon <b>Keyboard (⌨)</b> pada kartu meme untuk set tombol.')}</span>
+              <span>${StreamKitUI.t('sc_tutor_step2', 'Klik icon <b>Keyboard (⌨)</b> pada kartu meme untuk set tombol.')}</span>
             </div>
           </div>
 
@@ -735,12 +608,12 @@ function openShortcutSetup() {
 
           <div style="background:rgba(56,189,248,.05); border-left:3px solid var(--ac); padding:12px; border-radius:4px 10px 10px 4px;">
             <p style="font-size:.7rem; color:var(--tx); line-height:1.5; margin:0;">
-              ${KSK.t('sc_tutor_tips', '💡 <b>Tips:</b> Kamu juga bisa atur Shortcut untuk tombol <b>Win / Lose / Death Counter</b> dan <b>Custom Tab</b> melalui icon gear ⚙️ yang muncul saat Shortcut Mode aktif.')}
+              ${StreamKitUI.t('sc_tutor_tips', '💡 <b>Tips:</b> Kamu juga bisa atur Shortcut untuk tombol <b>Win / Lose / Death Counter</b> dan <b>Custom Tab</b> melalui icon gear ⚙️ yang muncul saat Shortcut Mode aktif.')}
             </p>
           </div>
 
           <p style="font-size:.62rem; color:var(--tx3); font-style:italic; line-height:1.4; text-align:center;">
-            ${KSK.t('sc_tutor_hint', 'Pastikan Shortcut Mode (bar biru di bawah) menyala untuk melihat icon pengaturannya.')}
+            ${StreamKitUI.t('sc_tutor_hint', 'Pastikan Shortcut Mode (bar biru di bawah) menyala untuk melihat icon pengaturannya.')}
           </p>
         </div>
 
@@ -748,7 +621,7 @@ function openShortcutSetup() {
           <a href="/deck.html" style="flex:1; background:var(--ac); color:#000; text-decoration:none; text-align:center; padding:12px; border-radius:10px; font-size:.75rem; font-weight:900; letter-spacing:1px; box-shadow:0 4px 15px rgba(56,189,248,.2); transition:all .15s;" 
              onmouseover="this.style.transform='translateY(-2px)'" 
              onmousedown="this.style.transform='translateY(1px)'">
-            ${KSK.t('sc_tutor_launch', 'LUNCURKAN DECK VIEW')}
+            ${StreamKitUI.t('sc_tutor_launch', 'LUNCURKAN DECK VIEW')}
           </a>
         </div>
       </div>
@@ -763,9 +636,11 @@ function toggleShortcutEnabled() {
   localStorage.setItem('shortcuts_enabled', String(newVal));
   updateScToggleUI(newVal);
   // Notify deck.html kalau lagi terbuka di tab lain (via BroadcastChannel)
+  try { new BroadcastChannel('streamkit').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
   try { new BroadcastChannel('ksk').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
-  try { if (window.kskElectron && window.kskElectron.setShortcutEnabled) window.kskElectron.setShortcutEnabled(newVal); } catch {}
-  toast(newVal ? KSK.t('toast_sc_on', '⌨ Shortcut aktif') : KSK.t('toast_sc_off', '⌨ Shortcut dimatikan'));
+  const bridge = window.streamKitElectron || window.kskElectron;
+  try { if (bridge && bridge.setShortcutEnabled) bridge.setShortcutEnabled(newVal); } catch {}
+  toast(newVal ? StreamKitUI.t('toast_sc_on', '⌨ Shortcut aktif') : StreamKitUI.t('toast_sc_off', '⌨ Shortcut dimatikan'));
 }
 
 function updateScToggleUI(enabled) {

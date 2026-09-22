@@ -1,94 +1,193 @@
 # 🚀 Tomatosuki Stream Kit AIO
 
-**All-in-One Overlay & Deck Controller: Meme, Video, Audio, Chroma Key, K/D Counter & Remote HP via Browser Source OBS.**
-
-Tomatosuki Stream Kit AIO adalah aplikasi kontroler stream berbasis **Electron + Node.js (Express & Socket.io)** yang dirancang khusus untuk streamer. Memungkinkan pengelolaan aset interaktif secara *real-time* hanya melalui satu jalur *Browser Source* di OBS Studio, Streamlabs, Polycam, atau XSplit.
-
----
-
-## 🛠️ Fitur Utama
-
-* 🎭 **Multi-Format Playback:** Putar Video (`.mp4`, `.webm`, `.mov`), Audio (`.mp3`, `.wav`, `.ogg`), Animasi (`.gif`, `.webp`), dan Gambar seketika.
-* 🟢 **Built-in Chroma Key:** Otomatis hapus background hijau (*green screen*) pada video meme tanpa perlu filter tambahan di OBS.
-* 📱 **Connect to Phone (LAN Remote):** Buka Deck View langsung dari browser HP di jaringan Wi-Fi yang sama untuk trigger meme tanpa *alt-tab* saat live gaming.
-* ⚔️ **Atomic K/D Counter:** Counter Win/Loss/Kill/Death yang tersimpan otomatis ke file `.txt` untuk dihubungkan sebagai *Text Source* di OBS.
-* ⌨️ **Global Keyboard Shortcut:** Trigger meme dan kontrol counter langsung dari hotkey keyboard.
-* 💾 **Atomic File Storage & Non-Blocking Async:** Arsitektur penyimpanan data anti-korup (*atomic write*) dan performa I/O non-blocking yang sangat ringan di CPU.
-* 🛡️ **OWASP Path Traversal Protected:** Sistem sanitasi direktori yang aman untuk melindungi aset komputer lokal.
-* 🌐 **100% Offline Standalone:** Bebas dari dependensi CDN eksternal, siap digunakan saat offline / LAN party.
-* 📦 **Backup & Restore 1-Click:** Ekspor seluruh koleksi meme dan konfigurasi deck ke dalam satu file ZIP.
+**All-in-One Stream Deck Controller & OBS Overlay Ecosystem**  
+*Meme Player, Video & Audio FX, Chroma Key, OBS WebSocket Automations, Macro Engine, K/D Counters & Remote Deck via Smartphone.*
 
 ---
 
-## 🚀 Cara Install & Menjalankan
-
-### Persyaratan:
-* [Node.js](https://nodejs.org/) (versi 18 ke atas disarankan).
-
-### Langkah Instalasi:
-1. **Clone / Download** repository ini:
-   ```bash
-   git clone https://github.com/fadhila36/Tomatosuki-Stream-kit-AIO.git
-   cd Tomatosuki-Stream-kit-AIO
-   ```
-2. **Install Dependensi:**
-   ```bash
-   npm install
-   ```
-3. **Jalankan Aplikasi:**
-   * **Mode Desktop (Electron):**
-     ```bash
-     npm run dev
-     ```
-   * **Mode Server Only (Web Server):**
-     ```bash
-     npm start
-     ```
-   * **Menjalankan Automated Test Suite (TDD):**
-     ```bash
-     npm test
-     ```
+Tomatosuki Stream Kit AIO adalah aplikasi kontroler streaming profesional berbasis **Electron + Node.js (Express & Socket.io)**. Didesain khusus untuk content creator, gamer, dan streamer di platform Twitch, YouTube, Kick, maupun TikTok Live. Cukup dengan satu URL *Browser Source* di OBS Studio, Anda dapat memicu meme video, sound effect, macro automation, animasi overlay, dan counter game secara *real-time* tanpa membebani performa PC.
 
 ---
 
-## 🖥️ Cara Pasang di OBS Studio
+## 🌟 Fitur Unggulan
 
+### 🎭 1. Multi-Format Meme & Media Player
+- **Dukungan Format Luas:** Video (`.mp4`, `.webm`, `.mov`), Audio (`.mp3`, `.wav`, `.ogg`), Animasi (`.gif`, `.webp`), dan Gambar (`.png`, `.jpg`).
+- **Built-in Chroma Key:** Otomatis hilangkan background hijau (*green screen*) langsung di browser overlay tanpa perlu filter tambahan di OBS.
+- **Visual FX & Screen Shake:** Efek kamera getar (*screen shake*), zoom in/out, flash, dan glitch saat meme dipicu.
+- **Audio Normalizer & Volume Control:** Pengaturan volume per media + Master Volume slider dengan integrasi FFmpeg.
+
+### 🔌 2. Integrasi OBS Studio WebSocket v5
+- **Scene Switcher:** Ganti scene OBS secara instan langsung dari deck controller.
+- **Source Visibility Toggle:** Munculkan atau sembunyikan overlay/source/kamera di OBS dengan 1 klik.
+- **Audio Input Mute/Unmute:** Toggle mute mikrofon, game audio, atau musik BGM.
+- **Status Indikator Real-time:** Menampilkan status koneksi WebSocket OBS di dashboard secara otomatis.
+
+### ⚡ 3. Macro & Automation Engine
+- **Multi-Step Automation:** Gabungkan berbagai aksi dalam 1 tombol (contoh: Putar suara intro ➔ Delay 1.5 detik ➔ Ganti Scene OBS ➔ Munculkan meme video ➔ Unmute mic).
+- **Import / Export Macro:** Bagikan dan simpan konfigurasi macro dalam format JSON.
+
+### 🌐 4. MyInstants Soundboard Search & Instant Import
+- Cari ribuan sound meme populer langsung dari library **MyInstants** di dalam aplikasi.
+- Preview audio seketika dan tambahkan ke Stream Deck Anda hanya dengan 1 klik tanpa perlu download manual.
+
+### 📱 5. Mobile Deck Remote (LAN / Wi-Fi)
+- **Connect to Phone via QR Code:** Buka Deck Controller di smartphone atau tablet tanpa install aplikasi tambahan.
+- Trigger meme, kontrol counter, dan ganti scene langsung dari HP saat bermain game layar penuh (*fullscreen*) tanpa perlu *alt-tab*.
+
+### ⚔️ 6. Atomic Game Counters (K/D/W/L Tracker)
+- Kelola counter Kill, Death, Win, Loss, atau Custom Counter apa pun.
+- Nilai counter tersimpan secara otomatis dan atomik ke file `.txt` lokal, siap dihubungkan ke **OBS Text (GDI+) Source**.
+
+### 🛡️ 7. Performa Tinggi & Keamanan Ketat
+- **Atomic File Store:** Arsitektur penyimpanan data anti-korup (*atomic write*) dengan fallback aman.
+- **Non-blocking Async I/O:** Ringan di CPU dan RAM, tidak mengganggu kestabilan FPS game saat streaming.
+- **OWASP Path Traversal Protection:** Sanitasi ketat terhadap nama file dan jalur direktori aset.
+- **100% Offline Standalone:** Seluruh asset UI dan dependensi berjalan lokal tanpa ketergantungan CDN eksternal.
+- **1-Click Backup & Restore:** Ekspor seluruh aset media, counter, dan preferensi deck ke file ZIP terkompresi.
+- **Multi-Language Support:** Antarmuka multibahasa (Bahasa Indonesia, English, Japanese, Spanish).
+
+---
+
+## 🛠️ Persyaratan Sistem
+
+- **Sistem Operasi:** Windows 10 / 11, macOS, atau Linux
+- **Node.js:** Versi 18.x atau lebih baru ([Download Node.js](https://nodejs.org/))
+- **OBS Studio:** Versi 28+ (sudah memiliki OBS WebSocket v5 bawaan)
+
+---
+
+## 🚀 Panduan Instalasi & Menjalankan
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/fadhila36/Tomatosuki-Stream-kit-AIO.git
+cd Tomatosuki-Stream-kit-AIO
+```
+
+### 2. Install Dependensi
+```bash
+npm install
+```
+
+### 3. Jalankan Aplikasi
+Pilih mode yang sesuai dengan kebutuhan Anda:
+
+* **Mode Desktop App (Electron GUI):**
+  ```bash
+  npm run dev
+  ```
+* **Mode Web Server Saja (Headless / Browser):**
+  ```bash
+  npm start
+  ```
+  *Dashboard dapat diakses di: [http://localhost:3000](http://localhost:3000)*
+
+* **Menjalankan Automated Unit & Integration Tests:**
+  ```bash
+  npm test
+  ```
+
+---
+
+## 🖥️ Panduan Setup di OBS Studio
+
+### Langkah 1: Pasang Browser Source Overlay
 1. Buka **OBS Studio**.
-2. Pada panel **Sources**, klik ikon **`+`** ➔ Pilih **Browser**.
-3. Beri nama source (misal: `Tomatosuki Meme Overlay`).
-4. Pada kolom **URL**, masukkan link overlay lokal Anda (misal: `http://localhost:3000/obs.html` atau `http://192.168.1.XX:3000/obs.html`).
-5. Atur **Width** ke `1920` dan **Height** ke `1080` (atau sesuaikan resolusi canvas OBS Anda).
+2. Pada panel **Sources**, klik tombol **`+`** ➔ Pilih **Browser**.
+3. Beri nama source (misalnya: `Tomatosuki Stream Kit Overlay`).
+4. Masukkan URL:
+   ```text
+   http://localhost:3000/obs.html
+   ```
+5. Atur resolusi:
+   - **Width:** `1920` (sesuaikan dengan canvas Anda)
+   - **Height:** `1080` (sesuaikan dengan canvas Anda)
 6. Centang opsi:
-   * ✅ *Shutdown source when not visible*
-   * ✅ *Refresh browser when scene becomes active*
-7. Klik **OK**. Selesai!
+   - ✅ *Shutdown source when not visible*
+   - ✅ *Refresh browser when scene becomes active*
+7. Klik **OK**.
 
-> 💡 **Tips:** Jika meme tidak muncul saat pertama kali diatur, klik kanan Browser Source di OBS ➔ **Interact** atau **Refresh Cache of Current Page**.
+### Langkah 2: Hubungkan OBS WebSocket (Opsional untuk Kontrol Scene & Audio)
+1. Di OBS Studio, buka menu **Tools** ➔ **WebSocket Server Settings**.
+2. Pastikan opsi **Enable WebSocket server** dicentang (Port default: `4455`).
+3. Di Dashboard Tomatosuki (Tab Settings), masukkan Port & Password OBS WebSocket Anda lalu klik **Connect**.
 
----
-
-## 📱 Cara Menggunakan Remote via HP
-
-1. Pastikan HP dan PC berada dalam jaringan Wi-Fi / LAN yang sama.
-2. Buka Dashboard Tomatosuki ➔ Klik **"Connect to Phone"** di Sidebar.
-3. Scan **QR Code** yang muncul di layar menggunakan kamera HP Anda, atau ketik alamat IP yang tertera (misal: `http://192.168.1.50:3000/deck.html`).
-4. Deck View akan langsung terbuka di layar HP Anda.
-
----
-
-## 🧪 Arsitektur & Testing
-
-Proyek ini telah direfaktor dengan standar **Senior Clean Code**:
-* `src/utils/path-security.js` — Sanitasi nama file dan validasi batas direktori.
-* `src/utils/file-store.js` — Operasi non-blocking async JSON & Text dengan atomic write ke temporary file.
-* `tests/` — Test harness native Node.js (`node --test`) mencakup unit testing utilitas dan integration test API endpoints.
+### Langkah 3: Menampilkan Counter di OBS
+1. Buat counter di Dashboard Tomatosuki (misal: `Win Streak`).
+2. Di OBS Studio, tambah Source **Text (GDI+)**.
+3. Centang opsi **Read from file**, lalu pilih file teks counter yang berada di dalam folder proyek Anda (folder `assets/`).
 
 ---
 
-## 🌐 Website & Portofolio
+## 📱 Panduan Menggunakan HP sebagai Stream Deck
 
-* Website: [fadhilaabiyyu.my.id](https://fadhilaabiyyu.my.id)
-* GitHub: [github.com/fadhila36](https://github.com/fadhila36)
+1. Pastikan PC dan Smartphone Anda terhubung ke jaringan Wi-Fi / LAN yang sama.
+2. Di dashboard Tomatosuki, buka tab **Connect to Phone** atau klik ikon barcode/HP.
+3. Scan **QR Code** yang tampil menggunakan kamera HP Anda, atau ketik alamat IP lokal yang tertera (contoh: `http://192.168.1.50:3000/deck.html`).
+4. Deck controller interaktif akan langsung terbuka dan siap digunakan di layar smartphone Anda.
+
+---
+
+## 🏗️ Struktur Proyek
+
+```text
+Tomatosuki-Stream-kit-AIO/
+├── assets/                  # Penyimpanan file media (video, audio, gambar)
+├── electron/                # Konfigurasi & lifecycle Electron Desktop
+│   ├── main.js
+│   └── preload.js
+├── lang/                    # File lokalisasi bahasa (id.json, en.json, dll.)
+├── public/                  # Antarmuka web frontend
+│   ├── index.html           # Dashboard utama
+│   ├── deck.html            # Deck view mobile / tablet
+│   ├── obs.html             # Browser source overlay untuk OBS
+│   └── css / js / fonts     # Aset statis lokal tanpa CDN eksternal
+├── src/
+│   ├── config/              # Konfigurasi & konstanta aplikasi
+│   ├── controllers/         # Handler route REST API
+│   ├── services/            # Business logic (Media, OBS, Macros, Counters, MyInstants, Backup)
+│   └── utils/               # Path security, atomic file store, network detection
+├── tests/                   # Native test suite (Unit & Integration tests)
+├── server.js                # Entry point server Express & Socket.io
+└── package.json
+```
+
+---
+
+## 📦 Build Installer / Portable Desktop
+
+Untuk mengompilasi aplikasi menjadi executable Windows (`.exe`):
+
+```bash
+# Build Installer & Portable (.exe)
+npm run build
+
+# Build NSIS Installer saja
+npm run build:installer
+
+# Build Portable (.exe standalone) saja
+npm run build:portable
+```
+File installer yang telah selesai dibuat akan berada di folder `dist/`.
+
+---
+
+## 🧪 Testing & Kualitas Kode
+
+Proyek ini dilengkapi dengan 40+ unit dan integration test suite menggunakan test runner bawaan Node.js:
+- ✅ **Path Traversal Security:** Validasi pencegahan eksploitasi file system.
+- ✅ **Atomic File Transactions:** Menjamin integritas data JSON/Text dari kegagalan crash atau power-cut.
+- ✅ **Macro Sequencing & OBS Integration:** Pengujian aliran aksi multi-step secara sinkron dan asinkron.
+- ✅ **Media Lifecycle:** Pengujian parsing metadata, upload, dan filter format.
+
+---
+
+## 🌐 Author & Portofolio
+
+* **Developer:** Fadhila Abiyyu
+* **Website:** [fadhilaabiyyu.my.id](https://fadhilaabiyyu.my.id)
+* **GitHub:** [@fadhila36](https://github.com/fadhila36)
 
 ---
 

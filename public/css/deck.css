@@ -352,6 +352,43 @@
 .card.drag-over { border-color: var(--ac) !important; box-shadow: 0 0 0 2px var(--ac), 0 0 16px var(--ac-glow); }
 .card.dragging { opacity: 0.35; transform: scale(0.95); }
 
+/* Favorite Star Button */
+.card-fav-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tx3);
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-sm);
+  transition: all var(--duration-fast);
+  opacity: 0;
+}
+.card:hover .card-fav-btn,
+.card-fav-btn.active,
+.edit-mode .card-fav-btn {
+  opacity: 1;
+}
+.card-fav-btn.active {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(0, 0, 0, 0.85);
+}
+.card-fav-btn:hover {
+  transform: scale(1.15);
+  color: #fbbf24;
+}
+.sc-mode .card .card-fav-btn { display: none; }
+
 /* ─── Streamer HUD Counter Buttons ──────────────────────── */
 .counter-btn-wrap {
   padding: 10px 14px;

@@ -314,8 +314,8 @@
             <span class="acc-arrow">›</span>
           </div>
           <div class="acc-body">
-            <div class="fg"><div class="fl" data-i18n="studio_volume_label">Volume Media</div>
-              <div class="rrow"><input type="range" id="vol" min="0" max="100" value="80" oninput="rv(this,'rv-vol','%');updateAccSummaries()"><span class="rv" id="rv-vol">80%</span></div>
+            <div class="fg"><div class="fl" data-i18n="studio_volume_label">Volume / Gain Media</div>
+              <div class="rrow"><input type="range" id="vol" min="0" max="150" value="80" oninput="rv(this,'rv-vol','%');updateAccSummaries()"><span class="rv" id="rv-vol">80%</span></div>
             </div>
             <div class="fg" id="awrap">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
@@ -512,7 +512,7 @@
 <div class="toast" id="toast"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/ksk-ui.js"></script>
+<script src="/stream-kit-ui.js"></script>
 <script src="/js/shared.js"></script>
 <script>
 const socket = io();
@@ -564,7 +564,13 @@ function getType(n){
 function getLabel(f){ return (f.settings&&f.settings.displayName)||f.name; }
 
 async function loadFiles(){
-  try{ const r=await fetch('/api/media'); files=await r.json(); }catch{ files=[]; }
+  try{
+    const r=await fetch('/api/media');
+    const data=await r.json();
+    files = Array.isArray(data) ? data : [];
+  }catch{
+    files = [];
+  }
   render();
 }
 

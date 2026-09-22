@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 const OBSController = require('../src/services/obs-controller');
 
 test('OBSController Unit Tests', async (t) => {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ksk-obs-test-'));
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'streamkit-obs-test-'));
 
   t.after(async () => {
     try {
@@ -43,6 +43,14 @@ test('OBSController Unit Tests', async (t) => {
     await obs2.init();
     assert.equal(obs2.config.ip, '192.168.1.14');
     assert.equal(obs2.config.password, 'secretpassword');
+
+    // Password tidak boleh terhapus jika parameter password string kosong tanpa clearPassword
+    await obs2.saveConfig({ ip: '192.168.1.14', port: 4455, password: '' });
+    assert.equal(obs2.config.password, 'secretpassword');
+
+    // Password harus terhapus jika clearPassword bernilai true
+    await obs2.saveConfig({ password: '', clearPassword: true });
+    assert.equal(obs2.config.password, '');
   });
 
   await t.test('harus melempar error saat setScene dipanggil ketika belum terhubung', async () => {

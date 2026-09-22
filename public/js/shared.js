@@ -1,5 +1,5 @@
 /**
- * KSK Shared Utilities
+ * StreamKit Shared Utilities
  * Common functions used across multiple pages.
  * Eliminates duplication of sidebar, toast, clipboard, and media helpers.
  */

@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('kskElectron', {
+const electronBridge = {
   chooseFolder: () => ipcRenderer.invoke('choose-folder'),
   getConfig: () => ipcRenderer.invoke('get-config'),
   saveConfig: (cfg) => ipcRenderer.invoke('save-config', cfg),
@@ -14,4 +14,10 @@ contextBridge.exposeInMainWorld('kskElectron', {
   // ── SHORTCUT TOGGLE SYNC ──
   setShortcutEnabled: (enabled) => ipcRenderer.send('set-shortcut-enabled', enabled),
   onShortcutStateChanged: (cb) => ipcRenderer.on('shortcut-state-changed', (e, enabled) => cb(enabled)),
-});
+
+  // ── AUTO UPDATER ──
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+};
+
+contextBridge.exposeInMainWorld('streamKitElectron', electronBridge);
+contextBridge.exposeInMainWorld('kskElectron', electronBridge);

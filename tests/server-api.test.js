@@ -214,4 +214,24 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(exportRes.body.name, 'Integration Test Macro');
     assert.strictEqual(exportRes.body.steps.length, 1);
   });
+
+  it('POST /api/myinstants/download harus menolak URL SSRF / domain luar MyInstants', async () => {
+    const res = await request('POST', '/api/myinstants/download', {
+      mp3: 'http://127.0.0.1:3099/api/stats',
+      name: 'internal_probe',
+    });
+    assert.strictEqual(res.status, 500);
+    assert.strictEqual(res.body.ok, false);
+    assert.match(res.body.error, /Domain download tidak diizinkan/i);
+  });
+
+  it('POST /api/myinstants/download harus menolak domain myinstants yang dipalsukan (evil-myinstants.com)', async () => {
+    const res = await request('POST', '/api/myinstants/download', {
+      mp3: 'https://evil-myinstants.com/sound.mp3',
+      name: 'spoofed_domain',
+    });
+    assert.strictEqual(res.status, 500);
+    assert.strictEqual(res.body.ok, false);
+    assert.match(res.body.error, /Domain download tidak diizinkan/i);
+  });
 });

@@ -14,6 +14,17 @@ const logger = require('../utils/logger');
 
 const MODULE_NAME = 'myinstants-service';
 
+/**
+ * Strict domain & subdomain whitelist validator for MyInstants
+ * @param {string} hostname
+ * @returns {boolean}
+ */
+function isTrustedMyInstantsHost(hostname) {
+  if (!hostname || typeof hostname !== 'string') return false;
+  const host = hostname.toLowerCase();
+  return host === 'myinstants.com' || host.endsWith('.myinstants.com');
+}
+
 class MyInstantsService {
   /**
    * @param {object} options
@@ -29,27 +40,54 @@ class MyInstantsService {
    * Perform HTTP GET and return text body
    * @private
    * @param {string} url
+   * @param {number} [maxRedirects=3]
    * @returns {Promise<string>}
    */
-  fetchHtml(url) {
+  fetchHtml(url, maxRedirects = 3) {
+    if (maxRedirects < 0) {
+      return Promise.reject(new Error('Terlalu banyak redirect dari server'));
+    }
+
     return new Promise((resolve, reject) => {
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch {
+        return reject(new Error('Format URL tidak valid'));
+      }
+
+      if (!isTrustedMyInstantsHost(parsedUrl.hostname) || (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:')) {
+        return reject(new Error(`Domain tidak diizinkan: ${parsedUrl.hostname}`));
+      }
+
       const client = url.startsWith('https') ? https : http;
-      client.get(
+      const req = client.get(
         url,
         {
+          timeout: 8000,
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           },
         },
         (res) => {
           if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            return this.fetchHtml(res.headers.location).then(resolve).catch(reject);
+            const nextUrl = new URL(res.headers.location, url).toString();
+            return this.fetchHtml(nextUrl, maxRedirects - 1).then(resolve).catch(reject);
+          }
+          if (res.statusCode !== 200) {
+            return reject(new Error(`Gagal memuat halaman: HTTP ${res.statusCode}`));
           }
           let data = '';
           res.on('data', (chunk) => (data += chunk));
           res.on('end', () => resolve(data));
         }
-      ).on('error', reject);
+      );
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Koneksi timeout saat menghubungi MyInstants'));
+      });
+      req.on('error', reject);
     });
   }
 
@@ -96,6 +134,17 @@ class MyInstantsService {
       throw new Error('URL dan Nama audio wajib diisi');
     }
 
+    let parsedMp3;
+    try {
+      parsedMp3 = new URL(mp3Url);
+    } catch {
+      throw new Error('Format URL audio tidak valid');
+    }
+
+    if (!isTrustedMyInstantsHost(parsedMp3.hostname) || (parsedMp3.protocol !== 'http:' && parsedMp3.protocol !== 'https:')) {
+      throw new Error(`Domain download tidak diizinkan: ${parsedMp3.hostname}`);
+    }
+
     const safeBase = sanitizeFilename(name.replace(/[^a-zA-Z0-9_\-\s]/g, '').trim());
     const filename = `${safeBase || 'instant'}_${Date.now()}.mp3`;
     const targetPath = resolveSafePath(this.mediaDir, filename);
@@ -108,9 +157,15 @@ class MyInstantsService {
       const fileStream = fs.createWriteStream(targetPath);
       const client = mp3Url.startsWith('https') ? https : http;
 
-      client.get(
+      fileStream.on('error', (err) => {
+        fs.unlink(targetPath, () => {});
+        reject(err);
+      });
+
+      const req = client.get(
         mp3Url,
         {
+          timeout: 15000,
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           },
@@ -124,7 +179,17 @@ class MyInstantsService {
           response.pipe(fileStream);
           fileStream.on('finish', () => fileStream.close(resolve));
         }
-      ).on('error', (err) => {
+      );
+
+      req.on('timeout', () => {
+        req.destroy();
+        fileStream.close();
+        fs.unlink(targetPath, () => {});
+        reject(new Error('Koneksi unduhan audio timeout'));
+      });
+
+      req.on('error', (err) => {
+        fileStream.close();
         fs.unlink(targetPath, () => {});
         reject(err);
       });
@@ -140,3 +205,4 @@ class MyInstantsService {
 }
 
 module.exports = MyInstantsService;
+module.exports.isTrustedMyInstantsHost = isTrustedMyInstantsHost;

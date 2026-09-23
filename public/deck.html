@@ -823,21 +823,6 @@ async function disconnectOBS() {
   } catch {}
 }
 
-socket.on('obs-status-changed', (data) => {
-  if (data) {
-    obsStatus = data;
-    renderOBSUI();
-  }
-});
-
-socket.on('obs-scene-changed', (data) => {
-  if (data) {
-    obsStatus.currentScene = data.currentScene;
-    if (data.scenes) obsStatus.scenes = data.scenes;
-    renderOBSUI();
-  }
-});
-
 // Close OBS overlay on backdrop click
 document.getElementById('obs-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('obs-overlay')) closeOBSModal();

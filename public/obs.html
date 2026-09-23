@@ -163,6 +163,10 @@ socket.on('panic-stop', () => {
   clearTimeout(hideTimer);
   stopAllSoundboardTracks();
   stopChroma();
+  if (confettiRAF) { cancelAnimationFrame(confettiRAF); confettiRAF = null; }
+  fxCanvas.style.display = 'none';
+  mw.classList.remove('shaking');
+  flashEl.style.opacity = '0';
   doHide('fadeOut', 150);
 });
 

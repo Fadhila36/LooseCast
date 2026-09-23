@@ -420,7 +420,7 @@ const StreamKitUI = (() => {
       if (bridge && bridge.getConfig) {
         _hubState.config = await bridge.getConfig() || {};
       } else {
-        const cfgRes = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+        const cfgRes = await fetch('/api/app-settings').then(r => r.json()).catch(() => ({}));
         _hubState.config = cfgRes;
       }
       _hubState.shortcutsEnabled = localStorage.getItem('shortcuts_enabled') === 'true';

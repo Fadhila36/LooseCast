@@ -431,7 +431,7 @@ function renderKDList(counters) {
 async function copyCounterPath(filename) {
   try {
     // Kita ambil base path dari server supaya path-nya absolut (C:\Users\...)
-    const r = await fetch('/api/config');
+    const r = await fetch('/api/app-settings');
     const cfg = await r.json();
     
     // Logika penentuan path (sama kyk di server.js/paths.js)

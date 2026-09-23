@@ -273,5 +273,25 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(res.body.ok, true);
     assert.ok(res.body.restoredFiles.includes('counters.json'));
   });
+
+  it('GET /api/app-settings harus mengembalikan konfigurasi folder assets', async () => {
+    const res = await request('GET', '/api/app-settings');
+    assert.strictEqual(res.status, 200);
+    assert.ok(res.body.assetsDir);
+    assert.ok(res.body.defaultAssetsDir);
+  });
+
+  it('POST /api/app-settings harus memperbarui pengaturan assetsDir', async () => {
+    const customPath = path.join(TEST_BASE, 'custom_assets');
+    const updateRes = await request('POST', '/api/app-settings', { assetsDir: customPath });
+    assert.strictEqual(updateRes.status, 200);
+    assert.strictEqual(updateRes.body.ok, true);
+    assert.strictEqual(updateRes.body.config.assetsDir, customPath);
+
+    const getRes = await request('GET', '/api/app-settings');
+    assert.strictEqual(getRes.status, 200);
+    assert.strictEqual(getRes.body.assetsDir, customPath);
+  });
 });
+
 

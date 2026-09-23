@@ -76,4 +76,34 @@ describe('CountersService Unit Tests', () => {
     const all = await service.loadCounters();
     assert.ok(!all.some((c) => c.filename === counter.filename));
   });
+
+  it('harus menangani 10 concurrent increment tanpa lost update (REL-01)', async () => {
+    const counter = await service.createCounter({ name: 'Concurrent Test', initialValue: 0 });
+
+    // Trigger 10 mutasi paralel secara bersamaan
+    await Promise.all(
+      Array.from({ length: 10 }, () => service.executeCounterOp(counter.filename, 'inc'))
+    );
+
+    const finalValStr = await service.getCounterValue(counter.filename);
+    const finalVal = parseInt(finalValStr, 10);
+    assert.strictEqual(finalVal, 10, `Expected counter value to be 10 after 10 concurrent increments, but got ${finalVal}`);
+  });
+
+  it('harus tetap melepas lock saat task melempar error sehingga operasi berikutnya tidak macet', async () => {
+    const counter = await service.createCounter({ name: 'Error Lock Test', initialValue: 0 });
+
+    // Force error di dalam lock
+    await assert.rejects(async () => {
+      await service._withLock(counter.filename, async () => {
+        throw new Error('Simulated failure during mutation');
+      });
+    }, { message: 'Simulated failure during mutation' });
+
+    // Operasi berikutnya harus langsung bisa jalan tanpa timeout/deadlock
+    const res = await service.executeCounterOp(counter.filename, 'inc');
+    assert.strictEqual(res.value, 1);
+  });
 });
+
+

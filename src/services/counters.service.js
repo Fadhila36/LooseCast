@@ -23,6 +23,34 @@ class CountersService {
     this.counterMetaFile = counterMetaFile;
     this.textDir = textDir;
     this.io = io;
+    this._queues = new Map();
+  }
+
+  /**
+   * Run an asynchronous task sequentially per counter filename
+   * @param {string} filename
+   * @param {() => Promise<any>} task
+   * @returns {Promise<any>}
+   * @private
+   */
+  async _withLock(filename, task) {
+    const key = String(filename);
+    const prev = this._queues.get(key) || Promise.resolve();
+    let release;
+    const next = new Promise((resolve) => {
+      release = resolve;
+    });
+    this._queues.set(key, next);
+
+    try {
+      await prev;
+      return await task();
+    } finally {
+      release();
+      if (this._queues.get(key) === next) {
+        this._queues.delete(key);
+      }
+    }
   }
 
   /**
@@ -54,12 +82,10 @@ class CountersService {
   }
 
   /**
-   * Write raw text value of a counter file and broadcast update
-   * @param {string} filename
-   * @param {string|number} value
-   * @returns {Promise<boolean>}
+   * Internal text write and broadcast without lock
+   * @private
    */
-  async setCounterValue(filename, value) {
+  async _setCounterValueInternal(filename, value) {
     const targetPath = resolveSafePath(this.textDir, filename);
     if (!targetPath) return false;
     const strVal = String(value ?? '0');
@@ -71,24 +97,37 @@ class CountersService {
   }
 
   /**
+   * Write raw text value of a counter file and broadcast update
+   * @param {string} filename
+   * @param {string|number} value
+   * @returns {Promise<boolean>}
+   */
+  async setCounterValue(filename, value) {
+    return await this._withLock(filename, () => this._setCounterValueInternal(filename, value));
+  }
+
+  /**
    * Execute an atomic operation on a counter (+1, -1, reset, set)
+   * Serialized per filename to prevent race conditions during concurrent mutations.
    * @param {string} filename - Target counter text file
    * @param {'inc'|'dec'|'reset'|'set'} op - Operation type
    * @param {number|string} [val] - Value for 'set' operation
    * @returns {Promise<{ ok: boolean, filename: string, value: number }>}
    */
   async executeCounterOp(filename, op = 'inc', val = null) {
-    const curValStr = await this.getCounterValue(filename);
-    let cur = parseInt(curValStr, 10);
-    if (isNaN(cur)) cur = 0;
+    return await this._withLock(filename, async () => {
+      const curValStr = await this.getCounterValue(filename);
+      let cur = parseInt(curValStr, 10);
+      if (isNaN(cur)) cur = 0;
 
-    if (op === 'inc') cur += 1;
-    else if (op === 'dec') cur = Math.max(0, cur - 1);
-    else if (op === 'reset') cur = 0;
-    else if (op === 'set' && val !== null) cur = parseInt(val, 10) || 0;
+      if (op === 'inc') cur += 1;
+      else if (op === 'dec') cur = Math.max(0, cur - 1);
+      else if (op === 'reset') cur = 0;
+      else if (op === 'set' && val !== null) cur = parseInt(val, 10) || 0;
 
-    await this.setCounterValue(filename, cur);
-    return { ok: true, filename, value: cur };
+      await this._setCounterValueInternal(filename, cur);
+      return { ok: true, filename, value: cur };
+    });
   }
 
   /**

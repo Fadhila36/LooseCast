@@ -201,6 +201,10 @@ app.get('/customdeck', (req, res) => res.sendFile(path.join(APP_PATH, 'public', 
 // Stats & Network info
 app.get('/api/stats', async (req, res) => res.json(await loadStatsData()));
 app.get('/api/local-ip', (req, res) => res.json({ ip: getLocalIPv4(), port: server.address()?.port || DEFAULT_SERVER_PORT }));
+app.get('/api/version', (req, res) => {
+  const pkg = require('./package.json');
+  res.json({ version: pkg.version || '0.0.1' });
+});
 
 // Media endpoints
 app.get('/api/media', mediaController.listMedia);

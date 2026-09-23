@@ -297,6 +297,13 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(getRes.body.assetsDir, customPath);
   });
 
+  it('GET /api/version harus mengembalikan versi dinamis dari package.json', async () => {
+    const pkg = require('../package.json');
+    const res = await request('GET', '/api/version');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.version, pkg.version);
+  });
+
   it('server harus memiliki tepat 1 error listener dan tidak menduplikasi listener saat port fallback (REL-03)', () => {
     const errorListenersBefore = appServer.listenerCount('error');
     assert.strictEqual(errorListenersBefore, 1);

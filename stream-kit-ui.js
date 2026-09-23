@@ -388,6 +388,7 @@ const StreamKitUI = (() => {
   let _hubState = {
     ip: '127.0.0.1',
     port: 3000,
+    version: '0.0.1',
     activeTab: 'settings',
     config: {},
     stats: { totalTriggers: 0 },
@@ -401,15 +402,17 @@ const StreamKitUI = (() => {
 
   async function loadHubData() {
     try {
-      const [ipRes, statsRes, mediaRes, obsRes] = await Promise.all([
+      const [ipRes, statsRes, mediaRes, obsRes, verRes] = await Promise.all([
         fetch('/api/local-ip').then(r => r.json()).catch(() => ({ ip: '127.0.0.1', port: 3000 })),
         fetch('/api/stats').then(r => r.json()).catch(() => ({ totalTriggers: 0 })),
         fetch('/api/media').then(r => r.json()).catch(() => []),
-        fetch('/api/obs/status').then(r => r.json()).catch(() => ({ connected: false }))
+        fetch('/api/obs/status').then(r => r.json()).catch(() => ({ connected: false })),
+        fetch('/api/version').then(r => r.json()).catch(() => ({ version: '0.0.1' }))
       ]);
 
       _hubState.ip = ipRes.ip || '127.0.0.1';
       _hubState.port = ipRes.port || 3000;
+      _hubState.version = verRes.version || '0.0.1';
       _hubState.stats = statsRes;
       _hubState.mediaCount = Array.isArray(mediaRes) ? mediaRes.length : 0;
       let totalBytes = 0;
@@ -562,7 +565,7 @@ const StreamKitUI = (() => {
               <div style="font-size:0.68rem;color:var(--tx3);margin-top:3px;">Meme Overlay, Smart Deck & OBS Controller Suite</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <span class="mono" style="font-size:0.72rem;background:rgba(255,255,255,0.05);border:1px solid var(--bd2);padding:4px 8px;border-radius:6px;color:var(--tx2);">v0.0.1</span>
+              <span class="mono" style="font-size:0.72rem;background:rgba(255,255,255,0.05);border:1px solid var(--bd2);padding:4px 8px;border-radius:6px;color:var(--tx2);">v${_hubState.version || '0.0.1'}</span>
               <button onclick="StreamKitUI.checkForUpdates(this)" id="hub-check-update-btn" class="hub-action-btn">
                 <span class="hub-btn-icon">${ICONS.refresh}</span> <span>${t('about_check_update_btn', 'Periksa Pembaruan')}</span>
               </button>
@@ -858,14 +861,15 @@ const StreamKitUI = (() => {
         headers: { 'Accept': 'application/vnd.github.v3+json' },
       }).catch(() => null);
 
+      const currentVer = _hubState.version || '0.0.1';
       let isLatest = true;
-      let latestTag = 'v0.0.1';
+      let latestTag = `v${currentVer}`;
 
       if (res && res.ok) {
         const release = await res.json();
-        latestTag = release.tag_name || release.name || 'v0.0.1';
-        const currentVer = '0.0.1';
-        if (latestTag.replace(/^v/, '') !== currentVer && !latestTag.includes(currentVer)) {
+        latestTag = release.tag_name || release.name || `v${currentVer}`;
+        const cleanLatest = latestTag.replace(/^v/, '');
+        if (cleanLatest !== currentVer && !latestTag.includes(currentVer)) {
           isLatest = false;
         }
       }
@@ -876,7 +880,8 @@ const StreamKitUI = (() => {
         showToast(`${t('about_update_available', 'Versi baru')} ${latestTag} ${t('about_update_available_suffix', 'tersedia!')}`, 'info');
       }
     } catch {
-      showToast(`${t('about_up_to_date', 'Tomatosuki Stream Kit AIO sudah menggunakan versi terbaru')} (v0.0.1)`, 'success');
+      const currentVer = _hubState.version || '0.0.1';
+      showToast(`${t('about_up_to_date', 'Tomatosuki Stream Kit AIO sudah menggunakan versi terbaru')} (v${currentVer})`, 'success');
     } finally {
       setTimeout(() => {
         if (btn) {

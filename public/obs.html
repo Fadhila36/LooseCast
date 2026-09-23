@@ -127,7 +127,7 @@ const IN ={fade:'fadeIn',pop:'popIn','slide-up':'slideUpIn','slide-down':'slideD
 const OUT={fade:'fadeOut',pop:'popOut','slide-up':'slideUpOut','slide-down':'slideDnOut','slide-left':'slideLOut','slide-right':'slideROut','zoom-rotate':'zoomRotOut',flip:'flipOut'};
 
 let hideTimer=null, hiding=false, queued=null, curData=null;
-let chromaRAF=null;
+let chromaRAF=null, chromaInitTimer=null;
 let masterVolume = 1;
 const activeSoundboardAudios = new Set();
 
@@ -285,6 +285,7 @@ function startChroma(data, onReady){
 
   const tryStart = () => {
     if(mv.videoWidth && mv.videoHeight){
+      chromaInitTimer = null;
       mc.width = mv.videoWidth;
       mc.height = mv.videoHeight;
       mc.style.display = 'block';
@@ -292,13 +293,14 @@ function startChroma(data, onReady){
       chromaFrame(tr,tg,tb,sens,blend);
       if(onReady) onReady();
     } else {
-      setTimeout(tryStart, 30);
+      chromaInitTimer = setTimeout(tryStart, 30);
     }
   };
   tryStart();
 }
 
 function stopChroma(){
+  if(chromaInitTimer){ clearTimeout(chromaInitTimer); chromaInitTimer=null; }
   if(chromaRAF){ cancelAnimationFrame(chromaRAF); chromaRAF=null; }
   mc.style.display='none';
 }

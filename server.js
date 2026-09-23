@@ -168,6 +168,21 @@ const upload = multer({
   },
 });
 
+const os = require('os');
+const restoreUpload = multer({
+  dest: os.tmpdir(),
+  limits: { fileSize: 100 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.zip') {
+      return cb(null, true);
+    }
+    const err = new Error('File restore harus berupa arsip .zip yang valid');
+    err.status = 400;
+    cb(err);
+  },
+});
+
 // Middlewares
 app.use(express.json({ limit: '50mb' }));
 
@@ -364,7 +379,7 @@ app.post('/api/fx', (req, res) => {
 
 // Backup & Restore endpoints
 app.get('/api/backup', backupController.exportBackup);
-app.post('/api/restore', upload.single('backup'), backupController.restoreBackup);
+app.post('/api/restore', restoreUpload.single('backup'), backupController.restoreBackup);
 
 // MyInstants integration endpoints
 app.get('/api/myinstants/search', myInstantsController.searchSounds);

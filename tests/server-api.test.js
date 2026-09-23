@@ -234,4 +234,44 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(res.body.ok, false);
     assert.match(res.body.error, /Domain download tidak diizinkan/i);
   });
+
+  it('POST /api/restore harus menolak file selain zip', async () => {
+    const res = await uploadFile('/api/restore', 'backup', 'backup.txt', Buffer.from('not a zip'));
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.body.ok, false);
+    assert.match(res.body.error, /harus berupa arsip .zip/i);
+  });
+
+  it('POST /api/restore harus menolak zip yang berisi JSON rusak', async () => {
+    const archiver = require('archiver');
+    const chunks = [];
+    const archive = archiver('zip');
+    archive.on('data', (c) => chunks.push(c));
+    archive.append('{ invalid json structure', { name: 'counters.json' });
+    archive.finalize();
+    await new Promise((resolve) => archive.on('end', resolve));
+    const zipBuf = Buffer.concat(chunks);
+
+    const res = await uploadFile('/api/restore', 'backup', 'corrupt.zip', zipBuf);
+    assert.strictEqual(res.status, 500);
+    assert.strictEqual(res.body.ok, false);
+    assert.match(res.body.error, /rusak atau format JSON tidak valid/i);
+  });
+
+  it('POST /api/restore harus berhasil merestore file JSON valid dari zip', async () => {
+    const archiver = require('archiver');
+    const chunks = [];
+    const archive = archiver('zip');
+    archive.on('data', (c) => chunks.push(c));
+    archive.append(JSON.stringify({ testCounter: 42 }), { name: 'counters.json' });
+    archive.finalize();
+    await new Promise((resolve) => archive.on('end', resolve));
+    const zipBuf = Buffer.concat(chunks);
+
+    const res = await uploadFile('/api/restore', 'backup', 'valid.zip', zipBuf);
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.ok, true);
+    assert.ok(res.body.restoredFiles.includes('counters.json'));
+  });
 });
+

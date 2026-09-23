@@ -4,6 +4,8 @@
  * @module controllers/backup.controller
  */
 
+const fs = require('fs');
+const fsPromises = require('fs').promises;
 const logger = require('../utils/logger');
 const MODULE_NAME = 'backup-controller';
 
@@ -47,6 +49,12 @@ function createBackupController({ backupService }) {
     } catch (err) {
       logger.error(MODULE_NAME, 'Failed restoring backup', err);
       res.status(500).json({ ok: false, error: err.message });
+    } finally {
+      if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+        try {
+          await fsPromises.unlink(req.file.path);
+        } catch {}
+      }
     }
   }
 

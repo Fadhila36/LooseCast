@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const TEST_BASE = path.resolve(__dirname, 'temp_test_server');
 process.env.USER_DATA_DIR = TEST_BASE;
-process.env.PORT = '3099';
+process.env.PORT = '3098';
 
 describe('Server API Endpoints Integration Test', () => {
   let appServer;
@@ -31,13 +31,17 @@ describe('Server API Endpoints Integration Test', () => {
     }
   });
 
+  function getActivePort() {
+    return (appServer && appServer.address()) ? appServer.address().port : 3098;
+  }
+
   function request(method, pathUrl, body = null) {
     return new Promise((resolve, reject) => {
       const payload = body ? JSON.stringify(body) : null;
       const req = http.request(
         {
           hostname: '127.0.0.1',
-          port: 3099,
+          port: getActivePort(),
           path: pathUrl,
           method,
           headers: payload
@@ -75,7 +79,7 @@ describe('Server API Endpoints Integration Test', () => {
       const req = http.request(
         {
           hostname: '127.0.0.1',
-          port: 3099,
+          port: getActivePort(),
           path: pathUrl,
           method: 'POST',
           headers: {

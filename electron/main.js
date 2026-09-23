@@ -114,6 +114,7 @@ function startServer() {
     if (msg && msg.type === 'server-started' && msg.port) {
       activeServerPort = msg.port;
       log(`[server] Active port synchronized: ${activeServerPort}`);
+      rebuildTrayMenu();
     }
   });
   serverProcess.on('exit', code => log(`Server exited: ${code}`));
@@ -194,7 +195,8 @@ function createWindow() {
     if (code !== -3) { // -3 = aborted (intentional), skip retry
       setTimeout(() => {
         log('Retrying loadURL after failure...');
-        mainWindow.loadURL(`http://127.0.0.1:${PORT}/`).catch(err => {
+        const portToUse = activeServerPort || PORT;
+        mainWindow.loadURL(`http://127.0.0.1:${portToUse}/`).catch(err => {
           log(`Retry loadURL error: ${err.message}`);
         });
       }, 2000);
@@ -234,16 +236,17 @@ function createTray() {
 function rebuildTrayMenu() {
   if (!tray) return;
   const ip = getLocalIPv4();
+  const currentPort = activeServerPort || PORT;
   const scLabel = shortcutsEnabled ? '⌨ Shortcut: ON  — Klik untuk matikan' : '⌨ Shortcut: OFF — Klik untuk aktifkan';
   const menu = Menu.buildFromTemplate([
     { label: 'Tomatosuki Stream Kit AIO', enabled: false },
     { type: 'separator' },
     { label: '🏠 Buka Dashboard', click: () => { if (mainWindow) { mainWindow.show(); mainWindow.focus(); } else createWindow(); } },
-    { label: '🎮 Buka Deck View', click: () => shell.openExternal(`http://${ip}:${PORT}/deck.html`) },
+    { label: '🎮 Buka Deck View', click: () => shell.openExternal(`http://${ip}:${currentPort}/deck.html`) },
     { type: 'separator' },
     { label: scLabel, click: () => toggleShortcutsFromTray() },
     { type: 'separator' },
-    { label: `🌐 ${ip}:${PORT}`, enabled: false },
+    { label: `🌐 ${ip}:${currentPort}`, enabled: false },
     { type: 'separator' },
     { label: '🔄 Periksa Pembaruan...', click: () => checkForUpdates(true) },
     { label: '📋 Lihat Log', click: () => shell.openPath(LOG_FILE) },

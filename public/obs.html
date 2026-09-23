@@ -152,6 +152,9 @@ socket.on('master-volume', data => {
       const v = (curData && curData.volume ? curData.volume / 100 : 0.8) * masterVolume;
       ma.volume = Math.max(0, Math.min(1, v));
     }
+    activeSoundboardAudios.forEach(track => {
+      track.volume = Math.max(0, Math.min(1, (track._baseVol || 0.8) * masterVolume));
+    });
   }
 });
 
@@ -339,6 +342,7 @@ function doShow(data){
   // Soundboard Multi-track Audio Mode
   if(type === 'audio' && (multiPlay || isSoundboard)){
     const track = new Audio(url);
+    track._baseVol = baseVol;
     track.volume = effectiveVol;
     activeSoundboardAudios.add(track);
     track.onended = () => { activeSoundboardAudios.delete(track); };

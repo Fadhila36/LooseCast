@@ -333,6 +333,18 @@ class OBSController {
   }
 
   /**
+   * Set mute state of a specific audio input
+   * @param {string} inputName - Name of audio input
+   * @param {boolean} inputMuted - Desired mute state
+   * @returns {Promise<{ success: boolean, inputName: string, inputMuted: boolean }>}
+   */
+  async setInputMute(inputName, inputMuted) {
+    if (!this.isConnected) throw new Error('OBS tidak terhubung');
+    await this.obs.call('SetInputMute', { inputName, inputMuted: Boolean(inputMuted) });
+    return { success: true, inputName, inputMuted: Boolean(inputMuted) };
+  }
+
+  /**
    * Toggle mute state of a specific audio input
    * @param {string} inputName - Name of audio input
    * @returns {Promise<{ success: boolean, inputName: string, inputMuted: boolean }>}

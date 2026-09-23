@@ -201,11 +201,9 @@ class MacroRunner {
           const inputName = step.inputName || step.name;
           if (inputName) {
             if (step.action === 'mute' || step.muted === true) {
-              await this.obsController.obs.call('SetInputMute', { inputName, inputMuted: true });
-              return { success: true, inputName, inputMuted: true };
+              return await this.obsController.setInputMute(inputName, true);
             } else if (step.action === 'unmute' || step.muted === false) {
-              await this.obsController.obs.call('SetInputMute', { inputName, inputMuted: false });
-              return { success: true, inputName, inputMuted: false };
+              return await this.obsController.setInputMute(inputName, false);
             } else {
               return await this.obsController.toggleInputMute(inputName);
             }

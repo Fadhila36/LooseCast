@@ -35,6 +35,7 @@ const StreamKitUI = (() => {
     refresh: `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>`,
     external: `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
     chevronRight: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`,
+    arrowRight: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
     code: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
     gamepad: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>`,
     bolt: `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
@@ -789,7 +790,8 @@ const StreamKitUI = (() => {
       const r = await fetch('/api/restore', { method: 'POST', body: form });
       const d = await r.json();
       if (d.ok) {
-        if (st) { st.style.color = '#22c55e'; st.textContent = `✅ Berhasil me-restore ${d.restoredFiles} file dan ${d.restoredConfigs} konfigurasi!`; }
+        const count = Array.isArray(d.restoredFiles) ? d.restoredFiles.length : (typeof d.restoredCount === 'number' ? d.restoredCount : 0);
+        if (st) { st.style.color = '#22c55e'; st.textContent = `✅ Berhasil me-restore ${count} file database!`; }
         setTimeout(() => location.reload(), 1500);
       } else {
         if (st) { st.style.color = '#ef4444'; st.textContent = '❌ Restore gagal: ' + (d.error || 'Unknown error'); }

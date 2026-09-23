@@ -126,7 +126,8 @@ class MediaService {
     }
 
     // Cleanup cached thumbnail if exists
-    const thumbPath = resolveSafePath(this.thumbDir, `${filename}.jpg`);
+    const thumbName = `${sanitizeFilename(filename)}.jpg`;
+    const thumbPath = resolveSafePath(this.thumbDir, thumbName);
     if (thumbPath) {
       try {
         await fsPromises.unlink(thumbPath);

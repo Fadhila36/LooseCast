@@ -133,4 +133,32 @@ describe('MacroRunner Unit Tests', () => {
     assert.strictEqual(res.results[0].success, false);
     assert.ok(res.results[0].error.includes("Step type 'non_existent_action' tidak dikenal"));
   });
+
+  it('harus menolak eksekusi paralel dari macro yang sama (BUG-MACRO-02)', async () => {
+    const slowMacro = {
+      id: 'macro_slow_test',
+      name: 'Slow Macro',
+      steps: [
+        { type: 'delay', ms: 50 },
+      ],
+    };
+
+    const p1 = runner.executeMacro(slowMacro);
+    let p2Error = null;
+
+    try {
+      await runner.executeMacro(slowMacro);
+    } catch (err) {
+      p2Error = err;
+    }
+
+    const r1 = await p1;
+    assert.strictEqual(r1.success, true);
+    assert.ok(p2Error, 'Eksekusi kedua yang bersamaan harus dilempar sebagai error');
+    assert.ok(p2Error.message.includes("sedang berjalan"), 'Pesan error harus menyatakan macro sedang berjalan');
+
+    // Pastikan setelah selesai dieksekusi, macro dapat dijalankan kembali
+    const r3 = await runner.executeMacro(slowMacro);
+    assert.strictEqual(r3.success, true, 'Macro harus bisa dijalankan ulang setelah selesai');
+  });
 });

@@ -24,6 +24,7 @@ class MacroRunner {
     this.counterHandler = counterHandler;
     this.macroFile = path.join(baseDir, 'macros.json');
     this.macros = [];
+    this._runningMacros = new Set();
   }
 
   /**
@@ -121,44 +122,53 @@ class MacroRunner {
 
     if (!macro) throw new Error('Macro tidak valid');
 
-    const results = [];
-    if (this.io) {
-      this.io.emit('macro-running', { id: macro.id, name: macro.name });
+    if (this._runningMacros.has(macro.id)) {
+      throw new Error(`Macro '${macro.name || macro.id}' sedang berjalan. Tunggu hingga selesai.`);
     }
 
-    logger.info(MODULE_NAME, `Executing macro: "${macro.name}" (${macro.id}) with ${(macro.steps || []).length} steps`);
-
-    for (let i = 0; i < (macro.steps || []).length; i++) {
-      const step = macro.steps[i];
-      try {
-        const res = await this._executeStep(step);
-        const isSkipped = Boolean(res && (res.skipped === true || res.unknown === true));
-        results.push({
-          step: i,
-          type: step.type,
-          success: !isSkipped,
-          result: res,
-          error: isSkipped ? (res.reason || `Step type '${step.type}' tidak didukung atau dilewati`) : undefined,
-        });
-      } catch (err) {
-        logger.warn(MODULE_NAME, `Step ${i} (${step?.type}) error: ${err.message}`);
-        results.push({ step: i, type: step?.type, success: false, error: err.message });
+    this._runningMacros.add(macro.id);
+    try {
+      const results = [];
+      if (this.io) {
+        this.io.emit('macro-running', { id: macro.id, name: macro.name });
       }
+
+      logger.info(MODULE_NAME, `Executing macro: "${macro.name}" (${macro.id}) with ${(macro.steps || []).length} steps`);
+
+      for (let i = 0; i < (macro.steps || []).length; i++) {
+        const step = macro.steps[i];
+        try {
+          const res = await this._executeStep(step);
+          const isSkipped = Boolean(res && (res.skipped === true || res.unknown === true));
+          results.push({
+            step: i,
+            type: step.type,
+            success: !isSkipped,
+            result: res,
+            error: isSkipped ? (res.reason || `Step type '${step.type}' tidak didukung atau dilewati`) : undefined,
+          });
+        } catch (err) {
+          logger.warn(MODULE_NAME, `Step ${i} (${step?.type}) error: ${err.message}`);
+          results.push({ step: i, type: step?.type, success: false, error: err.message });
+        }
+      }
+
+      const hasErrors = results.some((r) => !r.success);
+
+      if (this.io) {
+        this.io.emit('macro-completed', { id: macro.id, name: macro.name, success: !hasErrors, results });
+      }
+
+      return {
+        success: !hasErrors,
+        macroId: macro.id,
+        name: macro.name,
+        stepsExecuted: results.length,
+        results,
+      };
+    } finally {
+      this._runningMacros.delete(macro.id);
     }
-
-    const hasErrors = results.some((r) => !r.success);
-
-    if (this.io) {
-      this.io.emit('macro-completed', { id: macro.id, name: macro.name, success: !hasErrors, results });
-    }
-
-    return {
-      success: !hasErrors,
-      macroId: macro.id,
-      name: macro.name,
-      stepsExecuted: results.length,
-      results,
-    };
   }
 
   /**

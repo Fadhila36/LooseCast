@@ -26,7 +26,16 @@ function loadConfig() {
   try { return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')); } catch { return {}; }
 }
 function saveConfig(cfg) {
-  try { fs.writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 2)); } catch {}
+  const tmpFile = `${CONFIG_FILE}.tmp.${Date.now()}`;
+  try {
+    fs.writeFileSync(tmpFile, JSON.stringify(cfg, null, 2), 'utf8');
+    fs.renameSync(tmpFile, CONFIG_FILE);
+  } catch (e) {
+    log(`[config] Gagal menyimpan config secara atomic: ${e.message}`);
+    try {
+      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+    } catch {}
+  }
 }
 
 function getAssetsDir() {

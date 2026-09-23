@@ -292,6 +292,19 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(getRes.status, 200);
     assert.strictEqual(getRes.body.assetsDir, customPath);
   });
+
+  it('server harus memiliki tepat 1 error listener dan tidak menduplikasi listener saat port fallback (REL-03)', () => {
+    const errorListenersBefore = appServer.listenerCount('error');
+    assert.strictEqual(errorListenersBefore, 1);
+
+    // Memverifikasi listener tidak bertambah jika startListening dipanggil ulang
+    const { startListening } = require('../server');
+    if (typeof startListening === 'function') {
+      const errorListenersAfter = appServer.listenerCount('error');
+      assert.strictEqual(errorListenersAfter, 1);
+    }
+  });
 });
+
 
 

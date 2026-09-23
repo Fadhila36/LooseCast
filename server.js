@@ -431,8 +431,32 @@ io.on('connection', (socket) => {
 
 // Server bootstrap with dynamic port fallback
 const REQUESTED_PORT = parseInt(process.env.PORT, 10) || DEFAULT_SERVER_PORT;
+let currentPortToTry = REQUESTED_PORT;
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    if (server.listening) {
+      try {
+        server.close();
+      } catch {}
+    }
+
+    if (currentPortToTry !== FALLBACK_SERVER_PORT) {
+      logger.warn(MODULE_NAME, `Port ${currentPortToTry} in use, attempting fallback port ${FALLBACK_SERVER_PORT}...`);
+      currentPortToTry = FALLBACK_SERVER_PORT;
+      startListening(FALLBACK_SERVER_PORT);
+    } else {
+      logger.warn(MODULE_NAME, `Fallback port ${FALLBACK_SERVER_PORT} in use, attempting ephemeral dynamic port...`);
+      currentPortToTry = 0;
+      startListening(0);
+    }
+  } else {
+    logger.error(MODULE_NAME, 'Server error', err);
+  }
+});
 
 function startListening(portToTry) {
+  currentPortToTry = portToTry;
   server.listen(portToTry, () => {
     const activePort = server.address().port;
     logger.info(MODULE_NAME, `Tomatosuki Server running on port ${activePort} | media: ${MEDIA_DIR}`);
@@ -440,21 +464,6 @@ function startListening(portToTry) {
     // Notify Electron parent process via IPC if launched via child_process.fork()
     if (typeof process.send === 'function') {
       process.send({ type: 'server-started', port: activePort });
-    }
-  });
-
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      logger.warn(MODULE_NAME, `Port ${portToTry} in use, attempting fallback port ${FALLBACK_SERVER_PORT}...`);
-      server.close();
-      if (portToTry !== FALLBACK_SERVER_PORT) {
-        startListening(FALLBACK_SERVER_PORT);
-      } else {
-        // Ephemeral dynamic port allocation
-        startListening(0);
-      }
-    } else {
-      logger.error(MODULE_NAME, 'Server error', err);
     }
   });
 }

@@ -2215,6 +2215,9 @@ function toggleFavoriteMeme(name) {
 }
 
 // Socket listeners
+socket.on('media-list-updated', () => {
+  loadFiles();
+});
 socket.on('macros-updated', (list) => {
   if (list) { macros = list; render(); }
 });

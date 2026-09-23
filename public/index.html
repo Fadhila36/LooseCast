@@ -242,6 +242,12 @@
 <script>
 const socket = io();
 
+socket.on('media-list-updated', () => {
+  if (typeof StreamKitUI !== 'undefined' && typeof StreamKitUI.loadHubData === 'function') {
+    StreamKitUI.loadHubData();
+  }
+});
+
 // Dengarkan toggle dari tray Electron (via IPC)
 const electronBridge = window.streamKitElectron || window.kskElectron;
 if (electronBridge && electronBridge.onShortcutStateChanged) {

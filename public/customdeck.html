@@ -522,6 +522,9 @@ let cdReady=false, cropReady=false, thumbDataUrl=null, thumbChanged=false;
 
 socket.on('connect',    ()=>{ document.querySelectorAll('.status-pill .sdot').forEach(d=>d.classList.add('on')); });
 socket.on('disconnect', ()=>{ document.querySelectorAll('.status-pill .sdot').forEach(d=>d.classList.remove('on')); });
+socket.on('media-list-updated', () => {
+  loadFiles();
+});
 
 // ─── OBS DROPDOWN ───────────────────────────────────────
 let obsUrl = location.origin+'/obs.html';

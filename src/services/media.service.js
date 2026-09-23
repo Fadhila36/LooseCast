@@ -140,7 +140,22 @@ class MediaService {
     await this.saveMeta(meta);
 
     logger.info(MODULE_NAME, `Deleted media "${filename}"`);
+
+    if (this.io) {
+      this.io.emit('media-list-updated', { action: 'delete', filename });
+    }
+
     return true;
+  }
+
+  /**
+   * Broadcast upload notification to all connected clients
+   * @param {string[]} [files]
+   */
+  notifyMediaUploaded(files = []) {
+    if (this.io) {
+      this.io.emit('media-list-updated', { action: 'upload', files });
+    }
   }
 
   /**

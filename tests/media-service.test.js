@@ -74,4 +74,32 @@ describe('MediaService Unit Tests', () => {
     assert.equal(result, true);
     assert.equal(fs.existsSync(path.join(mediaDir, 'test_sound.mp3')), false);
   });
+
+  it('harus memancarkan event media-list-updated saat deleteMedia dan notifyMediaUploaded (BUG-DECK-01)', async () => {
+    const emitted = [];
+    const mockIo = {
+      emit: (event, payload) => emitted.push({ event, payload }),
+    };
+
+    const serviceWithIo = new MediaService({
+      mediaDir,
+      thumbDir,
+      metaFile,
+      io: mockIo,
+    });
+
+    // Buat file dummy untuk ditest delete
+    await fsPromises.writeFile(path.join(mediaDir, 'temp_delete.mp3'), 'audio-data');
+    await serviceWithIo.deleteMedia('temp_delete.mp3');
+
+    const deleteEmit = emitted.find((e) => e.event === 'media-list-updated' && e.payload.action === 'delete');
+    assert.ok(deleteEmit, 'Event media-list-updated delete harus dipancarkan');
+    assert.strictEqual(deleteEmit.payload.filename, 'temp_delete.mp3');
+
+    // Test notifyMediaUploaded
+    serviceWithIo.notifyMediaUploaded(['new_meme.png']);
+    const uploadEmit = emitted.find((e) => e.event === 'media-list-updated' && e.payload.action === 'upload');
+    assert.ok(uploadEmit, 'Event media-list-updated upload harus dipancarkan');
+    assert.deepStrictEqual(uploadEmit.payload.files, ['new_meme.png']);
+  });
 });

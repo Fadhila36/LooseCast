@@ -132,19 +132,28 @@ class MacroRunner {
       const step = macro.steps[i];
       try {
         const res = await this._executeStep(step);
-        results.push({ step: i, type: step.type, success: true, result: res });
+        const isSkipped = Boolean(res && (res.skipped === true || res.unknown === true));
+        results.push({
+          step: i,
+          type: step.type,
+          success: !isSkipped,
+          result: res,
+          error: isSkipped ? (res.reason || `Step type '${step.type}' tidak didukung atau dilewati`) : undefined,
+        });
       } catch (err) {
         logger.warn(MODULE_NAME, `Step ${i} (${step?.type}) error: ${err.message}`);
         results.push({ step: i, type: step?.type, success: false, error: err.message });
       }
     }
 
+    const hasErrors = results.some((r) => !r.success);
+
     if (this.io) {
-      this.io.emit('macro-completed', { id: macro.id, name: macro.name, results });
+      this.io.emit('macro-completed', { id: macro.id, name: macro.name, success: !hasErrors, results });
     }
 
     return {
-      success: true,
+      success: !hasErrors,
       macroId: macro.id,
       name: macro.name,
       stepsExecuted: results.length,
@@ -252,7 +261,7 @@ class MacroRunner {
       }
 
       default:
-        return { unknown: true, type: step.type };
+        return { unknown: true, type: step.type, reason: `Step type '${step.type}' tidak dikenal` };
     }
   }
 }

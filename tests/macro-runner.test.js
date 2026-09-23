@@ -99,4 +99,38 @@ describe('MacroRunner Unit Tests', () => {
     const afterDelete = await runner.getMacros();
     assert.strictEqual(afterDelete.length, 0);
   });
+
+  it('harus menandai success: false jika step di-skip karena dependensi tidak tersedia (BUG-MACRO-01)', async () => {
+    // obsRunner tanpa koneksi OBS
+    const disconnectedRunner = new MacroRunner(TEST_DIR, mockIo, { isConnected: false });
+    const macroWithObs = {
+      id: 'macro_offline_obs',
+      name: 'Offline OBS Test',
+      steps: [
+        { type: 'delay', ms: 10 },
+        { type: 'obs_scene', sceneName: 'Gameplay' },
+      ],
+    };
+
+    const res = await disconnectedRunner.executeMacro(macroWithObs);
+    assert.strictEqual(res.success, false, 'Macro harus berstatus success: false jika ada step yang ter-skip');
+    assert.strictEqual(res.results[0].success, true, 'Step delay berhasil');
+    assert.strictEqual(res.results[1].success, false, 'Step obs_scene harus gagal/skipped');
+    assert.ok(res.results[1].error.includes('OBS not connected'));
+  });
+
+  it('harus menandai success: false dengan error jelas untuk step type asing/tidak valid', async () => {
+    const macroWithInvalidStep = {
+      id: 'macro_invalid_type',
+      name: 'Invalid Type Test',
+      steps: [
+        { type: 'non_existent_action', param: 123 },
+      ],
+    };
+
+    const res = await runner.executeMacro(macroWithInvalidStep);
+    assert.strictEqual(res.success, false);
+    assert.strictEqual(res.results[0].success, false);
+    assert.ok(res.results[0].error.includes("Step type 'non_existent_action' tidak dikenal"));
+  });
 });

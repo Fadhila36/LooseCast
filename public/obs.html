@@ -388,6 +388,7 @@ function doShow(data){
     ma.onended=()=>{ if(!hiding) doHide(outAnim, animOutSpeed); };
     ma.play().catch((err)=>{
       console.warn('[OBS Overlay] Audio play promise rejected:', err);
+      if(err && err.name === 'AbortError') return;
       if(!hiding) doHide(outAnim, animOutSpeed);
     });
     mw.style.display='none'; return;

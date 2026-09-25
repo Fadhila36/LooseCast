@@ -64,11 +64,12 @@ function getTextDir() {
 }
 
 // File logging
-const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}`;
   console.log(line);
-  logStream.write(line + '\n');
+  try {
+    fs.appendFileSync(LOG_FILE, line + '\n');
+  } catch {}
 }
 
 // Runtime state
@@ -614,7 +615,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', e => e.preventDefault());
-app.on('before-quit', () => { killServerProcess(); logStream.end(); });
+app.on('before-quit', () => { killServerProcess(); });
 app.on('will-quit', () => { 
   killServerProcess();
   globalShortcut.unregisterAll(); 

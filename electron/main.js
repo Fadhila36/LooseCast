@@ -66,10 +66,8 @@ function getTextDir() {
 // File logging
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}`;
-  console.log(line);
-  try {
-    fs.appendFileSync(LOG_FILE, line + '\n');
-  } catch {}
+  try { console.log(line); } catch {}
+  try { fs.appendFileSync(LOG_FILE, line + '\n'); } catch {}
 }
 
 // Runtime state
@@ -509,7 +507,11 @@ function setupAutoUpdater() {
     }).then((result) => {
       if (result.response === 0) {
         log('[updater] Pengguna memilih pasang sekarang. Melakukan restart...');
-        autoUpdater.quitAndInstall(false, true);
+        killServerProcess();
+        app.isQuitting = true;
+        setTimeout(() => {
+          autoUpdater.quitAndInstall(false, true);
+        }, 500);
       } else {
         log('[updater] Pengguna memilih menunda pemasangan hingga aplikasi ditutup.');
       }

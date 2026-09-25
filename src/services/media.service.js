@@ -201,6 +201,12 @@ class MediaService {
       throw new Error('ffmpeg not available');
     }
 
+    if (!fs.existsSync(this.thumbDir)) {
+      try {
+        fs.mkdirSync(this.thumbDir, { recursive: true });
+      } catch {}
+    }
+
     return new Promise((resolve, reject) => {
       const args = [
         '-y',
@@ -212,11 +218,14 @@ class MediaService {
         thumbPath,
       ];
 
+      logger.info(MODULE_NAME, `Spawning ffmpeg (${this.ffmpegPath}) to generate thumbnail for "${filename}"`);
+
       execFile(this.ffmpegPath, args, { timeout: 8000 }, (err) => {
         if (err) {
-          logger.warn(MODULE_NAME, `Thumbnail generation failed for "${filename}": ${err.message}`);
+          logger.warn(MODULE_NAME, `FFmpeg thumbnail generation failed for "${filename}": ${err.message}`);
           return reject(new Error('Thumbnail generation failed'));
         }
+        logger.info(MODULE_NAME, `FFmpeg thumbnail created successfully for "${filename}" at "${thumbPath}"`);
         resolve(thumbPath);
       });
     });

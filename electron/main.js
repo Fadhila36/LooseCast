@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, shell, nativeImage, dialog, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, Tray, Menu, shell, nativeImage, dialog, ipcMain, globalShortcut, session } = require('electron');
 const path = require('path');
 const { fork } = require('child_process');
 const os = require('os');
@@ -7,7 +7,23 @@ const { getLocalIPv4 } = require('../src/utils/network');
 
 // Single instance lock
 const gotLock = app.requestSingleInstanceLock();
-if (!gotLock) { app.quit(); process.exit(0); }
+if (!gotLock) {
+  app.quit();
+  process.exit(0);
+}
+
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    if (!mainWindow.isVisible()) mainWindow.show();
+    mainWindow.focus();
+    mainWindow.setAlwaysOnTop(true);
+    setTimeout(() => {
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.setAlwaysOnTop(false);
+    }, 300);
+    log('Second instance detected: brought existing window to foreground');
+  }
+});
 
 // User data paths
 const USER_DATA  = app.getPath('userData');
@@ -57,9 +73,46 @@ function log(msg) {
 
 // Runtime state
 let mainWindow = null;
+let splashWindow = null;
 let tray = null;
 let serverProcess = null;
 const PORT = 3000;
+let shortcutsEnabled = false;
+
+function createSplashWindow() {
+  splashWindow = new BrowserWindow({
+    width: 460,
+    height: 300,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    center: true,
+    resizable: false,
+    skipTaskbar: true,
+    show: false,
+    backgroundColor: '#00000000',
+    icon: path.join(__dirname, '..', 'build', 'icon.png'),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
+  });
+
+  splashWindow.loadFile(path.join(__dirname, '..', 'public', 'splash.html'));
+  splashWindow.once('ready-to-show', () => {
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.show();
+    }
+  });
+}
+
+function dismissSplash() {
+  if (splashWindow && !splashWindow.isDestroyed()) {
+    splashWindow.close();
+    splashWindow = null;
+  }
+}
+
 function killServerProcess() {
   if (serverProcess) {
     try {
@@ -87,7 +140,7 @@ function startServer() {
     ? path.join(process.resourcesPath, 'app.asar.unpacked', 'server.js')
     : path.join(__dirname, '..', 'server.js');
 
-  log(`=== Tomatosuki Stream Kit AIO starting ===`);
+  log(`=== LooseCast starting ===`);
   log(`Version: ${app.getVersion()}`);
   log(`Platform: ${process.platform}`);
   log(`User data: ${USER_DATA}`);
@@ -120,9 +173,16 @@ function startServer() {
 // Window lifecycle
 function createWindow() {
   Menu.setApplicationMenu(null);
+  const cfg = loadConfig();
+  const winBounds = cfg.windowBounds || { width: 1200, height: 720 };
   mainWindow = new BrowserWindow({
-    width: 1200, height: 720, minWidth: 800, minHeight: 560,
-    title: 'Tomatosuki Stream Kit AIO',
+    width: winBounds.width || 1200,
+    height: winBounds.height || 720,
+    x: winBounds.x,
+    y: winBounds.y,
+    minWidth: 800,
+    minHeight: 560,
+    title: 'LooseCast — Local System Casting Stream',
     icon: path.join(__dirname, '..', 'build', 'icon.png'),
     backgroundColor: '#09090d',
 
@@ -133,6 +193,19 @@ function createWindow() {
     },
     show: false,
   });
+
+  let saveBoundsTimer = null;
+  const saveBounds = () => {
+    clearTimeout(saveBoundsTimer);
+    saveBoundsTimer = setTimeout(() => {
+      if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isMaximized() && !mainWindow.isMinimized()) {
+        const b = mainWindow.getBounds();
+        saveConfig({ ...loadConfig(), windowBounds: b });
+      }
+    }, 500);
+  };
+  mainWindow.on('resize', saveBounds);
+  mainWindow.on('move', saveBounds);
 
   const tryLoad = (attempts = 0) => {
     const http = require('http');
@@ -165,22 +238,30 @@ function createWindow() {
     }
   });
 
+  const showMainWindow = () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      if (!mainWindow.isVisible()) mainWindow.show();
+      mainWindow.setAlwaysOnTop(true);
+      mainWindow.focus();
+      setTimeout(() => {
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.setAlwaysOnTop(false);
+      }, 300);
+      log('Main window shown');
+      dismissSplash();
+    }
+  };
+
   // Show window when page actually finishes loading, not just when frame is ready
   mainWindow.webContents.on('did-finish-load', () => {
-    if (mainWindow && !mainWindow.isVisible()) {
-      mainWindow.show();
-      log('Window shown (did-finish-load)');
-    }
+    showMainWindow();
   });
 
   // Fallback: also show on ready-to-show but with a delay to allow loadURL
   mainWindow.once('ready-to-show', () => {
     setTimeout(() => {
-      if (mainWindow && !mainWindow.isVisible()) {
-        mainWindow.show();
-        log('Window shown (ready-to-show fallback)');
-      }
-    }, 3000);
+      showMainWindow();
+    }, 1500);
   });
   mainWindow.on('close', e => { if (!app.isQuitting) { e.preventDefault(); mainWindow.hide(); } });
   mainWindow.on('closed', () => { mainWindow = null; });
@@ -225,7 +306,7 @@ function createTray() {
   }
 
   tray = new Tray(icon);
-  tray.setToolTip('Tomatosuki Stream Kit AIO');
+  tray.setToolTip('LooseCast — Local System Casting Stream');
   tray.on('double-click', () => { if (mainWindow) { mainWindow.show(); mainWindow.focus(); } else createWindow(); });
   rebuildTrayMenu();
 }
@@ -236,7 +317,7 @@ function rebuildTrayMenu() {
   const currentPort = activeServerPort || PORT;
   const scLabel = shortcutsEnabled ? '⌨ Shortcut: ON  — Klik untuk matikan' : '⌨ Shortcut: OFF — Klik untuk aktifkan';
   const menu = Menu.buildFromTemplate([
-    { label: 'Tomatosuki Stream Kit AIO', enabled: false },
+    { label: 'LooseCast', enabled: false },
     { type: 'separator' },
     { label: '🏠 Buka Dashboard', click: () => { if (mainWindow) { mainWindow.show(); mainWindow.focus(); } else createWindow(); } },
     { label: '🎮 Buka Deck View', click: () => shell.openExternal(`http://${ip}:${currentPort}/deck.html`) },
@@ -321,11 +402,6 @@ ipcMain.handle('check-for-updates', () => {
   return { ok: true };
 });
 
-// Second instance guard
-app.on('second-instance', () => {
-  if (mainWindow) { if (!mainWindow.isVisible()) mainWindow.show(); mainWindow.focus(); }
-});
-
 // Auto updater
 const { autoUpdater } = require('electron-updater');
 
@@ -358,6 +434,11 @@ function setupAutoUpdater() {
       }
     }
 
+    if (!isManualCheck) {
+      if (tray) tray.setToolTip(`LooseCast — Versi v${info.version} tersedia`);
+      return;
+    }
+
     const currentVersion = app.getVersion();
     const result = await dialog.showMessageBox(mainWindow || null, {
       type: 'info',
@@ -365,7 +446,7 @@ function setupAutoUpdater() {
       defaultId: 0,
       cancelId: 1,
       title: 'Pembaruan Tersedia',
-      message: `Versi baru Tomatosuki Stream Kit AIO (v${info.version}) telah tersedia!`,
+      message: `Versi baru LooseCast (v${info.version}) telah tersedia!`,
       detail: `Versi saat ini: v${currentVersion}\nVersi terbaru: v${info.version}${releaseDetails}\n\nApakah Anda ingin mengunduh dan memasang pembaruan sekarang?`,
       noLink: true,
     });
@@ -373,13 +454,13 @@ function setupAutoUpdater() {
     if (result.response === 0) {
       log('[updater] Pengguna menyetujui pembaruan. Memulai proses unduh...');
       isDownloadingUpdate = true;
-      if (tray) tray.setToolTip('Tomatosuki Stream Kit AIO — Mengunduh pembaruan...');
+      if (tray) tray.setToolTip('LooseCast — Mengunduh pembaruan...');
       try {
         await autoUpdater.downloadUpdate();
       } catch (err) {
         log(`[updater:err] Gagal mengunduh pembaruan: ${err.message}`);
         isDownloadingUpdate = false;
-        if (tray) tray.setToolTip('Tomatosuki Stream Kit AIO');
+        if (tray) tray.setToolTip('LooseCast');
       }
     } else {
       log('[updater] Pengguna menolak/menunda pembaruan untuk sesi ini.');
@@ -394,7 +475,7 @@ function setupAutoUpdater() {
         buttons: ['OK'],
         title: 'Versi Terbaru',
         message: 'Aplikasi sudah menggunakan versi terbaru.',
-        detail: `Anda saat ini menggunakan Tomatosuki Stream Kit AIO v${app.getVersion()}.`,
+        detail: `Anda saat ini menggunakan LooseCast v${app.getVersion()}.`,
       });
       isManualCheck = false;
     }
@@ -404,19 +485,34 @@ function setupAutoUpdater() {
     const percent = Math.round(progressObj.percent);
     log(`[updater] Unduh pembaruan: ${percent}% (${Math.round(progressObj.bytesPerSecond / 1024)} KB/s)`);
     if (tray) {
-      tray.setToolTip(`Tomatosuki Stream Kit AIO — Mengunduh update (${percent}%)`);
+      tray.setToolTip(`LooseCast — Mengunduh update (${percent}%)`);
     }
   });
 
   autoUpdater.on('update-downloaded', (info) => {
-    log(`[updater] Pembaruan v${info.version} berhasil diunduh. Memulai pemasangan otomatis...`);
+    log(`[updater] Pembaruan v${info.version} berhasil diunduh.`);
     isDownloadingUpdate = false;
-    if (tray) tray.setToolTip('Tomatosuki Stream Kit AIO — Memasang pembaruan...');
+    if (tray) tray.setToolTip('LooseCast — Pembaruan siap dipasang');
 
-    // Pemasangan otomatis tanpa intervensi manual tambahan
-    setTimeout(() => {
-      autoUpdater.quitAndInstall(false, true);
-    }, 1000);
+    dialog.showMessageBox(mainWindow || null, {
+      type: 'question',
+      buttons: ['Pasang & Mulai Ulang Sekarang', 'Pasang Saat Aplikasi Ditutup'],
+      defaultId: 1,
+      cancelId: 1,
+      title: 'Pembaruan Siap Dipasang',
+      message: `Pembaruan LooseCast v${info.version} telah selesai diunduh!`,
+      detail: 'Apakah Anda ingin me-restart LooseCast sekarang untuk menerapkan pembaruan, atau memasangnya nanti saat aplikasi ditutup?',
+      noLink: true,
+    }).then((result) => {
+      if (result.response === 0) {
+        log('[updater] Pengguna memilih pasang sekarang. Melakukan restart...');
+        autoUpdater.quitAndInstall(false, true);
+      } else {
+        log('[updater] Pengguna memilih menunda pemasangan hingga aplikasi ditutup.');
+      }
+    }).catch((err) => {
+      log(`[updater:err] Error menampilkan dialog update: ${err.message}`);
+    });
   });
 
   autoUpdater.on('error', (err) => {
@@ -457,8 +553,53 @@ function checkForUpdates(manual = false) {
   }
 }
 
-// ── APP EVENTS ───────────────────────────────────────────
+function getLocalCSPHosts() {
+  const hosts = new Set(['127.0.0.1', 'localhost']);
+  const nets = os.networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name] || []) {
+      if (net.family === 'IPv4' && !net.internal && !net.address.startsWith('169.254.')) {
+        hosts.add(net.address);
+      }
+    }
+  }
+  return Array.from(hosts);
+}
+
 app.whenReady().then(() => {
+  log(`=== LooseCast Electron Runtime Initialized ===`);
+  log(`App Path: ${app.getAppPath()}`);
+  log(`Packaged: ${app.isPackaged}`);
+  log(`User Data Path: ${USER_DATA}`);
+  log(`Log File: ${LOG_FILE}`);
+
+  if (session && session.defaultSession) {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      const responseHeaders = { ...details.responseHeaders };
+      if (!responseHeaders['access-control-allow-origin'] && !responseHeaders['Access-Control-Allow-Origin']) {
+        responseHeaders['Access-Control-Allow-Origin'] = ['*'];
+      }
+      responseHeaders['Access-Control-Allow-Methods'] = ['GET, POST, OPTIONS'];
+      responseHeaders['Access-Control-Allow-Headers'] = ['*'];
+
+      const localHosts = getLocalCSPHosts();
+      const localHttp = localHosts.map(h => `http://${h}:*`).join(' ');
+      const localWs = localHosts.map(h => `ws://${h}:*`).join(' ');
+      const externalApiHosts = "https://api.myinstants.com https://www.myinstants.com https://api.github.com https://github.com https://objects.githubusercontent.com";
+
+      responseHeaders['Content-Security-Policy'] = [
+        `default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: ${localHttp} ${externalApiHosts}; ` +
+        `connect-src 'self' data: blob: ${localHttp} ${localWs} ${externalApiHosts}; ` +
+        `img-src 'self' data: blob: ${localHttp} https://www.myinstants.com https://avatars.githubusercontent.com; ` +
+        `media-src 'self' data: blob: ${localHttp} https://www.myinstants.com; ` +
+        `font-src 'self' https://fonts.gstatic.com data:; ` +
+        `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;`
+      ];
+      callback({ responseHeaders });
+    });
+  }
+
+  createSplashWindow();
   startServer();
   createWindow();
   createTray();

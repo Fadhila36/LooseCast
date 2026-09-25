@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Tomatosuki OBS Overlay</title>
+<title>LooseCast OBS Overlay</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;background:transparent;overflow:hidden;}
@@ -86,15 +86,51 @@ html,body{width:100%;height:100%;background:transparent;overflow:hidden;}
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+let stageW = 1920;
+let stageH = 1080;
 let currentScale = 1;
+
+// URL parameter detection (e.g., obs.html?format=tiktok or obs.html?w=1080&h=1920)
+const urlParams = new URLSearchParams(window.location.search);
+const fmtParam = (urlParams.get('format') || '').toLowerCase();
+const wParam = parseInt(urlParams.get('w') || urlParams.get('width'), 10);
+const hParam = parseInt(urlParams.get('h') || urlParams.get('height'), 10);
+
+if (wParam && hParam) {
+  stageW = wParam;
+  stageH = hParam;
+} else if (fmtParam === 'tiktok' || fmtParam === 'portrait' || fmtParam === 'shorts' || fmtParam === 'vertical') {
+  stageW = 1080;
+  stageH = 1920;
+} else if (fmtParam === 'square') {
+  stageW = 1080;
+  stageH = 1080;
+} else if (fmtParam === 'classic') {
+  stageW = 1440;
+  stageH = 1080;
+} else if (window.innerHeight > window.innerWidth && window.innerWidth < 1200) {
+  stageW = 1080;
+  stageH = 1920;
+}
+
 function scaleStage(){
   const stage = document.getElementById('stage');
-  const scaleX = window.innerWidth  / 1920;
-  const scaleY = window.innerHeight / 1080;
+  const fxCanvas = document.getElementById('fx-canvas');
+  if(!stage) return;
+
+  stage.style.width = stageW + 'px';
+  stage.style.height = stageH + 'px';
+  if(fxCanvas){
+    fxCanvas.width = stageW;
+    fxCanvas.height = stageH;
+  }
+
+  const scaleX = window.innerWidth  / stageW;
+  const scaleY = window.innerHeight / stageH;
   currentScale = Math.min(scaleX, scaleY);
   stage.style.transform = 'scale('+currentScale+')';
-  const ox = (window.innerWidth  - 1920*currentScale) / 2;
-  const oy = (window.innerHeight - 1080*currentScale) / 2;
+  const ox = (window.innerWidth  - stageW * currentScale) / 2;
+  const oy = (window.innerHeight - stageH * currentScale) / 2;
   stage.style.left = ox+'px';
   stage.style.top  = oy+'px';
 }
@@ -312,14 +348,33 @@ function doShow(data){
   const filename = data.filename;
   if (!filename) return;
 
+  // Adapt Stage Format / Resolution per media trigger
+  if(data.stageW && data.stageH){
+    stageW = Number(data.stageW);
+    stageH = Number(data.stageH);
+  } else if(data.stageFormat === 'portrait' || data.stageFormat === 'tiktok' || data.stageFormat === 'shorts'){
+    stageW = 1080;
+    stageH = 1920;
+  } else if(data.stageFormat === 'square'){
+    stageW = 1080;
+    stageH = 1080;
+  } else if(data.stageFormat === 'classic'){
+    stageW = 1440;
+    stageH = 1080;
+  } else if(data.stageFormat === 'landscape'){
+    stageW = 1920;
+    stageH = 1080;
+  }
+  scaleStage();
+
   const animIn = data.animIn || 'pop';
   const animOut = data.animOut || 'fade';
   const animInSpeed = Number(data.animInSpeed) || 400;
   const animOutSpeed = Number(data.animOutSpeed) || 350;
   const maxW = data.maxW != null && Number(data.maxW) > 0 ? Number(data.maxW) : 600;
   const maxH = data.maxH != null && Number(data.maxH) > 0 ? Number(data.maxH) : 400;
-  const posX = data.posX != null ? Number(data.posX) : Math.round((1920 - maxW) / 2);
-  const posY = data.posY != null ? Number(data.posY) : Math.round((1080 - maxH) / 2);
+  const posX = data.posX != null ? Number(data.posX) : Math.round((stageW - maxW) / 2);
+  const posY = data.posY != null ? Number(data.posY) : Math.round((stageH - maxH) / 2);
 
   const vol = data.volume != null ? Number(data.volume) : 80;
   const gain = data.gain != null ? Number(data.gain) : 1;
@@ -351,9 +406,11 @@ function doShow(data){
     track._baseVol = baseVol;
     track.volume = effectiveVol;
     activeSoundboardAudios.add(track);
-    track.onended = () => { activeSoundboardAudios.delete(track); };
-    track.onerror = () => { activeSoundboardAudios.delete(track); };
-    track.play().catch(()=>{});
+    const cleanTrack = () => { activeSoundboardAudios.delete(track); };
+    track.onended = cleanTrack;
+    track.onerror = cleanTrack;
+    track.onabort = cleanTrack;
+    track.play().catch(cleanTrack);
     return;
   }
 

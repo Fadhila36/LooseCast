@@ -41,4 +41,28 @@ describe('Path Security Utilities', () => {
       assert.strictEqual(result, null);
     });
   });
+
+  describe('MyInstants Domain Whitelist', () => {
+    const { isTrustedMyInstantsHost, isTrustedApiHost } = require('../src/services/myinstants.service');
+
+    it('harus mengizinkan domain myinstants.com dan subdomain resminya', () => {
+      assert.strictEqual(isTrustedMyInstantsHost('myinstants.com'), true);
+      assert.strictEqual(isTrustedMyInstantsHost('www.myinstants.com'), true);
+      assert.strictEqual(isTrustedMyInstantsHost('media.myinstants.com'), true);
+    });
+
+    it('harus menolak domain palsu/spoofed untuk media myinstants', () => {
+      assert.strictEqual(isTrustedMyInstantsHost('evil-myinstants.com'), false);
+      assert.strictEqual(isTrustedMyInstantsHost('myinstants.com.evil.com'), false);
+      assert.strictEqual(isTrustedMyInstantsHost('127.0.0.1'), false);
+      assert.strictEqual(isTrustedMyInstantsHost(''), false);
+    });
+
+    it('harus memvalidasi host API myinstants-api.vercel.app secara ketat', () => {
+      assert.strictEqual(isTrustedApiHost('myinstants-api.vercel.app'), true);
+      assert.strictEqual(isTrustedApiHost('evil-myinstants-api.vercel.app'), false);
+      assert.strictEqual(isTrustedApiHost('myinstants-api.vercel.app.evil.com'), false);
+    });
+  });
 });
+

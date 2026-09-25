@@ -122,15 +122,18 @@ class MacroRunner {
 
     if (!macro) throw new Error('Macro tidak valid');
 
-    if (this._runningMacros.has(macro.id)) {
-      throw new Error(`Macro '${macro.name || macro.id}' sedang berjalan. Tunggu hingga selesai.`);
+    const macroId = macro.id || `macro_temp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    macro.id = macroId;
+
+    if (this._runningMacros.has(macroId)) {
+      throw new Error(`Macro '${macro.name || macroId}' sedang berjalan. Tunggu hingga selesai.`);
     }
 
-    this._runningMacros.add(macro.id);
+    this._runningMacros.add(macroId);
     try {
       const results = [];
       if (this.io) {
-        this.io.emit('macro-running', { id: macro.id, name: macro.name });
+        this.io.emit('macro-running', { id: macroId, name: macro.name });
       }
 
       logger.info(MODULE_NAME, `Executing macro: "${macro.name}" (${macro.id}) with ${(macro.steps || []).length} steps`);

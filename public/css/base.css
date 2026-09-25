@@ -162,8 +162,8 @@ html, body {
   transform: scale(0.98);
 }
 .nav-item.active {
-  color: var(--ac);
-  background: var(--ac-dim);
+  color: var(--brand);
+  background: var(--brand-dim);
 }
 .nav-item.active::before {
   content: '';
@@ -173,9 +173,9 @@ html, body {
   transform: translateY(-50%);
   width: 3px;
   height: 18px;
-  background: var(--ac);
+  background: var(--brand);
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 10px var(--ac);
+  box-shadow: 0 0 10px var(--brand);
 }
 .nav-sep {
   height: 1px;
@@ -525,28 +525,30 @@ input[type="range"]::-webkit-slider-thumb:active {
 /* ─── TOAST NOTIFICATIONS ────────────────────────────────── */
 .toast {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(14, 14, 22, 0.9);
+  bottom: 24px;
+  right: 24px;
+  background: var(--panel2);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--bd2);
-  border-left: 3px solid var(--ac);
   color: var(--tx);
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 9px 16px;
-  border-radius: var(--r);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--r-sm);
   box-shadow: var(--shadow-lg);
   opacity: 0;
-  transform: translateY(12px) scale(0.95);
-  transition: all var(--duration-normal) var(--ease-out);
-  z-index: 999;
+  transform: translateY(8px);
+  transition: opacity var(--duration-normal) var(--ease), transform var(--duration-normal) var(--ease);
+  z-index: 9999;
   pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 .toast.show {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
 /* ─── CUSTOM SCROLLBARS ──────────────────────────────────── */
@@ -722,8 +724,8 @@ input[type="range"]::-webkit-slider-thumb:active {
   background: rgba(255, 255, 255, 0.04);
 }
 .hub-tab-btn.active {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--brand-dim);
+  border-color: var(--brand-border);
   color: #fff;
 }
 .hub-body {
@@ -942,4 +944,296 @@ input[type="range"]::-webkit-slider-thumb:active {
     transform: translateY(0) scale(1);
   }
 }
+
+/* ─── SKELETON LOADERS & MICRO-ANIMATIONS ─── */
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(255, 255, 255, 0.06) 37%,
+    rgba(255, 255, 255, 0.02) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeletonShimmer 1.6s var(--ease) infinite;
+  border-radius: var(--r-sm);
+  pointer-events: none;
+}
+
+/* Skeleton Variant: Stream Deck Button Card (1:1 Keycap) */
+.skeleton-deck-card {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  position: relative;
+}
+
+.skeleton-deck-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+}
+
+.skeleton-deck-label {
+  width: 60%;
+  height: 10px;
+  border-radius: var(--r-xs);
+}
+
+/* Skeleton Variant: Media Manager Grid Card */
+.skeleton-media-card {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-media-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--bd);
+}
+
+.skeleton-media-meta {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Skeleton Variant: Dashboard Metric Card */
+.skeleton-stat-card {
+  height: 76px;
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Skeleton Variant: Counter Strip Button */
+.skeleton-counter-pill {
+  width: 110px;
+  height: 48px;
+  background: var(--panel2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-md);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bd2);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.loading-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--tx2);
+  font-size: 0.76rem;
+  padding: 24px;
+}
+
+/* ─── UNIFIED ANTI-SLOP EMPTY STATES (LooseCast) ─── */
+.lc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 20px;
+  margin: 8px 0;
+  border-radius: var(--r-md);
+  background: var(--panel);
+  border: 1px dashed var(--bd2);
+  animation: emptyFadeIn var(--duration-normal) var(--ease) forwards;
+}
+
+@keyframes emptyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lc-empty-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-md);
+  background: var(--panel2);
+  border: 1px solid var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tx2);
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.lc-empty-icon-wrap.accent-brand {
+  color: var(--brand);
+  border-color: var(--brand-border);
+  background: var(--brand-dim);
+}
+
+.lc-empty-icon-wrap.accent-sky {
+  color: var(--ac);
+  border-color: rgba(14, 165, 233, 0.3);
+  background: var(--ac-dim);
+}
+
+.lc-empty-icon-wrap.accent-amber {
+  color: var(--am);
+  border-color: rgba(245, 158, 11, 0.3);
+  background: var(--am-dim);
+}
+
+.lc-empty-icon-wrap svg {
+  width: 26px;
+  height: 26px;
+}
+
+.lc-empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: 0.2px;
+  margin-bottom: 6px;
+}
+
+.lc-empty-desc {
+  font-size: 0.74rem;
+  color: var(--tx2);
+  max-width: 360px;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.lc-empty-cta {
+  background: var(--brand);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 18px;
+  border-radius: var(--r-sm);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--duration-fast) var(--ease);
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+}
+
+.lc-empty-cta:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+.lc-empty-cta:active {
+  transform: translateY(0);
+}
+
+.lc-empty-cta-secondary {
+  background: var(--panel2);
+  color: var(--tx);
+  border: 1px solid var(--bd2);
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--duration-fast) var(--ease);
+}
+
+.lc-empty-cta-secondary:hover {
+  background: var(--panel3);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Quick Action Chips Container */
+.lc-empty-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.lc-chip-btn {
+  background: var(--panel2);
+  border: 1px solid var(--bd2);
+  color: var(--tx2);
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.lc-chip-btn:hover {
+  background: var(--brand-dim);
+  border-color: var(--brand-border);
+  color: var(--tx);
+  transform: translateY(-1px);
+}
+
+.lc-chip-btn:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--panel2);
+  }
+  .lc-empty-state {
+    animation: none;
+  }
+  .lc-empty-cta:hover, .lc-chip-btn:hover {
+    transform: none;
+  }
+}
+
 

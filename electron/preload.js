@@ -19,5 +19,6 @@ const electronBridge = {
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
 };
 
+contextBridge.exposeInMainWorld('looseCastElectron', electronBridge);
 contextBridge.exposeInMainWorld('streamKitElectron', electronBridge);
 contextBridge.exposeInMainWorld('kskElectron', electronBridge);

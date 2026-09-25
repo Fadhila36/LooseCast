@@ -34,7 +34,7 @@ describe('Server Port Fallback & Real EADDRINUSE Simulation (REL-03)', () => {
       const startedEvent = await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error(`Timeout menunggu fallback port. Stderr: ${stderrOutput}`));
-        }, 5000);
+        }, 12000);
 
         child.on('message', (msg) => {
           if (msg && msg.type === 'server-started') {

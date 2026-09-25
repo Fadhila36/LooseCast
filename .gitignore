@@ -8,6 +8,9 @@ dist/
 assets/
 thumbs/
 _restore_tmp/
+_restore_tmp
+docs/superpowers/plans/
+docs/superpowers/plans/2026-09-25-loosecast-rebrand-and-fixes.md
 
 # User Runtime Data & Secret Configurations
 config.json

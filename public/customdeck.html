@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tomatosuki Custom Deck</title>
+<title>LooseCast Custom Deck</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0e101a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="StreamDeck">
+<meta name="apple-mobile-web-app-title" content="LooseCast">
 <link rel="apple-touch-icon" href="/icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
@@ -43,12 +43,12 @@
       <span data-i18n="topbar_record_mic">RECORD MIC</span>
     </button>
     <div class="sp"></div>
-    <div class="brand-text">TOMATOSUKI <span>STREAM KIT</span></div>
+    <div class="brand-text">LOOSE<span>CAST</span></div>
     <div class="status-pill"><div class="sdot on"></div><span data-i18n="topbar_running">RUNNING</span></div>
   </div>
   <div class="main">
     <div class="upzone" id="uz" onclick="document.getElementById('fi').click()">
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--ac);">
+      <div style="width:40px;height:40px;border-radius:10px;background:var(--brand-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--brand);">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
       <p data-i18n="upload_label">Drop files or <b>click to upload</b></p>
@@ -76,7 +76,7 @@
   <div class="modal studio-modal">
     <div class="mhd">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:32px;height:32px;border-radius:8px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
         <div>
@@ -90,9 +90,32 @@
     <div class="mbody studio-body">
       <!-- LEFT COLUMN: Visual Stage & Positioning -->
       <div class="studio-col-left">
-        <div class="fl" style="display:flex;align-items:center;justify-content:space-between;">
-          <span data-i18n="studio_live_stage">Live Overlay Stage (1920×1080)</span>
-          <span style="font-size:0.6rem;color:var(--tx3);text-transform:none;font-weight:400;" data-i18n="studio_drag_hint">Drag & resize kotak meme</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div class="fl" style="margin:0;">
+            <span id="stage-format-title" data-i18n="studio_live_stage">Live Stage: 16:9 Landscape (1920×1080)</span>
+          </div>
+          <div class="stage-preset-bar" style="display:flex;gap:4px;background:var(--panel2);padding:2px 4px;border-radius:8px;border:1px solid var(--bd);align-items:center;">
+            <button type="button" class="stage-fmt-btn on" data-fmt="landscape" onclick="setStageFormat('landscape')" title="16:9 Landscape (1920×1080) | YouTube / Twitch / OBS">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M12 16v4m-4 0h8"/></svg>
+              <span>16:9</span>
+            </button>
+            <button type="button" class="stage-fmt-btn" data-fmt="portrait" onclick="setStageFormat('portrait')" title="9:16 TikTok / YT Shorts / Reels (1080×1920)">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><circle cx="12" cy="18" r="1"/></svg>
+              <span>9:16 TikTok</span>
+            </button>
+            <button type="button" class="stage-fmt-btn" data-fmt="square" onclick="setStageFormat('square')" title="1:1 Square (1080×1080)">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              <span>1:1</span>
+            </button>
+            <button type="button" class="stage-fmt-btn" data-fmt="classic" onclick="setStageFormat('classic')" title="4:3 Classic (1440×1080)">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="15" rx="2"/><path d="m8 21 4-3 4 3"/></svg>
+              <span>4:3</span>
+            </button>
+            <button type="button" class="stage-fmt-btn" id="sync-obs-btn" onclick="syncCanvasFromOBS()" title="Baca otomatis ukuran resolusi kanvas dari OBS Studio yang sedang terhubung" style="border-left:1px solid var(--bd2);padding-left:7px;color:var(--brand);">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>Sync OBS</span>
+            </button>
+          </div>
         </div>
 
         <div class="pcwrap">
@@ -143,24 +166,42 @@
           </div>
         </div>
 
-        <!-- Snap position grid -->
-        <div style="margin-top:12px;">
-          <div class="fl" style="margin-bottom:6px;" data-i18n="studio_snap_title">Quick Snap Position</div>
-          <div class="snap-grid">
-            <button class="sb" data-s="tl" onclick="snap(this)" data-i18n="snap_tl">↖ Kiri Atas</button>
-            <button class="sb" data-s="tc" onclick="snap(this)" data-i18n="snap_tc">↑ Atas</button>
-            <button class="sb" data-s="tr" onclick="snap(this)" data-i18n="snap_tr">↗ Kanan Atas</button>
-            <button class="sb" data-s="ml" onclick="snap(this)" data-i18n="snap_ml">← Kiri</button>
-            <button class="sb" data-s="mc" onclick="snap(this)" data-i18n="snap_mc">⊕ Tengah</button>
-            <button class="sb" data-s="mr" onclick="snap(this)" data-i18n="snap_mr">→ Kanan</button>
-            <button class="sb" data-s="bl" onclick="snap(this)" data-i18n="snap_bl">↙ Kiri Bawah</button>
-            <button class="sb" data-s="bc" onclick="snap(this)" data-i18n="snap_bc">↓ Bawah</button>
-            <button class="sb" data-s="br" onclick="snap(this)" data-i18n="snap_br">↘ Kanan Bawah</button>
+        <!-- Snap position grid (Anchor Matrix) -->
+        <div class="snap-section">
+          <div class="fl" style="margin-bottom:2px;" data-i18n="studio_snap_title">Snap Anchor</div>
+          <div class="snap-matrix" id="snap-grid">
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="tl" onclick="snap(this)" title="Kiri Atas (Top-Left)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 18V6h12"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="tc" onclick="snap(this)" title="Atas (Top-Center)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 6h14"/><path d="M12 18V8"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="tr" onclick="snap(this)" title="Kanan Atas (Top-Right)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 18V6H6"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="ml" onclick="snap(this)" title="Kiri (Mid-Left)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 5v14"/><path d="M18 12H8"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="mc" onclick="snap(this)" title="Tengah (Center)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="mr" onclick="snap(this)" title="Kanan (Mid-Right)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 5v14"/><path d="M6 12h10"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="bl" onclick="snap(this)" title="Kiri Bawah (Bottom-Left)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6v12h12"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="bc" onclick="snap(this)" title="Bawah (Bottom-Center)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 18h14"/><path d="M12 6v10"/></svg>
+            </button>
+            <button type="button" class="snap-matrix-btn snap-btn" data-s="br" onclick="snap(this)" title="Kanan Bawah (Bottom-Right)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6v12H6"/></svg>
+            </button>
           </div>
         </div>
 
-        <!-- Media Preview Area (Video scrubber / thumbnail picker) -->
-        <div class="mprev" id="mprev" style="margin-top:12px;"></div>
+        <!-- Hidden video color picker reference container -->
+        <div class="mprev" id="mprev" style="display:none;"></div>
 
         <!-- Thumbnail picker (video only) -->
         <div class="fg" id="thumb-section" style="display:none;margin-top:10px;">
@@ -201,7 +242,7 @@
             <div style="display:flex;align-items:center;gap:8px;">
               <div id="athumb-img-preview" style="width:60px;height:60px;border-radius:var(--r-sm);border:1px dashed var(--bd2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;background:var(--panel2);font-size:.55rem;color:var(--tx3);">none</div>
               <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
-                <button onclick="document.getElementById('athumb-img-input').click()" style="background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);padding:6px;border-radius:5px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;">
+                <button onclick="document.getElementById('athumb-img-input').click()" style="background:var(--brand-dim);border:1px solid var(--brand-border);color:var(--brand);padding:6px;border-radius:5px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;">
                   <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
                   <span data-i18n="studio_choose_image">Pilih Gambar</span>
                 </button>
@@ -240,7 +281,7 @@
               <div class="whhd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                 <span class="fl" style="margin:0;" data-i18n="studio_dim_label">Dimensi Overlay</span>
                 <div style="display:flex;gap:6px;align-items:center;">
-                  <button class="rstbtn lock-btn on" id="lock-ar" onclick="toggleLockAR()" title="Lock aspect ratio" style="background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);padding:4px 8px;border-radius:5px;font-size:.65rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                  <button class="rstbtn lock-btn on" id="lock-ar" onclick="toggleLockAR()" title="Lock aspect ratio" style="background:var(--brand-dim);border:1px solid var(--brand-border);color:var(--brand);padding:4px 8px;border-radius:5px;font-size:.65rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     <span data-i18n="studio_lock_ratio">Lock Ratio</span>
                   </button>
@@ -249,15 +290,21 @@
               </div>
               <div class="whrow" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div class="wf" style="display:flex;align-items:center;gap:6px;background:var(--panel3);border:1px solid var(--bd2);border-radius:8px;padding:4px 10px;">
-                  <span class="wl" style="font-size:.7rem;font-weight:800;color:var(--ac);">W</span>
+                  <span class="wl" style="font-size:.7rem;font-weight:800;color:var(--brand);">W</span>
                   <input type="number" id="mw" value="600" min="1" max="3840" oninput="onWH('w');updateAccSummaries()" style="width:100%;background:none;border:none;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;">
                 </div>
                 <div class="wf" style="display:flex;align-items:center;gap:6px;background:var(--panel3);border:1px solid var(--bd2);border-radius:8px;padding:4px 10px;">
-                  <span class="wl" style="font-size:.7rem;font-weight:800;color:var(--ac);">H</span>
-                  <input type="number" id="mh" value="400" min="1" max="2160" oninput="onWH('h');updateAccSummaries()" style="width:100%;background:none;border:none;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;">
+                  <span class="wl" style="font-size:.7rem;font-weight:800;color:var(--brand);">H</span>
+                  <input type="number" id="mh" value="400" min="1" max="3840" oninput="onWH('h');updateAccSummaries()" style="width:100%;background:none;border:none;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:.8rem;outline:none;">
                 </div>
               </div>
-              <div id="native-sz" style="font-size:.56rem;color:var(--tx3);margin-top:6px;font-family:'JetBrains Mono',monospace;">Native: —</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
+                <button type="button" onclick="quickSizePreset('fit')" class="rstbtn" style="background:var(--panel2);border:1px solid var(--bd2);color:var(--tx2);padding:3px 8px;border-radius:5px;font-size:.62rem;cursor:pointer;" title="Sesuaikan ukuran proporsional gambar asli agar pas di layar">🎯 Fit Stage</button>
+                <button type="button" onclick="quickSizePreset('fullscreen')" class="rstbtn" style="background:var(--panel2);border:1px solid var(--bd2);color:var(--tx2);padding:3px 8px;border-radius:5px;font-size:.62rem;cursor:pointer;">⛶ Full Stage</button>
+                <button type="button" onclick="quickSizePreset('half')" class="rstbtn" style="background:var(--panel2);border:1px solid var(--bd2);color:var(--tx2);padding:3px 8px;border-radius:5px;font-size:.62rem;cursor:pointer;">½ Half Screen</button>
+                <button type="button" onclick="quickSizePreset('center-box')" class="rstbtn" style="background:var(--panel2);border:1px solid var(--bd2);color:var(--tx2);padding:3px 8px;border-radius:5px;font-size:.62rem;cursor:pointer;">⊡ Pop Box</button>
+              </div>
+              <div id="native-sz" style="font-size:.56rem;color:var(--tx3);margin-top:6px;font-family:'JetBrains Mono',monospace;">Native: (auto)</div>
             </div>
           </div>
         </div>
@@ -293,7 +340,7 @@
                 <div class="rrow"><input type="range" id="outspd" min="100" max="1500" value="350" oninput="rv(this,'rv-out','ms')"><span class="rv" id="rv-out">350ms</span></div>
               </div>
             </div>
-            <div class="fg" id="dur-wrap"><div class="fl" data-i18n="studio_duration_label">Durasi Tampil (detik) — 0 = manual hide</div>
+            <div class="fg" id="dur-wrap"><div class="fl" data-i18n="studio_duration_label">Durasi Tampil (detik) (0 = manual hide)</div>
               <div class="rrow"><input type="range" id="dur" min="0" max="30" value="5" step="0.5" oninput="rv(this,'rv-dur','s');updateAccSummaries()"><span class="rv" id="rv-dur">5s</span></div>
             </div>
           </div>
@@ -321,11 +368,11 @@
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
                 <div class="fl" style="margin:0;" data-i18n="studio_companion_label">Play Sound Together (Companion Audio)</div>
                 <div style="display:flex;gap:5px;">
-                  <button type="button" onclick="openMyInstantsModal()" style="background:linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(244,63,94,0.3) 100%);border:1px solid rgba(239,68,68,.4);color:#fda4af;padding:4px 9px;border-radius:5px;font-size:.62rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:4px;box-shadow:0 0 10px rgba(239,68,68,0.2);">
+                  <button type="button" onclick="openMyInstantsModal()" style="background:var(--brand-dim);border:1px solid var(--brand-border);color:var(--brand);padding:4px 9px;border-radius:5px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
                     <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <span data-i18n="studio_search_myinstants">⚡ Cari MyInstants</span>
+                    <span data-i18n="studio_search_myinstants">Cari MyInstants</span>
                   </button>
-                  <button type="button" onclick="document.getElementById('companion-audio-input').click()" style="background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);color:var(--ac);padding:4px 8px;border-radius:5px;font-size:.62rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                  <button type="button" onclick="document.getElementById('companion-audio-input').click()" style="background:var(--panel2);border:1px solid var(--bd2);color:var(--tx2);padding:4px 8px;border-radius:5px;font-size:.62rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     <span data-i18n="studio_upload_audio">+ Upload</span>
                   </button>
@@ -353,16 +400,16 @@
             <span class="acc-arrow">›</span>
           </div>
           <div class="acc-body">
-            <div class="chroma-toggle-row" onclick="toggleChroma()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--panel3);border-radius:8px;border:1px solid var(--bd2);cursor:pointer;">
+            <div class="chroma-toggle-row" onclick="toggleChroma()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--panel2);border-radius:8px;border:1px solid var(--bd);cursor:pointer;">
               <span style="font-size:.76rem;font-weight:700;" data-i18n="studio_enable_chroma">Aktifkan Chroma Key</span>
               <div class="toggle" id="chroma-toggle"></div>
             </div>
             <div id="chroma-options" style="display:none;margin-top:10px;">
               <div class="fl" style="margin-bottom:6px;" data-i18n="studio_key_color">Key Color (Klik video preview untuk pick warna)</div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;background:var(--panel3);padding:8px 12px;border-radius:8px;border:1px solid var(--bd2);">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;background:var(--panel2);padding:8px 12px;border-radius:8px;border:1px solid var(--bd);">
                 <div id="chroma-color-swatch" style="width:34px;height:34px;border-radius:8px;border:2px solid var(--bd2);background:#00ff00;flex-shrink:0;"></div>
                 <input type="color" id="chroma-color" value="#00ff00" oninput="onChromaColorChange(this.value)" style="width:44px;height:32px;border:none;background:none;cursor:pointer;">
-                <span id="chroma-color-hex" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:800;color:var(--ac);">#00ff00</span>
+                <span id="chroma-color-hex" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:800;color:var(--brand);">#00ff00</span>
               </div>
               <div class="fl" style="margin-bottom:4px;" data-i18n="studio_sensitivity">Sensitivity</div>
               <div class="rrow"><input type="range" id="chroma-sens" min="0.05" max="0.6" value="0.35" step="0.05" oninput="rv(this,'rv-chroma','');updateAccSummaries()"><span class="rv" id="rv-chroma">0.35</span></div>
@@ -374,14 +421,19 @@
       </div>
     </div>
 
-    <div class="mfoot" style="display:flex;justify-content:space-between;align-items:center;">
-      <button class="bplay" onclick="playPreview()" title="Test Putar di OBS Overlay" style="display:inline-flex;align-items:center;gap:8px;">
-        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        <span data-i18n="studio_test_play">Test Play ke OBS</span>
-      </button>
-      <div style="display:flex;gap:10px;">
+    <div class="mfoot">
+      <div class="mfoot-left">
+        <button class="bplay" onclick="playPreview()" title="Test Putar di OBS Overlay">
+          <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span data-i18n="studio_test_play">Test Play ke OBS</span>
+        </button>
+      </div>
+      <div class="mfoot-right">
         <button class="bcnl" onclick="closeM()" data-i18n="modal_cancel_btn">Batal</button>
-        <button class="bsave" onclick="saveM()" data-i18n="studio_save_btn">💾 Simpan Perubahan</button>
+        <button class="bsave" onclick="saveM()" data-i18n="studio_save_btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Simpan Perubahan</span>
+        </button>
       </div>
     </div>
   </div>
@@ -393,7 +445,7 @@
     <div class="mhd">
       <div>
         <div class="mtit" style="display:flex;align-items:center;gap:8px;">
-          <svg width="18" height="18" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+          <svg width="18" height="18" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
           Buka di Handphone
         </div>
         <div class="mfn">Pastikan HP &amp; PC satu WiFi</div>
@@ -405,8 +457,8 @@
         <div id="phone-qr-target" style="width:144px;height:144px;"></div>
       </div>
       <div id="phone-connect-url"
-        style="font-family:'Syne Mono',monospace;font-size:.65rem;color:var(--ac);word-break:break-all;text-align:center;background:var(--s3);padding:8px 12px;border-radius:6px;border:1px solid var(--bd2);width:100%;">
-        —
+        style="font-family:'Syne Mono',monospace;font-size:.65rem;color:var(--brand);word-break:break-all;text-align:center;background:var(--panel2);padding:8px 12px;border-radius:6px;border:1px solid var(--bd);width:100%;">
+        (auto)
       </div>
       <div style="font-size:.6rem;color:var(--tx2);text-align:center;line-height:1.5;">
         Scan QR pakai kamera HP, atau copy URL-nya dan buka di browser HP.
@@ -414,7 +466,7 @@
     </div>
     <div class="mfoot">
       <button class="bcnl" onclick="closePhoneConnect()">Tutup</button>
-      <button class="bsave" onclick="copyPhoneConnectUrl()" style="background:var(--gn);display:inline-flex;align-items:center;gap:6px;">
+      <button class="bsave" onclick="copyPhoneConnectUrl()" style="background:var(--gn);border-color:var(--gn);display:inline-flex;align-items:center;gap:6px;">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
         Copy URL
       </button>
@@ -427,7 +479,7 @@
   <div class="modal" style="max-width:720px;width:95vw;max-height:86vh;">
     <div class="mhd">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 12px var(--ac-glow);">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);box-shadow:0 0 12px var(--brand-glow);">
           <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <div>
@@ -445,7 +497,7 @@
           <input type="text" id="myinstants-search-input" placeholder="Cari efek suara (misal: gufron, bruh, snore, vine boom, anime, fart)..." style="width:100%;font-size:.82rem;padding:10px 14px 10px 38px;background:var(--panel2);border:1px solid var(--bd2);border-radius:var(--r-sm);color:var(--tx);outline:none;" onkeydown="if(event.key==='Enter') searchMyInstants()">
           <svg width="15" height="15" fill="none" stroke="var(--tx3)" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
-        <button onclick="searchMyInstants()" style="background:linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);border:none;color:#fff;padding:0 22px;border-radius:var(--r-sm);font-weight:800;font-size:.78rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 0 16px rgba(56,189,248,0.3);transition:all var(--duration-fast);">
+        <button onclick="searchMyInstants()" style="background:var(--brand);border:1px solid var(--brand);color:#fff;padding:0 22px;border-radius:var(--r-sm);font-weight:700;font-size:.78rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 10px var(--brand-glow);transition:all var(--duration-fast);">
           Cari
         </button>
       </div>
@@ -482,25 +534,30 @@
 <div class="mbk" id="sampler-modal">
   <div class="modal" style="max-width:380px;">
     <div class="mhd">
-      <div>
-        <div class="mtit">🎙️ Quick Mic Sampler</div>
-        <div class="mfn">Rekam suara mic langsung jadi tombol soundboard</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:32px;height:32px;border-radius:var(--r-sm);background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        </div>
+        <div>
+          <div class="mtit">Quick Mic Sampler</div>
+          <div class="mfn">Rekam suara mic langsung jadi tombol soundboard</div>
+        </div>
       </div>
       <button class="mclose" onclick="closeSamplerModal()">✕</button>
     </div>
     <div class="mbody" style="align-items:center;gap:14px;padding:20px;">
       <div id="sampler-status" style="font-size:.78rem;font-weight:700;color:var(--tx2);">Siap Merekam</div>
-      <div id="sampler-timer" class="mono" style="font-size:1.6rem;font-weight:800;color:var(--ac);">00:00</div>
+      <div id="sampler-timer" class="mono" style="font-size:1.6rem;font-weight:800;color:var(--brand);">00:00</div>
       <div style="display:flex;gap:10px;width:100%;">
         <button id="btn-start-rec" onclick="startRecordingSample()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:10px;border-radius:8px;font-size:.75rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
           ● Mulai Rekam
         </button>
-        <button id="btn-stop-rec" onclick="stopRecordingSample()" disabled style="flex:1;background:var(--s3);color:var(--tx2);border:1px solid var(--bd2);padding:10px;border-radius:8px;font-size:.75rem;font-weight:800;cursor:pointer;opacity:0.5;">
+        <button id="btn-stop-rec" onclick="stopRecordingSample()" disabled style="flex:1;background:var(--panel2);color:var(--tx2);border:1px solid var(--bd);padding:10px;border-radius:8px;font-size:.75rem;font-weight:800;cursor:pointer;opacity:0.5;">
           ■ Berhenti
         </button>
       </div>
       <audio id="sample-preview" controls style="width:100%;display:none;height:36px;"></audio>
-      <input type="text" id="sample-name-inp" placeholder="Nama Sound Effect (misal: Ketawa / Nice)" style="width:100%;background:var(--s2);border:1px solid var(--bd2);color:var(--tx);padding:9px 12px;border-radius:7px;font-size:.75rem;outline:none;display:none;">
+      <input type="text" id="sample-name-inp" placeholder="Nama Sound Effect (misal: Ketawa / Nice)" style="width:100%;background:var(--panel2);border:1px solid var(--bd);color:var(--tx);padding:9px 12px;border-radius:7px;font-size:.75rem;outline:none;display:none;">
     </div>
     <div class="mfoot">
       <button class="bcnl" onclick="closeSamplerModal()">Batal</button>
@@ -512,7 +569,7 @@
 <div class="toast" id="toast"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/stream-kit-ui.js"></script>
+<script src="/loosecast-ui.js"></script>
 <script src="/js/shared.js"></script>
 <script>
 const socket = io();
@@ -520,11 +577,181 @@ let files=[], active=null, filt='all', editing=null;
 let origW=0, origH=0, posX=0, posY=0, curW=600, curH=400;
 let cdReady=false, cropReady=false, thumbDataUrl=null, thumbChanged=false;
 
-socket.on('connect',    ()=>{ document.querySelectorAll('.status-pill .sdot').forEach(d=>d.classList.add('on')); });
+// ─── STAGE RESOLUTION & ASPECT RATIO PRESETS ──────────
+const STAGE_PRESETS = {
+  'landscape': { name: '16:9 Landscape', w: 1920, h: 1080, label: '16:9 Landscape (1920×1080)', ar: '16 / 9' },
+  'portrait':  { name: '9:16 TikTok / Shorts', w: 1080, h: 1920, label: '9:16 TikTok / Shorts (1080×1920)', ar: '9 / 16' },
+  'square':    { name: '1:1 Square', w: 1080, h: 1080, label: '1:1 Square (1080×1080)', ar: '1 / 1' },
+  'classic':   { name: '4:3 Classic', w: 1440, h: 1080, label: '4:3 Classic (1440×1080)', ar: '4 / 3' }
+};
+let currentStageFormat = 'landscape';
+let stageW = 1920;
+let stageH = 1080;
+
+function setStageFormat(fmtKey, preserveCoords = false) {
+  const preset = STAGE_PRESETS[fmtKey] || STAGE_PRESETS['landscape'];
+  currentStageFormat = fmtKey in STAGE_PRESETS ? fmtKey : 'landscape';
+  stageW = preset.w;
+  stageH = preset.h;
+
+  // Update Buttons
+  document.querySelectorAll('.stage-fmt-btn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.fmt === currentStageFormat);
+  });
+
+  // Update Title
+  const titleEl = document.getElementById('stage-format-title');
+  if (titleEl) {
+    titleEl.textContent = `Live Stage: ${preset.label}`;
+  }
+
+  // Update #pcanvas aspect-ratio
+  const canvasEl = document.getElementById('pcanvas');
+  if (canvasEl) {
+    canvasEl.style.aspectRatio = preset.ar;
+  }
+
+  // Update #snap-grid format layout
+  const snapGrid = document.getElementById('snap-grid') || document.querySelector('.snap-matrix');
+  if (snapGrid) {
+    snapGrid.className = `snap-matrix fmt-${currentStageFormat}`;
+  }
+
+  if (!preserveCoords) {
+    // If meme size exceeds new stage dimensions, scale it down proportionally
+    if (curW > stageW || curH > stageH) {
+      const scaleDown = Math.min(stageW / curW, stageH / curH) * 0.85;
+      curW = Math.max(20, Math.round(curW * scaleDown));
+      curH = Math.max(20, Math.round(curH * scaleDown));
+      document.getElementById('mw').value = curW;
+      document.getElementById('mh').value = curH;
+    }
+    // Re-center on the new stage
+    posX = Math.round((stageW - curW) / 2);
+    posY = Math.round((stageH - curH) / 2);
+    syncSnap();
+  }
+
+  updCanvas();
+  updateAccSummaries();
+}
+
+let latestOBSResolution = null;
+
+async function fetchOBSResolution(applyToModal = false) {
+  try {
+    const res = await fetch('/api/obs/video-settings');
+    const data = await res.json();
+    if (data.ok && data.baseWidth && data.baseHeight) {
+      const w = Number(data.baseWidth);
+      const h = Number(data.baseHeight);
+      latestOBSResolution = { w, h };
+
+      const syncBtn = document.getElementById('sync-obs-btn');
+      if (syncBtn) {
+        syncBtn.title = `Tersinkronisasi otomatis dengan OBS (${w}×${h})`;
+        const spanEl = syncBtn.querySelector('span');
+        if (spanEl) spanEl.textContent = `OBS (${w}×${h})`;
+      }
+
+      if (applyToModal) {
+        let matchedKey = null;
+        for (const [key, preset] of Object.entries(STAGE_PRESETS)) {
+          if (preset.w === w && preset.h === h) {
+            matchedKey = key;
+            break;
+          }
+        }
+        if (matchedKey) {
+          setStageFormat(matchedKey);
+        } else {
+          STAGE_PRESETS['custom-obs'] = {
+            name: `OBS Canvas (${w}×${h})`,
+            w: w,
+            h: h,
+            label: `OBS Canvas (${w}×${h})`,
+            ar: `${w} / ${h}`
+          };
+          setStageFormat('custom-obs');
+        }
+      }
+      return { w, h };
+    }
+  } catch {}
+  return null;
+}
+
+async function syncCanvasFromOBS() {
+  const btn = document.getElementById('sync-obs-btn');
+  try {
+    if (btn) btn.style.opacity = '0.5';
+    const obs = await fetchOBSResolution(true);
+    if (!obs) {
+      toast('⚠️ OBS belum terhubung / aktif', 'warning');
+      return;
+    }
+    toast(`✓ Live Stage disesuaikan ke resolusi OBS: ${obs.w}×${obs.h}`);
+  } catch (err) {
+    toast('⚠️ Gagal membaca ukuran dari OBS', 'error');
+  } finally {
+    if (btn) btn.style.opacity = '1';
+  }
+}
+
+function quickSizePreset(type) {
+  if (type === 'fit') {
+    const baseW = origW || curW || 600;
+    const baseH = origH || curH || 400;
+    const scale = Math.min(stageW / baseW, stageH / baseH);
+    curW = Math.max(20, Math.round(baseW * scale));
+    curH = Math.max(20, Math.round(baseH * scale));
+    aspectRatio = curW / curH;
+    posX = Math.round((stageW - curW) / 2);
+    posY = Math.round((stageH - curH) / 2);
+  } else if (type === 'fullscreen') {
+    curW = stageW;
+    curH = stageH;
+    posX = 0;
+    posY = 0;
+  } else if (type === 'half') {
+    if (stageW > stageH) {
+      curW = Math.round(stageW / 2);
+      curH = stageH;
+    } else {
+      curW = stageW;
+      curH = Math.round(stageH / 2);
+    }
+    posX = Math.round((stageW - curW) / 2);
+    posY = Math.round((stageH - curH) / 2);
+  } else if (type === 'center-box') {
+    curW = Math.min(600, Math.round(stageW * 0.6));
+    curH = Math.min(400, Math.round(stageH * 0.4));
+    if (aspectRatio > 0 && lockAR) {
+      curH = Math.round(curW / aspectRatio);
+    }
+    posX = Math.round((stageW - curW) / 2);
+    posY = Math.round((stageH - curH) / 2);
+  }
+  document.getElementById('mw').value = curW;
+  document.getElementById('mh').value = curH;
+  syncSnap();
+  updCanvas();
+  updateAccSummaries();
+  toast('Ukuran disesuaikan');
+}
+
+socket.on('connect',    ()=>{ 
+  document.querySelectorAll('.status-pill .sdot').forEach(d=>d.classList.add('on')); 
+  fetchOBSResolution(false);
+});
 socket.on('disconnect', ()=>{ document.querySelectorAll('.status-pill .sdot').forEach(d=>d.classList.remove('on')); });
+socket.on('obs-status-changed', (st) => {
+  if (st && st.connected) fetchOBSResolution(false);
+});
 socket.on('media-list-updated', () => {
   loadFiles();
 });
+fetchOBSResolution(false);
 
 // ─── OBS DROPDOWN ───────────────────────────────────────
 let obsUrl = location.origin+'/obs.html';
@@ -606,7 +833,25 @@ function render(){
   }
   document.getElementById('glbl').textContent=fs.length+' file'+(fs.length!==1?'s':'');
   const g=document.getElementById('grid');
-  if(!fs.length){g.innerHTML='<div class="empty">No files.<br>Upload above!</div>';return;}
+  if(!fs.length){
+    g.innerHTML=`
+      <div class="lc-empty-state" style="grid-column:1 / -1;margin:16px 0;">
+        <div class="lc-empty-icon-wrap accent-brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="14" x="3" y="5" rx="2"></rect>
+            <polygon points="10 9 15 12 10 15 10 9" fill="currentColor"></polygon>
+            <line x1="3" x2="21" y1="9" y2="9"></line>
+          </svg>
+        </div>
+        <div class="lc-empty-title">Belum Ada Media di Studio</div>
+        <div class="lc-empty-desc">Upload video chroma key, meme audio, atau gambar reaksi untuk mulai menyusun stage overlay siaran Anda.</div>
+        <button type="button" class="lc-empty-cta" onclick="document.getElementById('fi').click()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Media Pertama
+        </button>
+      </div>`;
+    return;
+  }
   g.innerHTML=fs.map(f=>{
     const t=getType(f.name);
     const nm=f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -738,6 +983,7 @@ function openM(e,name){
 
   origW=0; origH=0;
   const mp=document.getElementById('mprev');
+  if(mp) { mp.innerHTML=''; mp.style.display='none'; }
   // Load media and get native dimensions
   if(t==='image'){
     const im=new Image();
@@ -747,7 +993,6 @@ function openM(e,name){
       setCanvasThumb(url, null);
     };
     im.src=url;
-    mp.innerHTML='<img src="'+url+'" alt="">';
   } else if(t==='video'){
     const v=document.createElement('video');
     v.muted=true; v.src=url; v.style.width='100%'; v.controls=true;
@@ -756,10 +1001,9 @@ function openM(e,name){
       fillSz(s);
       setCanvasThumb(null, s.thumbnailData||null);
     };
-    mp.innerHTML=''; mp.appendChild(v);
+    if(mp) { mp.appendChild(v); }
     initThumbPicker(url, s.thumbnailData||null);
   } else {
-    mp.innerHTML='<div class="aprev">🎵</div>';
     setCanvasThumb(null, null);
   }
 
@@ -783,8 +1027,12 @@ function openM(e,name){
   document.getElementById('crop-toggle').classList.remove('on');
   document.getElementById('crop-overlay').style.display = 'none';
 
-  posX=s.posX!=null?s.posX:Math.round((1920-curW)/2);
-  posY=s.posY!=null?s.posY:Math.round((1080-curH)/2);
+  const savedFmt = s.stageFormat || (s.stageW === 1080 && s.stageH === 1920 ? 'portrait' : 'landscape');
+  setStageFormat(savedFmt, true);
+  fetchOBSResolution(false);
+
+  posX=s.posX!=null?s.posX:Math.round((stageW-curW)/2);
+  posY=s.posY!=null?s.posY:Math.round((stageH-curH)/2);
   syncSnap();
 
   document.getElementById('thumb-section').style.display = (t==='video') ? '' : 'none';
@@ -793,7 +1041,7 @@ function openM(e,name){
   document.getElementById('acc-anim').style.display = (t==='audio') ? 'none' : '';
   document.getElementById('acc-pos').style.display = (t==='audio') ? 'none' : '';
   document.getElementById('acc-chroma').style.display = (t==='audio') ? 'none' : '';
-  document.getElementById('mprev').style.display = (t==='audio') ? 'none' : '';
+  document.getElementById('mprev').style.display = 'none';
 
   // Chroma key init
   document.getElementById('chroma-toggle').classList.toggle('on', !!s.chromaKey);
@@ -855,14 +1103,21 @@ function openM(e,name){
 }
 
 function fillSz(s){
-  if(origW&&origH){
-    curW = s.maxW || Math.min(origW, 1920);
-    curH = s.maxH || Math.min(origH, 1080);
+  if(origW && origH){
+    aspectRatio = origW / origH;
+    if(s.maxW && s.maxH){
+      curW = s.maxW;
+      curH = s.maxH;
+    } else {
+      const scale = Math.min(stageW / origW, stageH / origH) * 0.85;
+      curW = Math.max(20, Math.round(origW * scale));
+      curH = Math.max(20, Math.round(origH * scale));
+    }
   } else {
-    curW = s.maxW || 600;
-    curH = s.maxH || 400;
+    curW = s.maxW || Math.min(600, stageW);
+    curH = s.maxH || Math.min(400, stageH);
+    aspectRatio = curW / curH;
   }
-  aspectRatio = curW / curH;
   document.getElementById('mw').value = curW;
   document.getElementById('mh').value = curH;
 
@@ -877,8 +1132,8 @@ function fillSz(s){
   cropLeft = s.cropLeft || 0;
   cropRight = s.cropRight || 0;
 
-  posX = s.posX != null ? s.posX : Math.round((1920-curW)/2);
-  posY = s.posY != null ? s.posY : Math.round((1080-curH)/2);
+  posX = s.posX != null ? s.posX : Math.round((stageW-curW)/2);
+  posY = s.posY != null ? s.posY : Math.round((stageH-curH)/2);
   syncSnap();
   updCanvas();
   updCropOverlay();
@@ -893,11 +1148,11 @@ function updCanvas(){
 
   // Posisi bebas — tidak di-clamp, boleh keluar canvas (untuk crop)
 
-  // Pakai % langsung — tidak perlu offsetWidth sama sekali
-  const lPct = posX/1920*100;
-  const tPct = posY/1080*100;
-  const wPct = curW/1920*100;
-  const hPct = curH/1080*100;
+  // Pakai % relatif terhadap stageW dan stageH
+  const lPct = (posX / stageW) * 100;
+  const tPct = (posY / stageH) * 100;
+  const wPct = (curW / stageW) * 100;
+  const hPct = (curH / stageH) * 100;
 
   p.style.left   = lPct+'%';
   p.style.top    = tPct+'%';
@@ -954,7 +1209,7 @@ function initDrag(){
   }
   function toCanvas(cx,cy){
     const r=c.getBoundingClientRect();
-    return { x:(cx-r.left)/r.width*1920, y:(cy-r.top)/r.height*1080 };
+    return { x:(cx-r.left)/r.width*stageW, y:(cy-r.top)/r.height*stageH };
   }
 
   // RESIZE HANDLES
@@ -994,8 +1249,8 @@ function initDrag(){
     if(!mode) return;
     const {x,y}=clientPos(e);
     const r=c.getBoundingClientRect();
-    const dx=(x-startX)/r.width*1920;
-    const dy=(y-startY)/r.height*1080;
+    const dx=(x-startX)/r.width*stageW;
+    const dy=(y-startY)/r.height*stageH;
     const MIN=20;
 
     if(mode==='move'){
@@ -1018,10 +1273,10 @@ function initDrag(){
         if(d.includes('n')) ny=startPosY+startH-nh;
       }
       // Clamp to canvas
-      nx=Math.max(0,Math.min(1920-MIN,nx));
-      ny=Math.max(0,Math.min(1080-MIN,ny));
-      nw=Math.min(nw,1920-nx);
-      nh=Math.min(nh,1080-ny);
+      nx=Math.max(0,Math.min(stageW-MIN,nx));
+      ny=Math.max(0,Math.min(stageH-MIN,ny));
+      nw=Math.min(nw,stageW-nx);
+      nh=Math.min(nh,stageH-ny);
       posX=Math.round(nx); posY=Math.round(ny);
       curW=Math.round(nw); curH=Math.round(nh);
       // Sync inputs
@@ -1056,7 +1311,7 @@ function syncSnap(){
   });
 }
 function snapMap(){
-  const cx=Math.round((1920-curW)/2),cy=Math.round((1080-curH)/2),rx=1920-curW,ry=1080-curH;
+  const cx=Math.round((stageW-curW)/2),cy=Math.round((stageH-curH)/2),rx=stageW-curW,ry=stageH-curH;
   return{tl:{x:0,y:0},tc:{x:cx,y:0},tr:{x:rx,y:0},ml:{x:0,y:cy},mc:{x:cx,y:cy},mr:{x:rx,y:cy},bl:{x:0,y:ry},bc:{x:cx,y:ry},br:{x:rx,y:ry}};
 }
 function snap(btn){
@@ -1255,7 +1510,7 @@ function initThumbPicker(url, savedThumb){
     const tmp = document.createElement('canvas');
     tmp.width = tv.videoWidth; tmp.height = tv.videoHeight;
     tmp.getContext('2d').drawImage(tv, 0, 0);
-    slider.style.background = 'linear-gradient(to right, var(--ac) 0%, var(--ac) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) 100%)';
+    slider.style.background = 'linear-gradient(to right, var(--brand) 0%, var(--brand) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) 100%)';
   };
 }
 
@@ -1411,6 +1666,9 @@ async function playPreview(){
 
     const cfg = {
       filename: editing,
+      stageFormat: currentStageFormat,
+      stageW: stageW,
+      stageH: stageH,
       animIn: ainEl ? ainEl.value : 'pop',
       animOut: aoutEl ? aoutEl.value : 'fade',
       animInSpeed: inspdEl ? +inspdEl.value : 400,
@@ -1439,18 +1697,18 @@ async function playPreview(){
     });
 
     if (res.ok) {
-      toast('▶ Preview terkirim ke OBS Overlay!');
+      toast('Preview terkirim ke OBS Studio');
       if(btn) {
-        btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Terkirim ke OBS!</span>';
+        btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Terkirim ke OBS</span>';
         setTimeout(() => { if(btn) { btn.innerHTML = origHtml; btn.disabled = false; } }, 1600);
       }
     } else {
-      toast('⚠️ Gagal mengirim preview ke server');
+      toast('Gagal mengirim preview');
       if(btn) { btn.innerHTML = origHtml; btn.disabled = false; }
     }
   } catch (err) {
     console.error('Play preview error:', err);
-    toast('⚠️ Error: ' + err.message);
+    toast('Gagal: ' + err.message);
     if(btn) { btn.innerHTML = origHtml; btn.disabled = false; }
   }
 }
@@ -1461,6 +1719,9 @@ async function saveM(){
   const dn=document.getElementById('dname').value.trim();
   const t=getType(editing);
   const cfg={
+    stageFormat: currentStageFormat,
+    stageW: stageW,
+    stageH: stageH,
     animIn:document.getElementById('ain').value,
     animOut:document.getElementById('aout').value,
     animInSpeed:+document.getElementById('inspd').value,
@@ -1492,13 +1753,20 @@ async function saveM(){
   await fetch('/api/media/'+encodeURIComponent(editing)+'/settings',{
     method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)
   });
-  closeM(); await loadFiles(); toast('Saved!');
+  closeM(); await loadFiles(); toast('Pengaturan tersimpan');
 }
 
 function sv(id,v){const e=document.getElementById(id);if(e)e.value=v;}
 function srng(id,v,lid,u){const e=document.getElementById(id),l=document.getElementById(lid);if(e)e.value=v;if(l)l.textContent=v+u;}
 function rv(el,lid,u){const l=document.getElementById(lid);if(l)l.textContent=el.value+u;}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function toast(msg){
+  const t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),2400);
+}
 
 // ── PHONE CONNECT ────────────────────────────────────────
 let _phoneModalQRGenerated = false;
@@ -1531,8 +1799,8 @@ function closePhoneConnect() {
 }
 function copyPhoneConnectUrl() {
   const url = _phoneBaseUrl + '/deck.html';
-  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('URL Copied!'));
-  else { const t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('URL Copied!'); }
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('URL berhasil disalin'));
+  else { const t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('URL berhasil disalin'); }
 }
 
 // ─── ACCORDION ──────────────────────────────────────────
@@ -1707,7 +1975,7 @@ async function saveRecordedSample() {
     });
     const res = await r.json();
     if (res.ok) {
-      toast('🎙️ Sample "' + rawName + '" berhasil ditambahkan ke Soundboard!');
+      toast('Sample "' + rawName + '" berhasil ditambahkan');
       closeSamplerModal();
       loadFiles();
     } else {
@@ -1754,19 +2022,74 @@ function quickSearchMyInstants(q) {
 async function searchMyInstants(queryOverride) {
   const q = queryOverride !== undefined ? queryOverride : (document.getElementById('myinstants-search-input').value || '').trim();
   const container = document.getElementById('myinstants-results');
-  container.innerHTML = '<div style="text-align:center;color:var(--tx3);padding:40px 10px;font-size:.8rem;">⏳ Mencari sound di MyInstants...</div>';
+  container.innerHTML = `
+    <div class="loading-inline" style="padding:40px 10px;">
+      <span class="loading-spinner"></span>
+      <span>Mencari sound di MyInstants...</span>
+    </div>`;
 
   try {
     const res = await fetch('/api/myinstants/search?q=' + encodeURIComponent(q));
     const data = await res.json();
     if (data.ok && Array.isArray(data.data) && data.data.length) {
       renderMyInstantsResults(data.data);
+    } else if (data.error) {
+      container.innerHTML = `
+        <div class="lc-empty-state" style="margin:16px 0;">
+          <div class="lc-empty-icon-wrap accent-amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="lc-empty-title">Koneksi MyInstants Gagal</div>
+          <div class="lc-empty-desc">${data.error}</div>
+          <button type="button" class="lc-empty-cta-secondary" onclick="searchMyInstants('${q.replace(/'/g, "\\'")}')">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Coba Lagi
+          </button>
+        </div>`;
     } else {
-      container.innerHTML = '<div style="text-align:center;color:var(--tx3);padding:40px 10px;font-size:.8rem;">Tidak ditemukan suara untuk "' + q + '". Coba kata kunci lain.</div>';
+      container.innerHTML = `
+        <div class="lc-empty-state" style="margin:16px 0;">
+          <div class="lc-empty-icon-wrap accent-sky">
+            <!-- Audio Waveform Off SVG -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"></path>
+              <line x1="1" y1="1" x2="23" y2="23" stroke="var(--rd)"></line>
+            </svg>
+          </div>
+          <div class="lc-empty-title">Sound Effect Tidak Ditemukan</div>
+          <div class="lc-empty-desc">Tidak ditemukan suara untuk <b>"${q || 'pencarian'}"</b>. Pilih rekomendasi suara populer:</div>
+          <div class="lc-empty-chips">
+            <button type="button" class="lc-chip-btn" onclick="applyMyInstantsChip('Bruh')">🔊 Bruh</button>
+            <button type="button" class="lc-chip-btn" onclick="applyMyInstantsChip('Airhorn')">📢 Airhorn</button>
+            <button type="button" class="lc-chip-btn" onclick="applyMyInstantsChip('Laugh')">😂 Laugh</button>
+            <button type="button" class="lc-chip-btn" onclick="applyMyInstantsChip('Victory')">🏆 Victory</button>
+          </div>
+        </div>`;
     }
   } catch(e) {
-    container.innerHTML = '<div style="text-align:center;color:#ef4444;padding:40px 10px;font-size:.8rem;">Gagal memuat dari MyInstants: ' + e.message + '</div>';
+    container.innerHTML = `
+      <div class="lc-empty-state" style="margin:16px 0;">
+        <div class="lc-empty-icon-wrap accent-amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="lc-empty-title">Gagal Menghubungi Server</div>
+        <div class="lc-empty-desc">Terjadi kesalahan: ${e.message}</div>
+      </div>`;
   }
+}
+
+function applyMyInstantsChip(keyword) {
+  const inp = document.getElementById('myinstants-search-input');
+  if (inp) inp.value = keyword;
+  searchMyInstants(keyword);
 }
 
 function renderMyInstantsResults(list) {
@@ -1843,19 +2166,69 @@ async function useMyInstantsSound(mp3Url, title, mode) {
   toast('⬇ Mengunduh suara dari MyInstants...');
   try {
     const isCompanion = mode === 'companion';
-    const res = await fetch('/api/myinstants/download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mp3Url,
-        title,
-        isCompanionOnly: isCompanion,
-        companionFor: editing || null
-      })
-    });
-    const data = await res.json();
+    let data = null;
 
-    if (data.ok && data.filename) {
+    // 1. Coba download via server backend
+    try {
+      const res = await fetch('/api/myinstants/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mp3: mp3Url,
+          name: title,
+          mp3Url: mp3Url,
+          title: title,
+          isCompanionOnly: isCompanion,
+          companionFor: editing || null
+        })
+      });
+      const resData = await res.json();
+      if (resData.ok && resData.filename) {
+        data = resData;
+      }
+    } catch (serverErr) {
+      console.warn('Server download request failed, attempting browser direct download fallback...', serverErr);
+    }
+
+    // 2. Fallback: Download langsung via browser client stack (Chromium bypasses Cloudflare) lalu simpan via /upload
+    if (!data) {
+      const audioRes = await fetch(mp3Url);
+      if (!audioRes.ok) {
+        throw new Error('Gagal mengunduh audio: HTTP ' + audioRes.status);
+      }
+      const audioBlob = await audioRes.blob();
+      const safeBase = (title || 'instant').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim() || 'instant';
+      const filename = `${safeBase}_${Date.now()}.mp3`;
+
+      const formData = new FormData();
+      formData.append('files', audioBlob, filename);
+
+      const uploadRes = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const uploadJson = await uploadRes.json();
+      if (!uploadJson.ok || !uploadJson.files || uploadJson.files.length === 0) {
+        throw new Error(uploadJson.error || 'Gagal menyimpan file audio');
+      }
+
+      const savedFilename = uploadJson.files[0];
+      // Daftarkan metadata nama/label
+      await fetch('/api/media/' + encodeURIComponent(savedFilename) + '/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: title, category: 'sound effect' })
+      });
+
+      data = {
+        ok: true,
+        filename: savedFilename,
+        name: title,
+        label: title
+      };
+    }
+
+    if (data && data.filename) {
       if (isCompanion) {
         // Otomatis simpan companionAudio ke settings meme yang sedang diedit
         if (editing) {
@@ -1874,7 +2247,7 @@ async function useMyInstantsSound(mp3Url, title, mode) {
         if (alistEl) {
           const af = files.filter(x => getType(x.name) === 'audio');
           alistEl.innerHTML =
-            '<option value="">— No sound —</option>'
+            '<option value="">(Tanpa Audio)</option>'
             + af.map(x => {
               const lbl = getLabel(x);
               return '<option value="' + x.name + '"' + (x.name === data.filename ? ' selected' : '') + '>' + lbl + '</option>';
@@ -1882,17 +2255,17 @@ async function useMyInstantsSound(mp3Url, title, mode) {
           alistEl.value = data.filename;
         }
         const hintEl = document.getElementById('audio-hint');
-        if (hintEl) hintEl.innerHTML = '✓ Audio <b>' + (data.label || data.filename) + '</b> otomatis dipasangkan & disimpan ke gambar ini.';
+        if (hintEl) hintEl.innerHTML = 'Audio <b>' + (data.label || data.name || data.filename) + '</b> otomatis dipasangkan ke meme ini.';
         updateAccSummaries();
         closeMyInstantsModal();
-        toast('⚡ Berhasil dipasangkan ke meme: "' + (data.label || data.filename) + '"');
+        toast('Audio terpasang ke meme: ' + (data.label || data.name || data.filename));
       } else {
         await loadFiles();
         closeMyInstantsModal();
-        toast('✓ Berhasil ditambahkan ke Soundboard: "' + (data.label || data.filename) + '"');
+        toast('Audio ditambahkan ke soundboard: ' + (data.label || data.name || data.filename));
       }
     } else {
-      toast('Gagal mengunduh: ' + (data.error || 'Server error'));
+      toast('Gagal mengunduh: ' + (data?.error || 'Server error'));
     }
   } catch(e) {
     toast('Error: ' + e.message);
@@ -1905,7 +2278,7 @@ loadFiles();
 <script>
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('dmask').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('dmask').classList.remove('open');}
-function clearThumbCache(){document.querySelectorAll('img[src*="/api/thumb/"]').forEach(img=>{const s=img.src.split('?')[0];img.src=s+'?t='+Date.now();});closeSidebar();toast('Thumbnail cache cleared!');}
+function clearThumbCache(){document.querySelectorAll('img[src*="/api/thumb/"]').forEach(img=>{const s=img.src.split('?')[0];img.src=s+'?t='+Date.now();});closeSidebar();toast('Cache thumbnail dibersihkan');}
 
 KSK.init('customdeck');
 </script>

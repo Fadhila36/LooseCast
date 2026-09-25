@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tomatosuki Stream Kit AIO</title>
+<title>LooseCast</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/dashboard.css">
@@ -16,7 +16,7 @@
 <div class="main-wrap">
   <header class="topbar">
     <button class="burger" onclick="openSidebar()" title="Menu"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
-    <div class="brand-text">TOMATOSUKI <span>STREAM KIT</span></div>
+    <div class="brand-text">LOOSE<span>CAST</span></div>
     <div class="status-pill"><div class="sdot"></div><span data-i18n="topbar_running">RUNNING</span></div>
     <div class="sp"></div>
     <div class="url-chip"><code id="url-disp">localhost:3000</code><button class="copy-btn" onclick="copyUrl()" title="Copy URL"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></div>
@@ -136,17 +136,17 @@
   <div class="modal-box" style="max-width:440px;padding:24px 28px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
       <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
-        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);box-shadow:0 0 16px -2px var(--brand-glow);">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
         <span data-i18n="feedback_modal_title">Feedback & Support</span>
       </div>
       <button onclick="closeFeedback()" class="ob-modal-close">✕</button>
     </div>
-    <div style="font-size:0.75rem;color:var(--tx2);margin-bottom:18px;line-height:1.6;" data-i18n="feedback_modal_desc">Ada pertanyaan, bug report, atau saran pengembangan untuk <b>Tomatosuki Stream Kit AIO</b>? Hubungi kontak resmi:</div>
+    <div style="font-size:0.75rem;color:var(--tx2);margin-bottom:18px;line-height:1.6;" data-i18n="feedback_modal_desc">Ada pertanyaan, bug report, atau saran pengembangan untuk <b>LooseCast</b>? Hubungi kontak resmi:</div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-      <a href="https://fadhilaabiyyu.my.id" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='var(--ac)';this.style.background='rgba(56,189,248,0.06)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);display:flex;align-items:center;justify-content:center;color:#38bdf8;flex-shrink:0;">
+      <a href="https://fadhilaabiyyu.my.id" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='var(--brand)';this.style.background='var(--brand-dim)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand-hover);flex-shrink:0;">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
         <div>
@@ -154,13 +154,13 @@
           <div style="font-size:0.68rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;">fadhilaabiyyu.my.id</div>
         </div>
       </a>
-      <a href="https://github.com/fadhila36" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='#a855f7';this.style.background='rgba(168,85,247,0.06)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;color:#a855f7;flex-shrink:0;">
+      <a href="https://github.com/fadhila36/LooseCast" target="_blank" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--tx);transition:all var(--duration-fast);" onmouseover="this.style.borderColor='var(--brand)';this.style.background='var(--brand-dim)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.background='rgba(255,255,255,0.03)'">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--tx1);flex-shrink:0;">
           <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         </div>
         <div>
-          <div style="font-size:0.8rem;font-weight:700;">GitHub Profile</div>
-          <div style="font-size:0.68rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;">github.com/fadhila36</div>
+          <div style="font-size:0.8rem;font-weight:700;">GitHub Repository</div>
+          <div style="font-size:0.68rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;">github.com/fadhila36/LooseCast</div>
         </div>
       </a>
     </div>
@@ -182,16 +182,16 @@
     </div>
 
     <!-- Create Card -->
-    <div style="background:linear-gradient(145deg, rgba(26,28,42,0.8) 0%, rgba(16,17,26,0.95) 100%);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px;margin-bottom:18px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-      <div style="font-size:0.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+    <div style="background:var(--panel2);border:1px solid var(--bd2);border-radius:var(--r-md);padding:16px 18px;margin-bottom:18px;">
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tx2);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         <span data-i18n="kd_create_title">Buat Counter Baru</span>
       </div>
       <div style="display:flex;gap:10px;align-items:center;">
         <input type="text" id="kd-name-inp" placeholder="Nama counter, e.g. Ranked Solo" data-i18n-placeholder="kd_input_placeholder" maxlength="40"
-          style="flex:1;background:rgba(8,9,14,0.9);border:1px solid rgba(255,255,255,0.12);color:var(--tx);border-radius:10px;padding:11px 14px;font-size:0.82rem;outline:none;"
+          style="flex:1;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);border-radius:var(--r-sm);padding:10px 14px;font-size:0.8rem;outline:none;"
           onkeydown="if(event.key==='Enter')saveKDCounter()">
-        <button onclick="saveKDCounter()" style="background:linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);border:none;color:#040914;padding:11px 18px;border-radius:10px;font-size:0.76rem;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(56,189,248,0.35);transition:all var(--duration-fast);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'" data-i18n="kd_create_btn">+ Buat</button>
+        <button onclick="saveKDCounter()" style="background:var(--brand);border:none;color:#fff;padding:10px 18px;border-radius:var(--r-sm);font-size:0.76rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all var(--duration-fast);" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'" data-i18n="kd_create_btn">+ Buat</button>
       </div>
       <div id="kd-error" style="font-size:0.68rem;color:#ef4444;margin-top:8px;display:none;font-weight:600;"></div>
     </div>
@@ -204,39 +204,37 @@
       <div style="font-size:0.75rem;color:var(--tx3);text-align:center;padding:24px 14px;background:rgba(255,255,255,0.02);border:1px dashed var(--bd2);border-radius:12px;" data-i18n="kd_empty_hint">Belum ada counter. Ketik nama di atas untuk membuat yang pertama!</div>
     </div>
 
-    <button onclick="closeKDSetup()" style="width:100%;margin-top:20px;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:12px;border-radius:10px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
+    <button onclick="closeKDSetup()" style="width:100%;margin-top:20px;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:12px;border-radius:var(--r-sm);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" data-i18n="modal_close_btn">Tutup</button>
   </div>
 </div>
-
-
 
 <!-- CONNECT MODAL -->
 <div class="modal-bg" id="connect-modal">
   <div class="modal-box" style="max-width:400px;padding:24px 28px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
-      <div style="font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;letter-spacing:-0.3px;">
-        <div style="width:34px;height:34px;border-radius:10px;background:var(--ac-dim);border:1px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center;color:var(--ac);box-shadow:0 0 16px -2px var(--ac-glow);">
+      <div style="font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:10px;letter-spacing:-0.3px;">
+        <div style="width:34px;height:34px;border-radius:var(--r-sm);background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
         </div>
         <span data-i18n="connect_modal_title">Connect to Phone</span>
       </div>
       <button onclick="closeConnect()" class="ob-modal-close">✕</button>
     </div>
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd2);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;">
-      <div style="font-size:0.65rem;color:var(--tx2);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;" data-i18n="connect_modal_hint">Scan QR Code dari HP (Satu WiFi)</div>
-      <div id="qr-container" style="margin:12px auto;width:160px;height:160px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+    <div style="background:var(--panel2);border:1px solid var(--bd2);border-radius:var(--r-md);padding:20px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:0.68rem;color:var(--tx2);margin-bottom:12px;font-weight:600;letter-spacing:0.5px;" data-i18n="connect_modal_hint">Scan QR Code dari HP (Satu WiFi)</div>
+      <div id="qr-container" style="margin:12px auto;width:160px;height:160px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:0 4px 16px rgba(0,0,0,0.4);">
         <div id="qr-target" style="width:144px;height:144px;"></div>
       </div>
-      <div class="mono" style="font-size:0.8rem;font-weight:700;color:var(--ac);margin-top:10px;word-break:break-all;" id="phone-url-disp">—</div>
+      <div class="mono" style="font-size:0.75rem;font-weight:600;color:var(--brand);margin-top:10px;word-break:break-all;" id="phone-url-disp">—</div>
     </div>
-    <button onclick="copyPhoneUrl()" style="width:100%;background:linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);border:none;color:#040914;padding:12px;border-radius:10px;font-size:0.8rem;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 14px rgba(56,189,248,0.35);" data-i18n="connect_copy_url_btn">Copy URL</button>
-    <button onclick="closeConnect()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:11px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;" data-i18n="modal_close_btn">Tutup</button>
+    <button onclick="copyPhoneUrl()" style="width:100%;background:var(--brand);border:none;color:#fff;padding:11px;border-radius:var(--r-sm);font-size:0.78rem;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all var(--duration-fast);" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'" data-i18n="connect_copy_url_btn">Copy URL</button>
+    <button onclick="closeConnect()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--bd2);color:var(--tx);padding:10px;border-radius:var(--r-sm);font-size:0.78rem;font-weight:600;cursor:pointer;" data-i18n="modal_close_btn">Tutup</button>
   </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/stream-kit-ui.js"></script>
+<script src="/loosecast-ui.js"></script>
 <script src="/js/shared.js"></script>
 
 <script>
@@ -249,7 +247,7 @@ socket.on('media-list-updated', () => {
 });
 
 // Dengarkan toggle dari tray Electron (via IPC)
-const electronBridge = window.streamKitElectron || window.kskElectron;
+const electronBridge = window.looseCastElectron || window.streamKitElectron || window.kskElectron;
 if (electronBridge && electronBridge.onShortcutStateChanged) {
   electronBridge.onShortcutStateChanged((enabled) => {
     localStorage.setItem('shortcuts_enabled', String(enabled));
@@ -334,7 +332,7 @@ function cp(url){
   if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Copied!'));
   else{const t=document.createElement('textarea');t.value=url;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Copied!');}
 }
-function toast(msg){const t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;bottom:70px;right:20px;background:var(--ac);color:#000;font-size:.7rem;font-weight:700;padding:7px 14px;border-radius:8px;z-index:999;';document.body.appendChild(t);setTimeout(()=>t.remove(),1500);}
+function toast(msg){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('show');clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),2400);}
 
 // (TYPO ASYNC DOUBLE SUDAH DIPERBAIKI DI SINI)
 async function loadStats(){
@@ -402,7 +400,35 @@ async function loadKDCounters() {
 function renderKDList(counters) {
   const el = document.getElementById('kd-list');
   if (!counters.length) {
-    el.innerHTML = '<div style="font-size:0.75rem;color:var(--tx3);text-align:center;padding:24px 14px;background:rgba(255,255,255,0.02);border:1px dashed var(--bd2);border-radius:12px;">Belum ada counter. Ketik nama di atas untuk membuat yang pertama!</div>';
+    el.innerHTML = `
+      <div class="lc-empty-state" style="padding:22px 14px;margin:8px 0;">
+        <div class="lc-empty-icon-wrap accent-brand" style="width:44px;height:44px;margin-bottom:10px;">
+          <!-- Scoreboard Tally Counter SVG -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;">
+            <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+            <path d="M7 8h10"></path>
+            <path d="M7 12h10"></path>
+            <path d="M7 16h10"></path>
+            <path d="M12 4v16"></path>
+          </svg>
+        </div>
+        <div class="lc-empty-title" style="font-size:0.84rem;">Pelacak Skor Belum Dibuat</div>
+        <div class="lc-empty-desc" style="font-size:0.7rem;margin-bottom:12px;">Nilai skor tersimpan otomatis ke file .txt lokal untuk Text Source di OBS. Pilih preset instan:</div>
+        <div class="lc-empty-chips">
+          <button type="button" class="lc-chip-btn" onclick="applyCounterPreset('Kill / Death')">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg>
+            Kill / Death
+          </button>
+          <button type="button" class="lc-chip-btn" onclick="applyCounterPreset('Win Streak')">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7v4h10v-4h-2c-.55 0-1-.45-1-1v-2.34"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+            Win Streak
+          </button>
+          <button type="button" class="lc-chip-btn" onclick="applyCounterPreset('Round Score')">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            Round Score
+          </button>
+        </div>
+      </div>`;
     return;
   }
   el.innerHTML = counters.map(c => {
@@ -482,6 +508,14 @@ async function saveKDCounter() {
     loadKDCounters();
     toast('Counter "'+name+'" berhasil dibuat!');
   } catch(e) { errEl.textContent='Error: '+e.message; errEl.style.display='block'; }
+}
+
+async function applyCounterPreset(presetName) {
+  const inp = document.getElementById('kd-name-inp');
+  if (inp) {
+    inp.value = presetName;
+    saveKDCounter();
+  }
 }
 
 async function deleteKDCounter(filename) {
@@ -612,22 +646,22 @@ function openShortcutSetup() {
             </div>
           </div>
 
-          <div style="background:rgba(56,189,248,.05); border-left:3px solid var(--ac); padding:12px; border-radius:4px 10px 10px 4px;">
-            <p style="font-size:.7rem; color:var(--tx); line-height:1.5; margin:0;">
-              ${StreamKitUI.t('sc_tutor_tips', '💡 <b>Tips:</b> Kamu juga bisa atur Shortcut untuk tombol <b>Win / Lose / Death Counter</b> dan <b>Custom Tab</b> melalui icon gear ⚙️ yang muncul saat Shortcut Mode aktif.')}
+          <div style="background:var(--panel2); border:1px solid var(--bd); padding:12px 14px; border-radius:var(--r-sm);">
+            <p style="font-size:.72rem; color:var(--tx); line-height:1.5; margin:0;">
+              ${StreamKitUI.t('sc_tutor_tips', '<b>Tips:</b> Anda juga dapat mengatur shortcut untuk tombol Counter dan Tab Kustom melalui ikon pengaturan saat Mode Shortcut aktif.')}
             </p>
           </div>
 
-          <p style="font-size:.62rem; color:var(--tx3); font-style:italic; line-height:1.4; text-align:center;">
-            ${StreamKitUI.t('sc_tutor_hint', 'Pastikan Shortcut Mode (bar biru di bawah) menyala untuk melihat icon pengaturannya.')}
+          <p style="font-size:.65rem; color:var(--tx3); line-height:1.4; text-align:center;">
+            ${StreamKitUI.t('sc_tutor_hint', 'Pastikan Mode Shortcut dalam status aktif.')}
           </p>
         </div>
 
-        <div style="padding:16px 24px; background:rgba(255,255,255,.02); border-top:1px solid var(--bd); display:flex;">
-          <a href="/deck.html" style="flex:1; background:var(--ac); color:#000; text-decoration:none; text-align:center; padding:12px; border-radius:10px; font-size:.75rem; font-weight:900; letter-spacing:1px; box-shadow:0 4px 15px rgba(56,189,248,.2); transition:all .15s;" 
-             onmouseover="this.style.transform='translateY(-2px)'" 
-             onmousedown="this.style.transform='translateY(1px)'">
-            ${StreamKitUI.t('sc_tutor_launch', 'LUNCURKAN DECK VIEW')}
+        <div style="padding:14px 20px; background:var(--panel2); border-top:1px solid var(--bd); display:flex;">
+          <a href="/deck.html" style="flex:1; background:var(--brand); color:#fff; text-decoration:none; text-align:center; padding:10px; border-radius:var(--r-sm); font-size:.76rem; font-weight:700; transition:all var(--duration-fast);" 
+             onmouseover="this.style.background='var(--brand-hover)'" 
+             onmouseout="this.style.background='var(--brand)'">
+            ${StreamKitUI.t('sc_tutor_launch', 'Luncurkan Deck Controller')}
           </a>
         </div>
       </div>
@@ -641,12 +675,11 @@ function toggleShortcutEnabled() {
   const newVal = !cur;
   localStorage.setItem('shortcuts_enabled', String(newVal));
   updateScToggleUI(newVal);
-  // Notify deck.html kalau lagi terbuka di tab lain (via BroadcastChannel)
   try { new BroadcastChannel('streamkit').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
   try { new BroadcastChannel('ksk').postMessage({ type: 'shortcuts_toggle', enabled: newVal }); } catch {}
   const bridge = window.streamKitElectron || window.kskElectron;
   try { if (bridge && bridge.setShortcutEnabled) bridge.setShortcutEnabled(newVal); } catch {}
-  toast(newVal ? StreamKitUI.t('toast_sc_on', '⌨ Shortcut aktif') : StreamKitUI.t('toast_sc_off', '⌨ Shortcut dimatikan'));
+  toast(newVal ? StreamKitUI.t('toast_sc_on', 'Shortcut keyboard aktif') : StreamKitUI.t('toast_sc_off', 'Shortcut keyboard dinonaktifkan'));
 }
 
 function updateScToggleUI(enabled) {
@@ -656,12 +689,12 @@ function updateScToggleUI(enabled) {
   const wrap = document.getElementById('sc-toggle-wrap');
   if (!dot) return;
   if (enabled) {
-    dot.style.background = 'var(--ac)';
+    dot.style.background = 'var(--brand)';
     knob.style.left = '14px';
-    label.style.color = 'var(--ac)';
+    label.style.color = 'var(--brand)';
     label.textContent = 'ON';
-    wrap.style.borderColor = 'rgba(56,189,248,.3)';
-    wrap.style.background = 'rgba(56,189,248,.06)';
+    wrap.style.borderColor = 'var(--brand-border)';
+    wrap.style.background = 'var(--brand-dim)';
   } else {
     dot.style.background = '#2a2a38';
     knob.style.left = '2px';

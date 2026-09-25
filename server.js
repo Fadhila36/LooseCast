@@ -1,5 +1,5 @@
 /**
- * Tomatosuki Stream Kit AIO - Express & WebSocket Server
+ * LooseCast - Express & WebSocket Server
  * Orchestrates API routes, media handling, OBS integration, and realtime socket events.
  * @module server
  */
@@ -70,14 +70,27 @@ const CONFIG_FILE = path.join(BASE_DIR, 'config.json');
   }
 });
 
-logger.info(MODULE_NAME, `Base path: ${BASE_DIR} | Mode: ${IS_ELECTRON ? 'electron' : 'standalone'}`);
+logger.info(MODULE_NAME, `=== Runtime Path Resolution ===`);
+logger.info(MODULE_NAME, `Base directory: ${BASE_DIR} | Runtime Mode: ${IS_ELECTRON ? 'electron' : 'standalone'}`);
+logger.info(MODULE_NAME, `Media directory: ${MEDIA_DIR}`);
+logger.info(MODULE_NAME, `Thumbnail directory: ${THUMB_DIR}`);
+logger.info(MODULE_NAME, `Text counter directory: ${TEXT_DIR}`);
+logger.info(MODULE_NAME, `Metadata file: ${META_FILE}`);
 
 // Ffmpeg binary resolution
 let ffmpegPath = null;
 try {
-  const ffmpegStatic = require('ffmpeg-static');
-  if (ffmpegStatic && fs.existsSync(ffmpegStatic)) {
-    ffmpegPath = ffmpegStatic;
+  let ffmpegStatic = require('ffmpeg-static');
+  if (ffmpegStatic) {
+    if (typeof ffmpegStatic === 'string' && ffmpegStatic.includes('app.asar') && !ffmpegStatic.includes('app.asar.unpacked')) {
+      const unpackedCandidate = ffmpegStatic.replace('app.asar', 'app.asar.unpacked');
+      if (fs.existsSync(unpackedCandidate)) {
+        ffmpegStatic = unpackedCandidate;
+      }
+    }
+    if (fs.existsSync(ffmpegStatic)) {
+      ffmpegPath = ffmpegStatic;
+    }
   }
 } catch {}
 
@@ -87,7 +100,7 @@ if (!ffmpegPath) {
     ffmpegPath = 'ffmpeg';
   } catch {}
 }
-logger.info(MODULE_NAME, `ffmpeg: ${ffmpegPath ? `available (${ffmpegPath})` : 'not available (video thumbnails disabled)'}`);
+logger.info(MODULE_NAME, `FFmpeg diagnostic: ${ffmpegPath ? `Available at "${ffmpegPath}"` : 'Not detected on system (video thumbnail generation disabled)'}`);
 
 // Stats persistence helpers
 async function loadStatsData() {
@@ -192,8 +205,14 @@ app.use(express.static(path.join(APP_PATH, 'public')));
 app.use('/lang', express.static(path.join(APP_PATH, 'lang')));
 app.use('/assets', express.static(MEDIA_DIR));
 
-app.get('/stream-kit-ui.js', (req, res) => res.sendFile(path.join(APP_PATH, 'stream-kit-ui.js')));
-app.get('/ksk-ui.js', (req, res) => res.sendFile(path.join(APP_PATH, 'stream-kit-ui.js')));
+// UI Script Delivery: Main loosecast-ui.js with 301 redirects for legacy aliases
+const UI_SCRIPT_PATH = fs.existsSync(path.join(APP_PATH, 'loosecast-ui.js'))
+  ? path.join(APP_PATH, 'loosecast-ui.js')
+  : path.join(APP_PATH, 'stream-kit-ui.js');
+
+app.get('/loosecast-ui.js', (req, res) => res.sendFile(UI_SCRIPT_PATH));
+app.get('/stream-kit-ui.js', (req, res) => res.redirect(301, '/loosecast-ui.js'));
+app.get('/ksk-ui.js', (req, res) => res.redirect(301, '/loosecast-ui.js'));
 app.get('/customdeck', (req, res) => res.sendFile(path.join(APP_PATH, 'public', 'customdeck.html')));
 
 // REST API routes
@@ -211,7 +230,7 @@ app.get('/api/media', mediaController.listMedia);
 app.get('/api/media/:filename/settings', mediaController.getMediaSettings);
 app.post('/api/media/:filename/settings', mediaController.updateMediaSettings);
 app.delete('/api/media/:filename', mediaController.deleteMedia);
-app.post('/upload', upload.array('files'), mediaController.handleUpload);
+app.post('/upload', upload.any(), mediaController.handleUpload);
 app.get('/api/thumb/:filename', mediaController.getThumbnail);
 app.post('/trigger', mediaController.triggerMeme);
 app.post('/hide', (req, res) => {
@@ -295,6 +314,14 @@ app.post('/api/obs/toggle-mute', async (req, res) => {
     const { inputName } = req.body;
     if (!inputName) return res.status(400).json({ ok: false, error: 'inputName is required' });
     res.json(await obsController.toggleInputMute(inputName));
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+app.get('/api/obs/video-settings', async (req, res) => {
+  try {
+    const videoSettings = await obsController.getVideoSettings();
+    res.json({ ok: true, ...videoSettings });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -448,11 +475,11 @@ server.on('error', (err) => {
     if (currentPortToTry !== FALLBACK_SERVER_PORT) {
       logger.warn(MODULE_NAME, `Port ${currentPortToTry} in use, attempting fallback port ${FALLBACK_SERVER_PORT}...`);
       currentPortToTry = FALLBACK_SERVER_PORT;
-      startListening(FALLBACK_SERVER_PORT);
+      setImmediate(() => startListening(FALLBACK_SERVER_PORT));
     } else {
       logger.warn(MODULE_NAME, `Fallback port ${FALLBACK_SERVER_PORT} in use, attempting ephemeral dynamic port...`);
       currentPortToTry = 0;
-      startListening(0);
+      setImmediate(() => startListening(0));
     }
   } else {
     logger.error(MODULE_NAME, 'Server error', err);
@@ -463,12 +490,19 @@ function startListening(portToTry) {
   currentPortToTry = portToTry;
   server.listen(portToTry, () => {
     const activePort = server.address().port;
-    logger.info(MODULE_NAME, `Tomatosuki Server running on port ${activePort} | media: ${MEDIA_DIR}`);
+    logger.info(MODULE_NAME, `LooseCast Server running on port ${activePort} | media: ${MEDIA_DIR}`);
 
     // Notify Electron parent process via IPC if launched via child_process.fork()
     if (typeof process.send === 'function') {
       process.send({ type: 'server-started', port: activePort });
     }
+  });
+}
+
+// Self-terminate when parent Electron process disconnects (orphan process prevention)
+if (IS_ELECTRON && typeof process.on === 'function') {
+  process.on('disconnect', () => {
+    process.exit(0);
   });
 }
 

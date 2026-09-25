@@ -199,6 +199,12 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(res.body.ok, false);
   });
 
+  it('GET /api/obs/video-settings harus mengembalikan error jika OBS tidak terhubung', async () => {
+    const res = await request('GET', '/api/obs/video-settings');
+    assert.strictEqual(res.status, 500);
+    assert.strictEqual(res.body.ok, false);
+  });
+
   it('POST /api/macros/import dan GET /api/macros/:id/export harus mengimpor dan mengekspor single macro dengan benar', async () => {
     const macroPayload = {
       name: 'Integration Test Macro',
@@ -217,6 +223,17 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(exportRes.status, 200);
     assert.strictEqual(exportRes.body.name, 'Integration Test Macro');
     assert.strictEqual(exportRes.body.steps.length, 1);
+  });
+
+  it('GET /api/myinstants/search harus mengembalikan daftar suara dari REST API', async () => {
+    const res = await request('GET', '/api/myinstants/search?q=gufron');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.ok, true);
+    assert.ok(Array.isArray(res.body.data));
+    if (res.body.data.length > 0) {
+      assert.ok(res.body.data[0].name);
+      assert.ok(res.body.data[0].mp3);
+    }
   });
 
   it('POST /api/myinstants/download harus menolak URL SSRF / domain luar MyInstants', async () => {

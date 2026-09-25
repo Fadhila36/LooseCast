@@ -72,7 +72,10 @@ function createMediaController({ mediaService }) {
    * POST /upload
    */
   function handleUpload(req, res) {
-    const uploaded = (req.files || []).map((f) => f.filename);
+    const fileList = req.files
+      ? (Array.isArray(req.files) ? req.files : Object.values(req.files).flat())
+      : (req.file ? [req.file] : []);
+    const uploaded = fileList.map((f) => f.filename);
     logger.info(MODULE_NAME, `Uploaded ${uploaded.length} file(s)`);
     if (typeof mediaService.notifyMediaUploaded === 'function') {
       mediaService.notifyMediaUploaded(uploaded);

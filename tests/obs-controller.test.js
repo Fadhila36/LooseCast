@@ -97,4 +97,18 @@ test('OBSController Unit Tests', async (t) => {
     assert.equal(result.success, true);
     assert.equal(obs.isConnected, false);
   });
+
+  await t.test('harus menjadwalkan timer reconnect ketika connect gagal', async () => {
+    const obs = new OBSController(tmpDir, null);
+    await obs.init();
+
+    // Connect ke port yang tidak ada / offline
+    const res = await obs.connect({ ip: '127.0.0.1', port: 19999, autoConnect: true });
+    assert.equal(res.success, false);
+    assert.equal(obs.isConnected, false);
+    assert.ok(obs.reconnectTimer !== null, 'reconnectTimer harus dijadwalkan');
+
+    await obs.disconnect();
+    assert.equal(obs.reconnectTimer, null, 'reconnectTimer harus dibersihkan saat disconnect');
+  });
 });

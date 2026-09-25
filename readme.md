@@ -1,194 +1,178 @@
-# 🚀 Tomatosuki Stream Kit AIO
+# LooseCast
 
-**All-in-One Stream Deck Controller & OBS Overlay Ecosystem**  
-*Meme Player, Video & Audio FX, Chroma Key, OBS WebSocket Automations, Macro Engine, K/D Counters & Remote Deck via Smartphone.*
+Local stream deck controller and OBS Studio overlay application built with Electron, Express, and Socket.io.
 
----
+LooseCast allows streamers to trigger media overlays, play sound effects, execute multi-step automation macros, control OBS Studio via WebSocket, update atomic text counters, and control scenes remotely from a mobile browser on the local network.
 
-Tomatosuki Stream Kit AIO adalah aplikasi kontroler streaming profesional berbasis **Electron + Node.js (Express & Socket.io)**. Didesain khusus untuk content creator, gamer, dan streamer di platform Twitch, YouTube, Kick, maupun TikTok Live. Cukup dengan satu URL *Browser Source* di OBS Studio, Anda dapat memicu meme video, sound effect, macro automation, animasi overlay, dan counter game secara *real-time* tanpa membebani performa PC.
+## Core Capabilities
 
----
+### Media Overlay and Meme Player
+- Format support: MP4, WebM, MOV, MP3, WAV, OGG, GIF, WebP, PNG, JPG.
+- Client-side chroma key filter for green screen videos directly in the browser overlay.
+- Visual effects: screen shake, zoom, flash, glitch, and volume normalization.
+- Video thumbnail generation powered by local FFmpeg.
 
-## 🌟 Fitur Unggulan
+### OBS Studio WebSocket Integration
+- Compatible with OBS Studio 28+ (WebSocket v5 protocol).
+- Switch active program scenes.
+- Toggle scene item visibility.
+- Mute and unmute audio inputs (microphone, desktop audio).
+- Real-time connection status synchronization with auto-reconnect.
 
-### 🎭 1. Multi-Format Meme & Media Player
-- **Dukungan Format Luas:** Video (`.mp4`, `.webm`, `.mov`), Audio (`.mp3`, `.wav`, `.ogg`), Animasi (`.gif`, `.webp`), dan Gambar (`.png`, `.jpg`).
-- **Built-in Chroma Key:** Otomatis hilangkan background hijau (*green screen*) langsung di browser overlay tanpa perlu filter tambahan di OBS.
-- **Visual FX & Screen Shake:** Efek kamera getar (*screen shake*), zoom in/out, flash, dan glitch saat meme dipicu.
-- **Audio Normalizer & Volume Control:** Pengaturan volume per media + Master Volume slider dengan integrasi FFmpeg.
+### Multi-Step Automation Engine
+- Chain multiple actions into a single trigger (play audio, pause, switch scene, toggle source, unmute audio).
+- Import and export macro presets via JSON.
 
-### 🔌 2. Integrasi OBS Studio WebSocket v5
-- **Scene Switcher:** Ganti scene OBS secara instan langsung dari deck controller.
-- **Source Visibility Toggle:** Munculkan atau sembunyikan overlay/source/kamera di OBS dengan 1 klik.
-- **Audio Input Mute/Unmute:** Toggle mute mikrofon, game audio, atau musik BGM.
-- **Status Indikator Real-time:** Menampilkan status koneksi WebSocket OBS di dashboard secara otomatis.
+### MyInstants Soundboard Integration
+- Search sound memes directly from MyInstants inside the app.
+- Audio preview and one-click import into local media storage.
 
-### ⚡ 3. Macro & Automation Engine
-- **Multi-Step Automation:** Gabungkan berbagai aksi dalam 1 tombol (contoh: Putar suara intro ➔ Delay 1.5 detik ➔ Ganti Scene OBS ➔ Munculkan meme video ➔ Unmute mic).
-- **Import / Export Macro:** Bagikan dan simpan konfigurasi macro dalam format JSON.
+### Mobile Deck Remote (LAN)
+- Open the deck interface on mobile or tablet browsers via local IP or QR code.
+- Trigger media, change scenes, and update counters without alt-tabbing during full-screen games.
 
-### 🌐 4. MyInstants Soundboard Search & Instant Import
-- Cari ribuan sound meme populer langsung dari library **MyInstants** di dalam aplikasi.
-- Preview audio seketika dan tambahkan ke Stream Deck Anda hanya dengan 1 klik tanpa perlu download manual.
+### Atomic Game Counters
+- Track game stats (Kills, Deaths, Wins, Losses, or custom counters).
+- Atomic disk synchronization to local text files for OBS Text (GDI+) sources.
 
-### 📱 5. Mobile Deck Remote (LAN / Wi-Fi)
-- **Connect to Phone via QR Code:** Buka Deck Controller di smartphone atau tablet tanpa install aplikasi tambahan.
-- Trigger meme, kontrol counter, dan ganti scene langsung dari HP saat bermain game layar penuh (*fullscreen*) tanpa perlu *alt-tab*.
+### Architecture and Security
+- Local-first architecture: all core assets and dependencies run offline without external CDNs.
+- Atomic file operations with temporary file swapping to prevent data corruption.
+- Strict path sanitization to prevent path traversal vulnerabilities.
+- One-click backup and restore of media, counters, and configurations to ZIP archives.
+- Multi-language interface support (Bahasa Indonesia and English).
 
-### ⚔️ 6. Atomic Game Counters (K/D/W/L Tracker)
-- Kelola counter Kill, Death, Win, Loss, atau Custom Counter apa pun.
-- Nilai counter tersimpan secara otomatis dan atomik ke file `.txt` lokal, siap dihubungkan ke **OBS Text (GDI+) Source**.
+## System Requirements
 
-### 🛡️ 7. Performa Tinggi & Keamanan Ketat
-- **Atomic File Store:** Arsitektur penyimpanan data anti-korup (*atomic write*) dengan fallback aman.
-- **Non-blocking Async I/O:** Ringan di CPU dan RAM, tidak mengganggu kestabilan FPS game saat streaming.
-- **OWASP Path Traversal Protection:** Sanitasi ketat terhadap nama file dan jalur direktori aset.
-- **100% Offline Standalone:** Seluruh asset UI dan dependensi berjalan lokal tanpa ketergantungan CDN eksternal.
-- **1-Click Backup & Restore:** Ekspor seluruh aset media, counter, dan preferensi deck ke file ZIP terkompresi.
-- **Multi-Language Support:** Antarmuka multibahasa (Bahasa Indonesia, English, Japanese, Spanish).
+- Operating System: Windows 10 / 11 (64-bit), macOS, or Linux
+- Node.js: Version 18.x or later
+- OBS Studio: Version 28 or later (OBS WebSocket v5 enabled)
 
----
-
-## 🛠️ Persyaratan Sistem
-
-- **Sistem Operasi:** Windows 10 / 11, macOS, atau Linux
-- **Node.js:** Versi 18.x atau lebih baru ([Download Node.js](https://nodejs.org/))
-- **OBS Studio:** Versi 28+ (sudah memiliki OBS WebSocket v5 bawaan)
-
----
-
-## 🚀 Panduan Instalasi & Menjalankan
+## Installation and Execution
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/fadhila36/Tomatosuki-Stream-kit-AIO.git
-cd Tomatosuki-Stream-kit-AIO
+git clone https://github.com/fadhila36/LooseCast.git
+cd LooseCast
 ```
 
-### 2. Install Dependensi
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 3. Jalankan Aplikasi
-Pilih mode yang sesuai dengan kebutuhan Anda:
+### 3. Run Application
 
-* **Mode Desktop App (Electron GUI):**
-  ```bash
-  npm run dev
-  ```
-* **Mode Web Server Saja (Headless / Browser):**
-  ```bash
-  npm start
-  ```
-  *Dashboard dapat diakses di: [http://localhost:3000](http://localhost:3000)*
+Desktop GUI application (Electron):
+```bash
+npm run dev
+```
 
-* **Menjalankan Automated Unit & Integration Tests:**
-  ```bash
-  npm test
-  ```
+Headless web server mode:
+```bash
+npm start
+```
+Dashboard will be accessible at: `http://localhost:3000`
 
----
+Run automated test suite:
+```bash
+npm test
+```
 
-## 🖥️ Panduan Setup di OBS Studio
+## OBS Studio Setup Guide
 
-### Langkah 1: Pasang Browser Source Overlay
-1. Buka **OBS Studio**.
-2. Pada panel **Sources**, klik tombol **`+`** ➔ Pilih **Browser**.
-3. Beri nama source (misalnya: `Tomatosuki Stream Kit Overlay`).
-4. Masukkan URL:
+### Step 1: Add Browser Source Overlay
+1. In OBS Studio, go to the **Sources** panel and click **+** > **Browser**.
+2. Name the source (for example: `LooseCast Overlay`).
+3. Set the URL to:
    ```text
    http://localhost:3000/obs.html
    ```
-5. Atur resolusi:
-   - **Width:** `1920` (sesuaikan dengan canvas Anda)
-   - **Height:** `1080` (sesuaikan dengan canvas Anda)
-6. Centang opsi:
-   - ✅ *Shutdown source when not visible*
-   - ✅ *Refresh browser when scene becomes active*
-7. Klik **OK**.
+4. Set Width to `1920` and Height to `1080` (or match your canvas resolution).
+5. Check:
+   - Shutdown source when not visible
+   - Refresh browser when scene becomes active
+6. Click **OK**.
 
-### Langkah 2: Hubungkan OBS WebSocket (Opsional untuk Kontrol Scene & Audio)
-1. Di OBS Studio, buka menu **Tools** ➔ **WebSocket Server Settings**.
-2. Pastikan opsi **Enable WebSocket server** dicentang (Port default: `4455`).
-3. Di Dashboard Tomatosuki (Tab Settings), masukkan Port & Password OBS WebSocket Anda lalu klik **Connect**.
+### Step 2: Configure OBS WebSocket
+1. In OBS Studio, open **Tools** > **WebSocket Server Settings**.
+2. Check **Enable WebSocket server** (default port is `4455`).
+3. In the LooseCast dashboard (Settings / Hub tab), enter your OBS port and password, then click **Connect**.
 
-### Langkah 3: Menampilkan Counter di OBS
-1. Buat counter di Dashboard Tomatosuki (misal: `Win Streak`).
-2. Di OBS Studio, tambah Source **Text (GDI+)**.
-3. Centang opsi **Read from file**, lalu pilih file teks counter yang berada di dalam folder proyek Anda (folder `assets/`).
+### Step 3: Display Game Counters in OBS
+1. Create a counter in the LooseCast dashboard (e.g. `Kills`).
+2. In OBS Studio, add a **Text (GDI+)** source.
+3. Check **Read from file**, then browse to the counter text file located in `assets/text/` (or your configured user data folder).
 
----
+## Mobile Remote Deck Setup
 
-## 📱 Panduan Menggunakan HP sebagai Stream Deck
+1. Ensure your PC and mobile device are connected to the same local Wi-Fi or LAN network.
+2. In the LooseCast dashboard, open the **Connect to Phone** section.
+3. Scan the displayed QR code with your mobile camera or navigate directly to `http://<YOUR_LOCAL_IP>:3000/deck.html`.
 
-1. Pastikan PC dan Smartphone Anda terhubung ke jaringan Wi-Fi / LAN yang sama.
-2. Di dashboard Tomatosuki, buka tab **Connect to Phone** atau klik ikon barcode/HP.
-3. Scan **QR Code** yang tampil menggunakan kamera HP Anda, atau ketik alamat IP lokal yang tertera (contoh: `http://192.168.1.50:3000/deck.html`).
-4. Deck controller interaktif akan langsung terbuka dan siap digunakan di layar smartphone Anda.
-
----
-
-## 🏗️ Struktur Proyek
+## Project Structure
 
 ```text
-Tomatosuki-Stream-kit-AIO/
-├── assets/                  # Penyimpanan file media (video, audio, gambar)
-├── electron/                # Konfigurasi & lifecycle Electron Desktop
-│   ├── main.js
-│   └── preload.js
-├── lang/                    # File lokalisasi bahasa (id.json, en.json, dll.)
-├── public/                  # Antarmuka web frontend
-│   ├── index.html           # Dashboard utama
-│   ├── deck.html            # Deck view mobile / tablet
-│   ├── obs.html             # Browser source overlay untuk OBS
-│   └── css / js / fonts     # Aset statis lokal tanpa CDN eksternal
+LooseCast/
+├── build/                   # App icons and packaging resources
+├── electron/                # Electron main process and preload bridge
+│   ├── main.js              # Application lifecycle, tray, updater, logging
+│   └── preload.js           # Secure IPC contextBridge bindings
+├── lang/                    # Localization files (id.json, en.json)
+├── public/                  # Frontend web assets
+│   ├── index.html           # Main dashboard
+│   ├── deck.html            # Mobile / tablet deck controller
+│   ├── customdeck.html      # Media manager and deck configuration
+│   ├── obs.html             # Browser source overlay
+│   ├── splash.html          # Startup splash screen
+│   └── css / js / fonts     # Local stylesheets, scripts, and font files
 ├── src/
-│   ├── config/              # Konfigurasi & konstanta aplikasi
-│   ├── controllers/         # Handler route REST API
-│   ├── services/            # Business logic (Media, OBS, Macros, Counters, MyInstants, Backup)
-│   └── utils/               # Path security, atomic file store, network detection
-├── tests/                   # Native test suite (Unit & Integration tests)
-├── server.js                # Entry point server Express & Socket.io
+│   ├── config/              # Application constants and defaults
+│   ├── controllers/         # Express route controllers
+│   ├── services/            # Core business logic (Media, OBS, Macros, Counters)
+│   └── utils/               # Path security, atomic file store, logger
+├── tests/                   # Automated unit and integration test suite
+├── loosecast-ui.js          # Shared client-side UI controller and i18n
+├── server.js                # Express and Socket.io server entry point
 └── package.json
 ```
 
----
+## Packaging and Releases
 
-## 📦 Build Installer / Portable Desktop
-
-Untuk mengompilasi aplikasi menjadi executable Windows (`.exe`):
+To compile executable binaries for Windows:
 
 ```bash
-# Build Installer & Portable (.exe)
+# Build both NSIS Installer and Portable executable
 npm run build
 
-# Build NSIS Installer saja
+# Build NSIS Installer only
 npm run build:installer
 
-# Build Portable (.exe standalone) saja
+# Build Portable standalone executable only
 npm run build:portable
 ```
-File installer yang telah selesai dibuat akan berada di folder `dist/`.
 
----
+Compiled executables will be output to the `dist/` directory:
+- `LooseCast Setup 1.0.0.exe` (NSIS Installer)
+- `LooseCast-Portable-1.0.0.exe` (Portable executable)
 
-## 🧪 Testing & Kualitas Kode
+## Automated Tests
 
-Proyek ini dilengkapi dengan 40+ unit dan integration test suite menggunakan test runner bawaan Node.js:
-- ✅ **Path Traversal Security:** Validasi pencegahan eksploitasi file system.
-- ✅ **Atomic File Transactions:** Menjamin integritas data JSON/Text dari kegagalan crash atau power-cut.
-- ✅ **Macro Sequencing & OBS Integration:** Pengujian aliran aksi multi-step secara sinkron dan asinkron.
-- ✅ **Media Lifecycle:** Pengujian parsing metadata, upload, dan filter format.
+Run the built-in Node.js test runner:
 
----
+```bash
+npm test
+```
 
-## 🌐 Author & Portofolio
+Test coverage includes:
+- Path traversal and security validations
+- Atomic file transactions and crash resilience
+- OBS WebSocket controller and macro sequencing
+- Media upload, MIME filtering, and metadata parsing
+- Backup archive creation and extraction integrity
 
-* **Developer:** Fadhila Abiyyu
-* **Website:** [fadhilaabiyyu.my.id](https://fadhilaabiyyu.my.id)
-* **GitHub:** [@fadhila36](https://github.com/fadhila36)
+## Author
 
----
-
-**© 2026 Crafted with ❤️ by fadhila36.**
+- Developer: Muhammad Fadhila Abiyyu Faris
+- Website: https://fadhilaabiyyu.my.id
+- Repository: https://github.com/fadhila36/LooseCast

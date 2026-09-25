@@ -1,7 +1,7 @@
 {
-  "name": "Tomatosuki Stream Kit Deck",
-  "short_name": "StreamDeck",
-  "description": "Smart Touch Stream Deck, OBS Controller & Soundboard for Streamers",
+  "name": "LooseCast Deck",
+  "short_name": "LooseCast",
+  "description": "LooseCast — Local System Casting Stream Deck & OBS Controller",
   "start_url": "/deck.html",
   "scope": "/",
   "display": "standalone",

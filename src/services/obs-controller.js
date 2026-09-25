@@ -41,6 +41,7 @@ class OBSController {
     if (saved && typeof saved === 'object') {
       this.config = { ...this.config, ...saved };
     }
+    logger.info(MODULE_NAME, `Config loaded: host=${this.config.ip || '127.0.0.1'}, port=${this.config.port || 4455}, autoConnect=${Boolean(this.config.autoConnect)}, hasPassword=${Boolean(this.config.password)}`);
     this._bindEvents();
     if (this.config.autoConnect) {
       this.connect().catch((err) => {
@@ -56,6 +57,7 @@ class OBSController {
   _bindEvents() {
     this.obs.on('CurrentProgramSceneChanged', (data) => {
       this.currentScene = data.sceneName;
+      logger.info(MODULE_NAME, `Scene changed to: "${this.currentScene}"`);
       if (this.io) {
         this.io.emit('obs-scene-changed', {
           currentScene: this.currentScene,
@@ -98,6 +100,7 @@ class OBSController {
       this.isConnected = false;
       this.currentScene = null;
       this.scenes = [];
+      logger.warn(MODULE_NAME, 'OBS WebSocket connection closed');
       if (wasConnected && this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
       }
@@ -107,7 +110,7 @@ class OBSController {
     this.obs.on('ConnectionError', (err) => {
       const wasConnected = this.isConnected;
       this.isConnected = false;
-      logger.warn(MODULE_NAME, `OBS Connection error: ${err.message}`);
+      logger.warn(MODULE_NAME, `OBS WebSocket connection error: ${err.message} (code: ${err.code || 'N/A'})`);
       if (wasConnected && this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
       }
@@ -115,7 +118,7 @@ class OBSController {
     });
 
     this.obs.on('error', (err) => {
-      logger.debug(MODULE_NAME, `Underlying WebSocket error caught: ${err.message}`);
+      logger.debug(MODULE_NAME, `Underlying WebSocket error: ${err.message}`);
     });
   }
 
@@ -129,6 +132,7 @@ class OBSController {
 
     this.reconnectAttempts = (this.reconnectAttempts || 0) + 1;
     const delay = Math.min(30000, Math.round(2000 * Math.pow(1.5, Math.min(this.reconnectAttempts, 8))));
+    logger.info(MODULE_NAME, `Scheduling OBS reconnection attempt #${this.reconnectAttempts} in ${delay}ms`);
 
     this.reconnectTimer = setTimeout(() => {
       if (!this.isConnected && !this.isConnecting) {
@@ -175,6 +179,8 @@ class OBSController {
     const port = parseInt(this.config.port, 10) || 4455;
     const url = `ws://${targetIp}:${port}`;
 
+    logger.info(MODULE_NAME, `Initiating connection to OBS Studio at ${url} (hasAuth: ${Boolean(this.config.password)})`);
+
     try {
       if (this.isConnected) {
         await this.obs.disconnect().catch(() => {});
@@ -186,11 +192,13 @@ class OBSController {
 
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      logger.info(MODULE_NAME, `Connected to OBS Studio at ${url}`);
+      logger.info(MODULE_NAME, `Successfully connected and identified with OBS Studio WebSocket at ${url}`);
 
       const sceneList = await this.obs.call('GetSceneList');
-      this.currentScene = sceneList.currentProgramSceneName;
       this.scenes = (sceneList.scenes || []).map((s) => s.sceneName).reverse();
+      this.currentScene = sceneList.currentProgramSceneName || (this.scenes.length > 0 ? this.scenes[0] : null);
+
+      logger.info(MODULE_NAME, `OBS scenes loaded (${this.scenes.length} scene(s) found). Active scene: "${this.currentScene}"`);
 
       if (this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
@@ -203,7 +211,7 @@ class OBSController {
       };
     } catch (err) {
       this.isConnected = false;
-      logger.warn(MODULE_NAME, `Failed connecting to OBS (${url}): ${err.message}`);
+      logger.warn(MODULE_NAME, `Failed connecting to OBS Studio at ${url}: ${err.message} (code: ${err.code || 'N/A'})`);
       if (this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
       }
@@ -219,7 +227,10 @@ class OBSController {
    * @returns {Promise<{ success: boolean }>}
    */
   async disconnect() {
-    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     try {
       if (this.isConnected) {
         await this.obs.disconnect();
@@ -242,8 +253,8 @@ class OBSController {
     if (!this.isConnected) return [];
     try {
       const list = await this.obs.call('GetSceneList');
-      this.currentScene = list.currentProgramSceneName;
       this.scenes = (list.scenes || []).map((s) => s.sceneName).reverse();
+      this.currentScene = list.currentProgramSceneName || (this.scenes.length > 0 ? this.scenes[0] : null);
       return this.scenes;
     } catch {
       return [];
@@ -353,6 +364,27 @@ class OBSController {
     if (!this.isConnected) throw new Error('OBS tidak terhubung');
     const res = await this.obs.call('ToggleInputMute', { inputName });
     return { success: true, inputName, inputMuted: res.inputMuted };
+  }
+
+  /**
+   * Retrieve video canvas settings (base resolution and output resolution) from OBS Studio
+   * @returns {Promise<{ baseWidth: number, baseHeight: number, outputWidth: number, outputHeight: number, fpsNumerator: number, fpsDenominator: number }>}
+   */
+  async getVideoSettings() {
+    if (!this.isConnected) throw new Error('OBS tidak terhubung');
+    try {
+      const settings = await this.obs.call('GetVideoSettings');
+      return {
+        baseWidth: Number(settings.baseWidth),
+        baseHeight: Number(settings.baseHeight),
+        outputWidth: Number(settings.outputWidth),
+        outputHeight: Number(settings.outputHeight),
+        fpsNumerator: settings.fpsNumerator,
+        fpsDenominator: settings.fpsDenominator,
+      };
+    } catch (err) {
+      throw new Error(`Gagal membaca video settings dari OBS: ${err.message}`);
+    }
   }
 
   /**

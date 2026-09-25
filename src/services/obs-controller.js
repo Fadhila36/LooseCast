@@ -104,7 +104,9 @@ class OBSController {
       if (wasConnected && this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
       }
-      this._scheduleReconnect();
+      if (wasConnected) {
+        this._scheduleReconnect();
+      }
     });
 
     this.obs.on('ConnectionError', (err) => {
@@ -114,7 +116,6 @@ class OBSController {
       if (wasConnected && this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
       }
-      this._scheduleReconnect();
     });
 
     this.obs.on('error', (err) => {

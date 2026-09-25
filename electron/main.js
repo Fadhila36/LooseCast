@@ -153,6 +153,7 @@ function startServer() {
       PORT: String(PORT),
       USER_DATA_DIR: USER_DATA,
       ASSETS_DIR_OVERRIDE: assetsDir,
+      APP_VERSION: app.getVersion(),
       ELECTRON: '1',
     },
     silent: true,
@@ -397,6 +398,7 @@ ipcMain.handle('choose-folder', async () => {
   return r.canceled ? null : r.filePaths[0];
 });
 ipcMain.handle('get-local-ip', () => getLocalIPv4());
+ipcMain.handle('get-version', () => app.getVersion());
 ipcMain.handle('check-for-updates', () => {
   checkForUpdates(true);
   return { ok: true };

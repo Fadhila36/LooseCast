@@ -6,6 +6,7 @@ const electronBridge = {
   saveConfig: (cfg) => ipcRenderer.invoke('save-config', cfg),
   openTextFolder: () => ipcRenderer.send('open-text-folder'),
   getLocalIP: () => ipcRenderer.invoke('get-local-ip'),
+  getVersion: () => ipcRenderer.invoke('get-version'),
 
   // ── GLOBAL SHORTCUT ──
   registerShortcuts: (shortcuts) => ipcRenderer.send('register-shortcuts', shortcuts),

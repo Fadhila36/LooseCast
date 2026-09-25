@@ -398,7 +398,7 @@ const StreamKitUI = (() => {
   let _hubState = {
     ip: '127.0.0.1',
     port: 3000,
-    version: '0.0.1',
+    version: '1.0.0',
     activeTab: 'settings',
     config: {},
     stats: { totalTriggers: 0 },
@@ -408,7 +408,7 @@ const StreamKitUI = (() => {
     shortcutsEnabled: false
   };
 
-  const getElectronBridge = () => window.streamKitElectron || window.kskElectron;
+  const getElectronBridge = () => window.looseCastElectron || window.streamKitElectron || window.kskElectron;
 
   async function loadHubData() {
     try {
@@ -417,12 +417,12 @@ const StreamKitUI = (() => {
         fetch('/api/stats').then(r => r.json()).catch(() => ({ totalTriggers: 0 })),
         fetch('/api/media').then(r => r.json()).catch(() => []),
         fetch('/api/obs/status').then(r => r.json()).catch(() => ({ connected: false })),
-        fetch('/api/version').then(r => r.json()).catch(() => ({ version: '0.0.1' }))
+        fetch('/api/version').then(r => r.json()).catch(() => ({ version: '1.0.0' }))
       ]);
 
       _hubState.ip = ipRes.ip || '127.0.0.1';
       _hubState.port = ipRes.port || 3000;
-      _hubState.version = verRes.version || '0.0.1';
+      _hubState.version = verRes.version || '1.0.0';
       _hubState.stats = statsRes;
       _hubState.mediaCount = Array.isArray(mediaRes) ? mediaRes.length : 0;
       let totalBytes = 0;
@@ -431,6 +431,12 @@ const StreamKitUI = (() => {
       _hubState.obsStatus = obsRes || { connected: false };
 
       const bridge = getElectronBridge();
+      if (bridge && bridge.getVersion) {
+        try {
+          const v = await bridge.getVersion();
+          if (v) _hubState.version = v;
+        } catch {}
+      }
       if (bridge && bridge.getConfig) {
         _hubState.config = await bridge.getConfig() || {};
       } else {
@@ -439,7 +445,7 @@ const StreamKitUI = (() => {
       }
       _hubState.shortcutsEnabled = localStorage.getItem('shortcuts_enabled') === 'true';
     } catch (e) {
-      console.warn('[StreamKit Hub] loadHubData warning:', e);
+      console.warn('[LooseCast Hub] loadHubData warning:', e);
     }
   }
 

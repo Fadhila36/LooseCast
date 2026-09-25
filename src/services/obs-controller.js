@@ -30,6 +30,7 @@ class OBSController {
     this.reconnectAttempts = 0;
     this.config = { ...DEFAULT_OBS_CONFIG };
     this.isConnecting = false;
+    this._reconnectScheduledForCycle = false;
   }
 
   /**
@@ -110,12 +111,8 @@ class OBSController {
     });
 
     this.obs.on('ConnectionError', (err) => {
-      const wasConnected = this.isConnected;
       this.isConnected = false;
       logger.warn(MODULE_NAME, `OBS WebSocket connection error: ${err.message} (code: ${err.code || 'N/A'})`);
-      if (wasConnected && this.io) {
-        this.io.emit('obs-status-changed', this.getStatus());
-      }
     });
 
     this.obs.on('error', (err) => {
@@ -128,14 +125,17 @@ class OBSController {
    * @private
    */
   _scheduleReconnect() {
+    if (this._reconnectScheduledForCycle) return;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     if (!this.config.autoConnect) return;
 
+    this._reconnectScheduledForCycle = true;
     this.reconnectAttempts = (this.reconnectAttempts || 0) + 1;
     const delay = Math.min(30000, Math.round(2000 * Math.pow(1.5, Math.min(this.reconnectAttempts, 8))));
     logger.info(MODULE_NAME, `Scheduling OBS reconnection attempt #${this.reconnectAttempts} in ${delay}ms`);
 
     this.reconnectTimer = setTimeout(() => {
+      this._reconnectScheduledForCycle = false;
       if (!this.isConnected && !this.isConnecting) {
         this.connect().catch(() => {});
       }
@@ -193,6 +193,11 @@ class OBSController {
 
       this.isConnected = true;
       this.reconnectAttempts = 0;
+      this._reconnectScheduledForCycle = false;
+      if (this.reconnectTimer) {
+        clearTimeout(this.reconnectTimer);
+        this.reconnectTimer = null;
+      }
       logger.info(MODULE_NAME, `Successfully connected and identified with OBS Studio WebSocket at ${url}`);
 
       const sceneList = await this.obs.call('GetSceneList');

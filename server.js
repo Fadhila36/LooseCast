@@ -224,7 +224,8 @@ app.get('/api/version', (req, res) => {
   let ver = process.env.APP_VERSION;
   if (!ver) {
     try {
-      ver = require('./package.json').version;
+      const pkgPath = path.join(__dirname, 'package.json');
+      ver = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
     } catch {
       ver = '1.0.0';
     }

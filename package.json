@@ -93,7 +93,7 @@
       "icon": "build/icon.ico"
     },
     "nsis": {
-      "artifactName": "LooseCast Setup ${version}.${ext}",
+      "artifactName": "LooseCast-Setup-${version}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,

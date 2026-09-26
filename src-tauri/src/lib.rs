@@ -23,18 +23,25 @@ fn find_active_server_port() -> Option<u16> {
 }
 
 fn spawn_backend_server() -> Option<std::process::Child> {
+    let exe_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.to_path_buf()));
+    let cwd = std::env::current_dir().ok();
+
     // 1. Locate node runtime binary (bundled sidecar binary or system node)
-    let node_bin_candidates = [
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("loosecast-server.exe"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("loosecast-server.exe"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("_up_").join("loosecast-server.exe"))),
-        std::env::current_dir().ok().map(|p| p.join("loosecast-server.exe")),
-        std::env::current_dir().ok().map(|p| p.join("src-tauri").join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
-        std::env::current_dir().ok().map(|p| p.join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
-    ];
+    let mut node_bin_candidates = Vec::new();
+    if let Some(ref dir) = exe_dir {
+        node_bin_candidates.push(dir.join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("bin").join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("resources").join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("_up_").join("loosecast-server.exe"));
+    }
+    if let Some(ref dir) = cwd {
+        node_bin_candidates.push(dir.join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("src-tauri").join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
+        node_bin_candidates.push(dir.join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
+    }
 
     let mut node_bin = String::from("node");
-    for candidate in node_bin_candidates.into_iter().flatten() {
+    for candidate in &node_bin_candidates {
         if candidate.exists() {
             node_bin = candidate.to_string_lossy().to_string();
             break;
@@ -42,24 +49,27 @@ fn spawn_backend_server() -> Option<std::process::Child> {
     }
 
     // 2. Locate server.js
-    let server_script_candidates = [
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("_up_").join("server.js"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("_up_").join("server.js"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("server.js"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("server.js"))),
-        std::env::current_dir().ok().map(|p| p.join("_up_").join("server.js")),
-        std::env::current_dir().ok().map(|p| p.join("server.js")),
-    ];
+    let mut server_script_candidates = Vec::new();
+    if let Some(ref dir) = exe_dir {
+        server_script_candidates.push(dir.join("_up_").join("server.js"));
+        server_script_candidates.push(dir.join("resources").join("_up_").join("server.js"));
+        server_script_candidates.push(dir.join("resources").join("server.js"));
+        server_script_candidates.push(dir.join("server.js"));
+    }
+    if let Some(ref dir) = cwd {
+        server_script_candidates.push(dir.join("_up_").join("server.js"));
+        server_script_candidates.push(dir.join("server.js"));
+    }
 
-    for script_path in server_script_candidates.into_iter().flatten() {
+    for script_path in &server_script_candidates {
         if script_path.exists() {
-            let working_dir = script_path.parent().unwrap_or(&script_path);
+            let working_dir = script_path.parent().unwrap_or(script_path);
             #[cfg(target_os = "windows")]
             {
                 use std::os::windows::process::CommandExt;
                 const CREATE_NO_WINDOW: u32 = 0x08000000;
                 if let Ok(child) = Command::new(&node_bin)
-                    .arg(&script_path)
+                    .arg(script_path)
                     .current_dir(working_dir)
                     .creation_flags(CREATE_NO_WINDOW)
                     .spawn()
@@ -70,7 +80,7 @@ fn spawn_backend_server() -> Option<std::process::Child> {
             #[cfg(not(target_os = "windows"))]
             {
                 if let Ok(child) = Command::new(&node_bin)
-                    .arg(&script_path)
+                    .arg(script_path)
                     .current_dir(working_dir)
                     .spawn()
                 {
@@ -173,9 +183,9 @@ pub fn run() {
                     }
                 }
 
-                // 3. Fast polling across ports 3000..=3010 (up to 12 seconds max)
+                // 3. Fast polling across ports 3000..=3010 (up to 15 seconds)
                 let mut attempts = 0;
-                while attempts < 150 {
+                while attempts < 250 {
                     if let Some(port) = find_active_server_port() {
                         active_port = Some(port);
                         break;
@@ -195,11 +205,11 @@ pub fn run() {
                         if let Ok(target_url) = target_str.parse::<tauri::Url>() {
                             let _ = main_win.navigate(target_url);
                         }
-                        let _ = main_win.eval(&format!("window.location.replace('{}');", target_str));
                     }
+                    std::thread::sleep(Duration::from_millis(150));
                 }
 
-                // Always reveal main window and dismiss splash cleanly
+                // Reveal main window and dismiss splash
                 let _ = commands::ready_to_show(app_bg.clone());
             });
 

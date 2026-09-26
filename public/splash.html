@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LooseCast — Starting</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>LooseCast — Booting</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --card-bg: #111319;
-  --card-bd: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(15, 18, 26, 0.95);
+  --card-bd: rgba(255, 255, 255, 0.12);
   --cyan: #38bdf8;
-  --cyan-glow: rgba(56, 189, 248, 0.6);
-  --brand-red: #ef4444;
-  --brand-purple: #818cf8;
+  --cyan-glow: rgba(56, 189, 248, 0.5);
+  --green: #4ade80;
+  --green-glow: rgba(74, 222, 128, 0.4);
+  --amber: #fbbf24;
   --tx-primary: #ffffff;
   --tx-secondary: #94a3b8;
   --tx-muted: #64748b;
@@ -40,7 +41,7 @@ html, body {
   color: var(--tx-primary);
 }
 
-/* Main Figma-Inspired Floating Card (Fills entire window seamlessly) */
+/* Main Figma-Inspired Floating Card */
 .splash-card {
   position: relative;
   z-index: 2;
@@ -48,21 +49,23 @@ html, body {
   height: 100vh;
   box-sizing: border-box;
   background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-bd);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: space-between;
-  padding: 28px 30px 22px;
+  padding: 22px 24px 18px;
   overflow: hidden;
-  animation: cardEntrance 0.7s var(--ease) forwards;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: cardEntrance 0.5s var(--ease) forwards;
 }
 
 @keyframes cardEntrance {
   0% {
     opacity: 0;
-    transform: scale(0.94) translateY(12px);
+    transform: scale(0.96) translateY(8px);
   }
   100% {
     opacity: 1;
@@ -70,78 +73,61 @@ html, body {
   }
 }
 
-/* Ambient Backlight Orbs (Contained cleanly within card radius) */
+/* Ambient Backlight Orbs */
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(50px);
+  filter: blur(55px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.55;
-  animation: orbFloat 7s ease-in-out infinite alternate;
+  opacity: 0.5;
+  animation: orbFloat 8s ease-in-out infinite alternate;
 }
 
 .orb-bottom-left {
-  width: 180px;
-  height: 180px;
+  width: 190px;
+  height: 190px;
   bottom: -40px;
   left: -40px;
   background: radial-gradient(circle, #6366f1 0%, #7c3aed 70%, transparent 90%);
 }
 
 .orb-top-right {
-  width: 170px;
-  height: 170px;
+  width: 180px;
+  height: 180px;
   top: -40px;
   right: -30px;
   background: radial-gradient(circle, #0ea5e9 0%, #2563eb 70%, transparent 90%);
-  animation-delay: -3.5s;
+  animation-delay: -4s;
 }
 
 @keyframes orbFloat {
-  0% { transform: scale(1) translate(0, 0); opacity: 0.45; }
-  100% { transform: scale(1.15) translate(8px, -8px); opacity: 0.65; }
+  0% { transform: scale(1) translate(0, 0); opacity: 0.4; }
+  100% { transform: scale(1.15) translate(6px, -6px); opacity: 0.6; }
 }
 
-/* Corner Dot Matrix Clusters */
-.dot-cluster {
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.85;
-}
-
-.cluster-top-left {
-  top: 14px;
-  left: 14px;
-}
-
-.cluster-bottom-right {
-  bottom: 14px;
-  right: 14px;
-  transform: rotate(180deg);
-}
-
-/* Main Center Content */
-.brand-section {
+/* Header Brand Section */
+.brand-header {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 6px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 /* Constellation Dot Logo Icon */
 .logo-triangle {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 0 8px var(--cyan-glow));
+  filter: drop-shadow(0 0 10px var(--cyan-glow));
 }
 
 .brand-text-block {
@@ -151,9 +137,9 @@ html, body {
 
 .brand-title {
   font-family: 'Syne', 'Inter', sans-serif;
-  font-size: 1.65rem;
+  font-size: 1.45rem;
   font-weight: 800;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   color: #f8fafc;
   line-height: 1.1;
   display: flex;
@@ -166,62 +152,151 @@ html, body {
 }
 
 .brand-subtitle {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 500;
   color: var(--tx-secondary);
-  letter-spacing: 0.5px;
-  margin-top: 3px;
-}
-
-.brand-credit {
-  font-size: 0.58rem;
-  font-weight: 500;
-  color: var(--tx-muted);
   letter-spacing: 0.4px;
   margin-top: 2px;
-  text-align: right;
 }
 
-/* Version Typography */
+/* Version & Mode Badge */
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .version-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--green);
+  letter-spacing: 0.3px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+  animation: pulseAnim 1.5s infinite;
+}
+
+@keyframes pulseAnim {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* System Monitoring Terminal Box */
+.terminal-card {
   position: relative;
   z-index: 2;
+  width: 100%;
+  background: rgba(8, 10, 15, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.05rem;
-  font-weight: 400;
-  color: #e2e8f0;
-  letter-spacing: 2px;
-  margin: 2px 0;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+  height: 86px;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 3px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Segmented Loading Bar */
-.loader-section {
+.log-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: logFadeIn 0.25s var(--ease) forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.log-time {
+  color: var(--tx-muted);
+  font-size: 0.6rem;
+  min-width: 44px;
+}
+
+.log-tag {
+  font-weight: 700;
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+.tag-sys { background: rgba(56, 189, 248, 0.15); color: var(--cyan); }
+.tag-net { background: rgba(129, 140, 248, 0.15); color: #a5b4fc; }
+.tag-srv { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+.tag-warn { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
+
+.log-msg {
+  color: #e2e8f0;
+}
+
+@keyframes logFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Segmented Loading Bar & Status Footer */
+.loader-footer {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   width: 100%;
 }
 
 .segmented-track {
   display: flex;
   align-items: center;
-  gap: 3.5px;
+  justify-content: space-between;
+  gap: 3px;
+  width: 100%;
   padding: 3px 4px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.45);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .segment {
-  width: 9px;
-  height: 6px;
+  flex: 1;
+  height: 5px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 1px;
-  transition: all 0.22s var(--ease);
+  border-radius: 2px;
+  transition: all 0.18s var(--ease);
 }
 
 .segment.active {
@@ -229,20 +304,25 @@ html, body {
   box-shadow: 0 0 8px var(--cyan-glow);
 }
 
-.loading-label {
+.segment.active-green {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+}
+
+.status-label {
   font-size: 0.68rem;
   font-weight: 500;
   color: var(--tx-secondary);
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   font-family: 'Inter', sans-serif;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .dot-pulse {
   display: inline-block;
-  animation: dotBlink 1.4s infinite;
+  animation: dotBlink 1.2s infinite;
 }
 
 @keyframes dotBlink {
@@ -255,150 +335,164 @@ html, body {
   .splash-card { animation: none; }
   .ambient-orb { animation: none; }
   .segment { transition: none; }
+  .log-line { animation: none; opacity: 1; transform: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- Splash Center Card -->
 <div class="splash-card">
-
-  <!-- Ambient Glow Orbs (Inside Card to maintain clean transparent window corners) -->
+  <!-- Ambient Glow Orbs -->
   <div class="ambient-orb orb-bottom-left"></div>
   <div class="ambient-orb orb-top-right"></div>
 
-  <!-- Top-Left Corner Dot Cluster -->
-  <svg class="dot-cluster cluster-top-left" width="80" height="80" viewBox="0 0 80 80" fill="none">
-    <circle cx="8" cy="8" r="4" fill="#38bdf8" fill-opacity="0.9"/>
-    <circle cx="20" cy="8" r="3.2" fill="#38bdf8" fill-opacity="0.8"/>
-    <circle cx="32" cy="8" r="2.4" fill="#38bdf8" fill-opacity="0.6"/>
-    <circle cx="44" cy="8" r="1.8" fill="#38bdf8" fill-opacity="0.4"/>
-    
-    <circle cx="8" cy="20" r="3.2" fill="#38bdf8" fill-opacity="0.85"/>
-    <circle cx="20" cy="20" r="4" fill="#38bdf8" fill-opacity="0.95"/>
-    <circle cx="32" cy="20" r="3" fill="#38bdf8" fill-opacity="0.7"/>
-    <circle cx="44" cy="20" r="2" fill="#38bdf8" fill-opacity="0.45"/>
-    
-    <circle cx="8" cy="32" r="2.6" fill="#38bdf8" fill-opacity="0.65"/>
-    <circle cx="20" cy="32" r="3" fill="#38bdf8" fill-opacity="0.75"/>
-    <circle cx="32" cy="32" r="3.5" fill="#38bdf8" fill-opacity="0.85"/>
-    <circle cx="44" cy="32" r="2.2" fill="#38bdf8" fill-opacity="0.5"/>
-    
-    <circle cx="8" cy="44" r="1.8" fill="#38bdf8" fill-opacity="0.4"/>
-    <circle cx="20" cy="44" r="2.2" fill="#38bdf8" fill-opacity="0.5"/>
-    <circle cx="32" cy="44" r="2.5" fill="#38bdf8" fill-opacity="0.6"/>
-    <circle cx="44" cy="44" r="1.8" fill="#38bdf8" fill-opacity="0.3"/>
-  </svg>
+  <!-- Header Section -->
+  <div class="brand-header">
+    <div class="brand-section">
+      <svg class="logo-triangle" viewBox="0 0 44 44" fill="none">
+        <circle cx="6" cy="6" r="2.2" fill="#38bdf8" />
+        <circle cx="6" cy="14" r="2.5" fill="#38bdf8" />
+        <circle cx="6" cy="22" r="2.8" fill="#38bdf8" />
+        <circle cx="6" cy="30" r="2.5" fill="#38bdf8" />
+        <circle cx="6" cy="38" r="2.2" fill="#38bdf8" />
 
-  <!-- Bottom-Right Corner Dot Cluster -->
-  <svg class="dot-cluster cluster-bottom-right" width="80" height="80" viewBox="0 0 80 80" fill="none">
-    <circle cx="8" cy="8" r="4" fill="#38bdf8" fill-opacity="0.9"/>
-    <circle cx="20" cy="8" r="3.2" fill="#38bdf8" fill-opacity="0.8"/>
-    <circle cx="32" cy="8" r="2.4" fill="#38bdf8" fill-opacity="0.6"/>
-    <circle cx="44" cy="8" r="1.8" fill="#38bdf8" fill-opacity="0.4"/>
-    
-    <circle cx="8" cy="20" r="3.2" fill="#38bdf8" fill-opacity="0.85"/>
-    <circle cx="20" cy="20" r="4" fill="#38bdf8" fill-opacity="0.95"/>
-    <circle cx="32" cy="20" r="3" fill="#38bdf8" fill-opacity="0.7"/>
-    <circle cx="44" cy="20" r="2" fill="#38bdf8" fill-opacity="0.45"/>
-    
-    <circle cx="8" cy="32" r="2.6" fill="#38bdf8" fill-opacity="0.65"/>
-    <circle cx="20" cy="32" r="3" fill="#38bdf8" fill-opacity="0.75"/>
-    <circle cx="32" cy="32" r="3.5" fill="#38bdf8" fill-opacity="0.85"/>
-    <circle cx="44" cy="32" r="2.2" fill="#38bdf8" fill-opacity="0.5"/>
-    
-    <circle cx="8" cy="44" r="1.8" fill="#38bdf8" fill-opacity="0.4"/>
-    <circle cx="20" cy="44" r="2.2" fill="#38bdf8" fill-opacity="0.5"/>
-    <circle cx="32" cy="44" r="2.5" fill="#38bdf8" fill-opacity="0.6"/>
-    <circle cx="44" cy="44" r="1.8" fill="#38bdf8" fill-opacity="0.3"/>
-  </svg>
+        <circle cx="14" cy="10" r="2.5" fill="#38bdf8" />
+        <circle cx="14" cy="18" r="2.8" fill="#38bdf8" />
+        <circle cx="14" cy="26" r="2.8" fill="#38bdf8" />
+        <circle cx="14" cy="34" r="2.5" fill="#38bdf8" />
 
-  <!-- Brand / Logo Section -->
-  <div class="brand-section">
-    <!-- Playhead / Beacon Constellation Triangle Logo -->
-    <svg class="logo-triangle" viewBox="0 0 44 44" fill="none">
-      <circle cx="6" cy="6" r="2.2" fill="#38bdf8" />
-      <circle cx="6" cy="14" r="2.5" fill="#38bdf8" />
-      <circle cx="6" cy="22" r="2.8" fill="#38bdf8" />
-      <circle cx="6" cy="30" r="2.5" fill="#38bdf8" />
-      <circle cx="6" cy="38" r="2.2" fill="#38bdf8" />
+        <circle cx="22" cy="14" r="2.8" fill="#38bdf8" />
+        <circle cx="22" cy="22" r="3.2" fill="#ffffff" />
+        <circle cx="22" cy="30" r="2.8" fill="#38bdf8" />
 
-      <circle cx="14" cy="10" r="2.5" fill="#38bdf8" />
-      <circle cx="14" cy="18" r="2.8" fill="#38bdf8" />
-      <circle cx="14" cy="26" r="2.8" fill="#38bdf8" />
-      <circle cx="14" cy="34" r="2.5" fill="#38bdf8" />
+        <circle cx="30" cy="18" r="2.8" fill="#38bdf8" />
+        <circle cx="30" cy="26" r="2.8" fill="#38bdf8" />
 
-      <circle cx="22" cy="14" r="2.8" fill="#38bdf8" />
-      <circle cx="22" cy="22" r="3.2" fill="#ffffff" />
-      <circle cx="22" cy="30" r="2.8" fill="#38bdf8" />
+        <circle cx="38" cy="22" r="3.2" fill="#38bdf8" />
+      </svg>
+      <div class="brand-text-block">
+        <div class="brand-title">LOOSE<span class="cast">CAST</span></div>
+        <div class="brand-subtitle">Local System Casting Stream · by Fadhila</div>
+      </div>
+    </div>
 
-      <circle cx="30" cy="18" r="2.8" fill="#38bdf8" />
-      <circle cx="30" cy="26" r="2.8" fill="#38bdf8" />
-
-      <circle cx="38" cy="22" r="3.2" fill="#38bdf8" />
-    </svg>
-
-    <div class="brand-text-block">
-      <div class="brand-title">LOOSE<span class="cast">CAST</span></div>
-      <div class="brand-subtitle">Local System Casting Stream</div>
-      <div class="brand-credit">by Fadhila</div>
+    <div class="header-meta">
+      <div class="version-tag" id="app-version-tag">v1.1.1</div>
+      <div class="status-badge"><div class="pulse-dot"></div> <span id="telemetry-status">ENGINE READY</span></div>
     </div>
   </div>
 
-  <!-- Version Typography -->
-  <div class="version-tag">v. 1.0</div>
+  <!-- System Monitoring Log Terminal -->
+  <div class="terminal-card" id="terminal-container">
+    <!-- Lines inserted dynamically -->
+  </div>
 
-  <!-- Segmented Loading Bar & Status -->
-  <div class="loader-section">
+  <!-- Progress Bar & Status Footer -->
+  <div class="loader-footer">
     <div class="segmented-track" id="segment-track">
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
-      <div class="segment"></div>
+      <div class="segment"></div><div class="segment"></div><div class="segment"></div><div class="segment"></div>
+      <div class="segment"></div><div class="segment"></div><div class="segment"></div><div class="segment"></div>
+      <div class="segment"></div><div class="segment"></div><div class="segment"></div><div class="segment"></div>
+      <div class="segment"></div><div class="segment"></div><div class="segment"></div><div class="segment"></div>
     </div>
-    <div class="loading-label" id="loading-txt">Loading<span class="dot-pulse">..</span></div>
+    <div class="status-label" id="status-text">Menginisialisasi sistem runtime<span class="dot-pulse">..</span></div>
   </div>
-
 </div>
 
 <script>
-  // Progressive Segment Activation Engine
+  const startTime = performance.now();
+  const terminal = document.getElementById('terminal-container');
+  const statusText = document.getElementById('status-text');
   const segments = document.querySelectorAll('.segment');
   const totalSegments = segments.length;
-  let activeIndex = 0;
+  let activeSegments = 0;
 
-  function activateNextSegment() {
-    if (activeIndex < totalSegments) {
-      segments[activeIndex].classList.add('active');
-      activeIndex++;
-      const nextDelay = 80 + Math.random() * 80;
-      setTimeout(activateNextSegment, nextDelay);
+  function addLog(tag, typeClass, message) {
+    const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's';
+    const row = document.createElement('div');
+    row.className = 'log-line';
+    row.innerHTML = `<span class="log-time">[${elapsed}]</span> <span class="log-tag ${typeClass}">${tag}</span> <span class="log-msg">${message}</span>`;
+    terminal.appendChild(row);
+
+    // Keep max 4 visible lines cleanly
+    while (terminal.children.length > 4) {
+      terminal.removeChild(terminal.firstChild);
     }
   }
 
-  // Start segment filling smoothly
-  setTimeout(activateNextSegment, 150);
+  function advanceProgress(targetSegments) {
+    while (activeSegments < targetSegments && activeSegments < totalSegments) {
+      segments[activeSegments].classList.add('active');
+      activeSegments++;
+    }
+  }
 
-  // Dynamic version fetch if available from server
-  fetch('/api/version')
-    .then(r => r.json())
-    .then(data => {
-      if (data && data.version) {
-        const vEl = document.querySelector('.version-tag');
-        if (vEl) vEl.textContent = 'v. ' + data.version;
-      }
-    })
-    .catch(() => {});
+  // Initial boot sequence log steps
+  setTimeout(() => {
+    addLog('SYS', 'tag-sys', 'Tauri v2 Rust Core Engine runtime aktif');
+    advanceProgress(4);
+  }, 40);
+
+  setTimeout(() => {
+    addLog('SYS', 'tag-sys', 'Memeriksa WebView2 hardware acceleration');
+    advanceProgress(7);
+  }, 100);
+
+  setTimeout(() => {
+    addLog('NET', 'tag-net', 'Memindai dynamic ports lokal (3000..3010)...');
+    statusText.innerHTML = 'Memindai gateway port server<span class="dot-pulse">..</span>';
+    advanceProgress(11);
+    scanBackendPort();
+  }, 180);
+
+  async function scanBackendPort() {
+    let connected = false;
+    // Scan candidate ports
+    for (let port = 3000; port <= 3010; port++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 200);
+        const res = await fetch(`http://localhost:${port}/api/version`, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (res.ok) {
+          const data = await res.json();
+          connected = true;
+          if (data && data.version) {
+            document.getElementById('app-version-tag').textContent = 'v' + data.version;
+          }
+          addLog('SRV', 'tag-srv', `Backend terdeteksi pada port :${port} (v${data.version || '1.1.1'})`);
+          statusText.innerHTML = `Terhubung ke port :${port}! Menyiapkan antarmuka...`;
+          advanceProgress(totalSegments);
+          segments.forEach(s => s.classList.add('active-green'));
+          break;
+        }
+      } catch (e) {}
+    }
+
+    if (!connected) {
+      addLog('WAIT', 'tag-warn', 'Menyiapkan socket listener backend server...');
+      // Keep checking every 300ms until ready
+      const checkInterval = setInterval(async () => {
+        for (let port = 3000; port <= 3010; port++) {
+          try {
+            const res = await fetch(`http://localhost:${port}/api/version`);
+            if (res.ok) {
+              clearInterval(checkInterval);
+              const data = await res.json();
+              if (data && data.version) {
+                document.getElementById('app-version-tag').textContent = 'v' + data.version;
+              }
+              addLog('SRV', 'tag-srv', `Backend siap pada port :${port}`);
+              statusText.innerHTML = 'Server aktif! Membuka studio...';
+              advanceProgress(totalSegments);
+              segments.forEach(s => s.classList.add('active-green'));
+              break;
+            }
+          } catch {}
+        }
+      }, 300);
+    }
+  }
 </script>
 </body>
 </html>

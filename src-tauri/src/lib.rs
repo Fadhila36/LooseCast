@@ -2,6 +2,7 @@ pub mod commands;
 pub mod tray;
 
 use std::net::{SocketAddr, TcpStream};
+use std::process::Command;
 use std::sync::Mutex;
 use std::time::Duration;
 use sysinfo::System;
@@ -9,7 +10,54 @@ use tauri::{Manager, WindowEvent};
 
 fn check_server_ready(port: u16) -> bool {
     let addr: SocketAddr = format!("127.0.0.1:{}", port).parse().unwrap();
-    TcpStream::connect_timeout(&addr, Duration::from_millis(300)).is_ok()
+    TcpStream::connect_timeout(&addr, Duration::from_millis(60)).is_ok()
+}
+
+fn find_active_server_port() -> Option<u16> {
+    for port in 3000..=3010 {
+        if check_server_ready(port) {
+            return Some(port);
+        }
+    }
+    None
+}
+
+fn spawn_backend_server() -> Option<std::process::Child> {
+    let candidates = [
+        std::env::current_dir().ok().map(|p| p.join("server.js")),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("server.js"))),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("server.js"))),
+    ];
+
+    for candidate in candidates.into_iter().flatten() {
+        if candidate.exists() {
+            let working_dir = candidate.parent().unwrap_or(&candidate);
+            #[cfg(target_os = "windows")]
+            {
+                use std::os::windows::process::CommandExt;
+                const CREATE_NO_WINDOW: u32 = 0x08000000;
+                if let Ok(child) = Command::new("node")
+                    .arg(&candidate)
+                    .current_dir(working_dir)
+                    .creation_flags(CREATE_NO_WINDOW)
+                    .spawn()
+                {
+                    return Some(child);
+                }
+            }
+            #[cfg(not(target_os = "windows"))]
+            {
+                if let Ok(child) = Command::new("node")
+                    .arg(&candidate)
+                    .current_dir(working_dir)
+                    .spawn()
+                {
+                    return Some(child);
+                }
+            }
+        }
+    }
+    None
 }
 
 pub fn run() {
@@ -40,6 +88,7 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .manage(commands::AppState {
             sys: Mutex::new(System::new_all()),
+            server_proc: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
             commands::get_user_data_path,
@@ -81,27 +130,67 @@ pub fn run() {
                 });
             }
 
-            // Background server check thread with smooth minimum duration for splash animation
+            // Background server check and dynamic port resolution
             let app_bg = app_handle.clone();
             std::thread::spawn(move || {
                 let start_time = std::time::Instant::now();
-                let min_splash_duration = Duration::from_millis(2000);
-                let mut attempts = 0;
-                while attempts < 100 {
-                    if check_server_ready(3000) {
-                        let elapsed = start_time.elapsed();
-                        if elapsed < min_splash_duration {
-                            std::thread::sleep(min_splash_duration - elapsed);
+                let min_splash_duration = Duration::from_millis(450);
+
+                // 1. Initial check if server already running
+                let mut active_port = find_active_server_port();
+
+                // 2. If no server running, attempt auto-spawn
+                if active_port.is_none() {
+                    if let Some(child) = spawn_backend_server() {
+                        if let Some(state) = app_bg.try_state::<commands::AppState>() {
+                            if let Ok(mut proc) = state.server_proc.lock() {
+                                *proc = Some(child);
+                            }
                         }
-                        let _ = commands::ready_to_show(app_bg.clone());
+                    }
+                }
+
+                // 3. Fast polling across ports 3000..=3010 (up to 12 seconds max)
+                let mut attempts = 0;
+                while attempts < 150 {
+                    if let Some(port) = find_active_server_port() {
+                        active_port = Some(port);
                         break;
                     }
-                    std::thread::sleep(Duration::from_millis(200));
+                    std::thread::sleep(Duration::from_millis(60));
                     attempts += 1;
                 }
+
+                let elapsed = start_time.elapsed();
+                if elapsed < min_splash_duration {
+                    std::thread::sleep(min_splash_duration - elapsed);
+                }
+
+                if let Some(port) = active_port {
+                    if let Some(main_win) = app_bg.get_webview_window("main") {
+                        if port != 3000 {
+                            let target_url = format!("http://localhost:{}", port);
+                            let _ = main_win.eval(&format!("if (window.location.port !== '{}') {{ window.location.href = '{}'; }}", port, target_url));
+                        }
+                    }
+                }
+
+                // Always reveal main window and dismiss splash cleanly
+                let _ = commands::ready_to_show(app_bg.clone());
             });
 
             Ok(())
+        })
+        .on_window_event(|app, event| {
+            if let WindowEvent::Destroyed = event {
+                if let Some(state) = app.try_state::<commands::AppState>() {
+                    if let Ok(mut proc_lock) = state.server_proc.lock() {
+                        if let Some(mut child) = proc_lock.take() {
+                            let _ = child.kill();
+                        }
+                    }
+                }
+            }
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -3,6 +3,7 @@ node_modules/
 
 # Build and Packaging Outputs
 dist/
+dist-release/
 release/
 src-tauri/target/
 src-tauri/gen/

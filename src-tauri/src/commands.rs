@@ -16,6 +16,7 @@ pub struct SystemStats {
 
 pub struct AppState {
     pub sys: Mutex<System>,
+    pub server_proc: Mutex<Option<std::process::Child>>,
 }
 
 #[tauri::command]

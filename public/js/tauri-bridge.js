@@ -75,7 +75,13 @@
       }
     },
     getVersion: async () => {
-      return '1.0.4';
+      try {
+        const res = await fetch('/api/version');
+        const data = await res.json();
+        return data.version || '1.1.0';
+      } catch {
+        return '1.1.0';
+      }
     },
     getSystemMetrics: async () => {
       return await invokeTauri('get_system_metrics');

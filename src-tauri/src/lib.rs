@@ -23,21 +23,38 @@ fn find_active_server_port() -> Option<u16> {
 }
 
 fn spawn_backend_server() -> Option<std::process::Child> {
-    let candidates = [
-        std::env::current_dir().ok().map(|p| p.join("server.js")),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("server.js"))),
-        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("server.js"))),
+    // 1. Locate node runtime binary (bundled sidecar binary or system node)
+    let node_bin_candidates = [
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("loosecast-server.exe"))),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("loosecast-server.exe"))),
+        std::env::current_dir().ok().map(|p| p.join("src-tauri").join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
+        std::env::current_dir().ok().map(|p| p.join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
     ];
 
-    for candidate in candidates.into_iter().flatten() {
+    let mut node_bin = String::from("node");
+    for candidate in node_bin_candidates.into_iter().flatten() {
         if candidate.exists() {
-            let working_dir = candidate.parent().unwrap_or(&candidate);
+            node_bin = candidate.to_string_lossy().to_string();
+            break;
+        }
+    }
+
+    // 2. Locate server.js
+    let server_script_candidates = [
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("server.js"))),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("server.js"))),
+        std::env::current_dir().ok().map(|p| p.join("server.js")),
+    ];
+
+    for script_path in server_script_candidates.into_iter().flatten() {
+        if script_path.exists() {
+            let working_dir = script_path.parent().unwrap_or(&script_path);
             #[cfg(target_os = "windows")]
             {
                 use std::os::windows::process::CommandExt;
                 const CREATE_NO_WINDOW: u32 = 0x08000000;
-                if let Ok(child) = Command::new("node")
-                    .arg(&candidate)
+                if let Ok(child) = Command::new(&node_bin)
+                    .arg(&script_path)
                     .current_dir(working_dir)
                     .creation_flags(CREATE_NO_WINDOW)
                     .spawn()
@@ -47,8 +64,8 @@ fn spawn_backend_server() -> Option<std::process::Child> {
             }
             #[cfg(not(target_os = "windows"))]
             {
-                if let Ok(child) = Command::new("node")
-                    .arg(&candidate)
+                if let Ok(child) = Command::new(&node_bin)
+                    .arg(&script_path)
                     .current_dir(working_dir)
                     .spawn()
                 {
@@ -57,6 +74,7 @@ fn spawn_backend_server() -> Option<std::process::Child> {
             }
         }
     }
+
     None
 }
 

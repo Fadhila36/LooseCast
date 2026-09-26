@@ -70,6 +70,49 @@ const StreamKitUI = (() => {
     }
   }
 
+  function applyPageStrings() {
+    if (!_lang) return;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (key && _lang[key] !== undefined) {
+        el.textContent = _lang[key];
+      }
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-html');
+      if (key && _lang[key] !== undefined) {
+        el.innerHTML = _lang[key];
+      }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (key && _lang[key] !== undefined) {
+        el.setAttribute('placeholder', _lang[key]);
+      }
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-title');
+      if (key && _lang[key] !== undefined) {
+        el.setAttribute('title', _lang[key]);
+      }
+    });
+  }
+
+  async function switchLang(code) {
+    await loadLang(code);
+    injectSidebar();
+    injectDocsModal();
+    injectHubModal();
+    applyPageStrings();
+    _listeners.forEach((fn) => {
+      try { fn(code); } catch {}
+    });
+  }
+
+  function onLangChange(fn) {
+    if (typeof fn === 'function') _listeners.push(fn);
+  }
+
   function t(key, fallback) {
     if (_lang && _lang[key] !== undefined) return _lang[key];
     return fallback !== undefined ? fallback : key;

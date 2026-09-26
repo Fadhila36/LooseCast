@@ -30,9 +30,14 @@ fn spawn_backend_server() -> Option<std::process::Child> {
     let mut node_bin_candidates = Vec::new();
     if let Some(ref dir) = exe_dir {
         node_bin_candidates.push(dir.join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("loosecast-server-x86_64-pc-windows-msvc.exe"));
         node_bin_candidates.push(dir.join("bin").join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
         node_bin_candidates.push(dir.join("resources").join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("resources").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
+        node_bin_candidates.push(dir.join("resources").join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
         node_bin_candidates.push(dir.join("_up_").join("loosecast-server.exe"));
+        node_bin_candidates.push(dir.join("_up_").join("loosecast-server-x86_64-pc-windows-msvc.exe"));
     }
     if let Some(ref dir) = cwd {
         node_bin_candidates.push(dir.join("loosecast-server.exe"));

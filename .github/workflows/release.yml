@@ -112,6 +112,12 @@ jobs:
             echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           fi
 
+      - name: Prepare Node.js Sidecar Runtime Binary
+        shell: bash
+        run: |
+          mkdir -p src-tauri/bin
+          cp "$(which node)" src-tauri/bin/loosecast-server-x86_64-pc-windows-msvc.exe
+
       - name: Build Tauri Desktop Application
         run: npx tauri build
 
@@ -131,5 +137,6 @@ jobs:
             release/LooseCast-Portable-*.exe
             release/LooseCast_*_x64_en-US.msi
             release/SHA256SUMS.txt
+            release/latest.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

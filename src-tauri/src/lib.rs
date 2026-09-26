@@ -191,10 +191,11 @@ pub fn run() {
 
                 if let Some(port) = active_port {
                     if let Some(main_win) = app_bg.get_webview_window("main") {
-                        if port != 3000 {
-                            let target_url = format!("http://localhost:{}", port);
-                            let _ = main_win.eval(&format!("if (window.location.port !== '{}') {{ window.location.href = '{}'; }}", port, target_url));
+                        let target_str = format!("http://localhost:{}", port);
+                        if let Ok(target_url) = target_str.parse::<tauri::Url>() {
+                            let _ = main_win.navigate(target_url);
                         }
+                        let _ = main_win.eval(&format!("window.location.replace('{}');", target_str));
                     }
                 }
 

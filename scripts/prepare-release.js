@@ -45,7 +45,7 @@ try {
   // 1. NSIS Setup Executable
   const nsisDir = path.join(TAURI_RELEASE_DIR, 'bundle', 'nsis');
   if (fs.existsSync(nsisDir)) {
-    const nsisFiles = fs.readdirSync(nsisDir).filter((f) => f.endsWith('-setup.exe') || f.endsWith('.exe'));
+    const nsisFiles = fs.readdirSync(nsisDir).filter((f) => f.includes(version) && (f.endsWith('-setup.exe') || f.endsWith('.exe')));
     if (nsisFiles.length > 0) {
       const srcFile = path.join(nsisDir, nsisFiles[0]);
       const destFile = path.join(RELEASE_DIR, `LooseCast-Setup-${version}.exe`);
@@ -65,7 +65,7 @@ try {
   // 3. MSI Windows Installer
   const msiDir = path.join(TAURI_RELEASE_DIR, 'bundle', 'msi');
   if (fs.existsSync(msiDir)) {
-    const msiFiles = fs.readdirSync(msiDir).filter((f) => f.endsWith('.msi'));
+    const msiFiles = fs.readdirSync(msiDir).filter((f) => f.includes(version) && f.endsWith('.msi'));
     if (msiFiles.length > 0) {
       const srcFile = path.join(msiDir, msiFiles[0]);
       const destFile = path.join(RELEASE_DIR, `LooseCast_${version}_x64_en-US.msi`);
@@ -84,6 +84,24 @@ try {
   const checksumPath = path.join(RELEASE_DIR, 'SHA256SUMS.txt');
   fs.writeFileSync(checksumPath, checksumLines.join('\n') + '\n', 'utf8');
 
+  // 5. Generate latest.yml (SHA512 for Tauri/electron-updater compatibility)
+  const setupArtifact = artifacts.find(a => a.name.startsWith('LooseCast-Setup-'));
+  if (setupArtifact) {
+    const setupBuf = fs.readFileSync(setupArtifact.path);
+    const sha512Base64 = crypto.createHash('sha512').update(setupBuf).digest('base64');
+    const latestYml = [
+      `version: ${version}`,
+      'files:',
+      `  - url: ${setupArtifact.name}`,
+      `    sha512: ${sha512Base64}`,
+      `    size: ${setupArtifact.size}`,
+      `path: ${setupArtifact.name}`,
+      `sha512: ${sha512Base64}`,
+      `releaseDate: '${new Date().toISOString()}'`
+    ].join('\n') + '\n';
+    fs.writeFileSync(path.join(RELEASE_DIR, 'latest.yml'), latestYml, 'utf8');
+  }
+
   console.log(`\n========================================`);
   console.log(` LooseCast v${version} Release Assets Prepared:`);
   console.log(`========================================`);
@@ -91,6 +109,7 @@ try {
     console.log(`  📦 ${a.name.padEnd(35)} [${formatBytes(a.size)}]`);
   });
   console.log(`  🔒 SHA256SUMS.txt                   [Checksums]`);
+  console.log(`  🔄 latest.yml                       [Updater Manifest]`);
   console.log(`========================================\n`);
 } catch (err) {
   console.error(`[prepare-release] Error: ${err.message}`);

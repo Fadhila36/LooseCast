@@ -377,7 +377,7 @@ html, body {
     </div>
 
     <div class="header-meta">
-      <div class="version-tag" id="app-version-tag">v1.1.1</div>
+      <div class="version-tag" id="app-version-tag">...</div>
       <div class="status-badge"><div class="pulse-dot"></div> <span id="telemetry-status">ENGINE READY</span></div>
     </div>
   </div>
@@ -403,9 +403,22 @@ html, body {
   const startTime = performance.now();
   const terminal = document.getElementById('terminal-container');
   const statusText = document.getElementById('status-text');
+  const versionTag = document.getElementById('app-version-tag');
   const segments = document.querySelectorAll('.segment');
   const totalSegments = segments.length;
   let activeSegments = 0;
+
+  function updateAppVersion(ver) {
+    if (ver && versionTag) {
+      versionTag.textContent = ver.startsWith('v') ? ver : 'v' + ver;
+    }
+  }
+
+  // Fast initial fetch for version
+  fetch('/api/version')
+    .then(r => r.json())
+    .then(d => { if (d && d.version) updateAppVersion(d.version); })
+    .catch(() => {});
 
   function addLog(tag, typeClass, message) {
     const elapsed = ((performance.now() - startTime) / 1000).toFixed(2) + 's';
@@ -458,9 +471,9 @@ html, body {
           const data = await res.json();
           connected = true;
           if (data && data.version) {
-            document.getElementById('app-version-tag').textContent = 'v' + data.version;
+            updateAppVersion(data.version);
           }
-          addLog('SRV', 'tag-srv', `Backend terdeteksi pada port :${port} (v${data.version || '1.1.1'})`);
+          addLog('SRV', 'tag-srv', `Backend terdeteksi pada port :${port} (${versionTag.textContent})`);
           statusText.innerHTML = `Terhubung ke port :${port}! Menyiapkan antarmuka...`;
           advanceProgress(totalSegments);
           segments.forEach(s => s.classList.add('active-green'));
@@ -480,7 +493,7 @@ html, body {
               clearInterval(checkInterval);
               const data = await res.json();
               if (data && data.version) {
-                document.getElementById('app-version-tag').textContent = 'v' + data.version;
+                updateAppVersion(data.version);
               }
               addLog('SRV', 'tag-srv', `Backend siap pada port :${port}`);
               statusText.innerHTML = 'Server aktif! Membuka studio...';

@@ -2,7 +2,7 @@
   "name": "loosecast",
   "productName": "LooseCast",
   "author": "fadhila36",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "LooseCast: Local System Casting Stream",
   "main": "server.js",
   "scripts": {

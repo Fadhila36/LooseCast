@@ -27,6 +27,8 @@ fn spawn_backend_server() -> Option<std::process::Child> {
     let node_bin_candidates = [
         std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("loosecast-server.exe"))),
         std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("loosecast-server.exe"))),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("_up_").join("loosecast-server.exe"))),
+        std::env::current_dir().ok().map(|p| p.join("loosecast-server.exe")),
         std::env::current_dir().ok().map(|p| p.join("src-tauri").join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
         std::env::current_dir().ok().map(|p| p.join("bin").join("loosecast-server-x86_64-pc-windows-msvc.exe")),
     ];
@@ -41,8 +43,11 @@ fn spawn_backend_server() -> Option<std::process::Child> {
 
     // 2. Locate server.js
     let server_script_candidates = [
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("_up_").join("server.js"))),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("_up_").join("server.js"))),
         std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("resources").join("server.js"))),
         std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("server.js"))),
+        std::env::current_dir().ok().map(|p| p.join("_up_").join("server.js")),
         std::env::current_dir().ok().map(|p| p.join("server.js")),
     ];
 

@@ -204,6 +204,7 @@ const APP_PATH = __dirname;
 app.use(express.static(path.join(APP_PATH, 'public')));
 app.use('/lang', express.static(path.join(APP_PATH, 'lang')));
 app.use('/assets', express.static(MEDIA_DIR));
+app.use('/thumbs', express.static(THUMB_DIR));
 
 // UI Script Delivery: Main loosecast-ui.js with 301 redirects for legacy aliases
 const UI_SCRIPT_PATH = fs.existsSync(path.join(APP_PATH, 'loosecast-ui.js'))
@@ -330,6 +331,22 @@ app.get('/api/obs/video-settings', async (req, res) => {
   try {
     const videoSettings = await obsController.getVideoSettings();
     res.json({ ok: true, ...videoSettings });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+app.get('/api/obs/stream-status', async (req, res) => {
+  try {
+    const stream = await obsController.getStreamStatus();
+    res.json({ ok: true, ...stream });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+app.get('/api/obs/record-status', async (req, res) => {
+  try {
+    const record = await obsController.getRecordStatus();
+    res.json({ ok: true, ...record });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }

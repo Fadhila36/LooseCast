@@ -174,51 +174,85 @@ class MyInstantsService {
       throw new Error('Target path tidak aman');
     }
 
-    await new Promise((resolve, reject) => {
-      const fileStream = fs.createWriteStream(targetPath);
-      const client = mp3Url.startsWith('https') ? https : http;
-      let isCleanedUp = false;
+    let downloadSuccess = false;
 
-      const cleanupAndReject = (err) => {
-        if (isCleanedUp) return;
-        isCleanedUp = true;
-        try { fileStream.destroy(); } catch {}
-        fs.unlink(targetPath, () => {});
-        reject(err);
-      };
+    // Strategi 1: Coba download via Node HTTPS stream
+    try {
+      await new Promise((resolve, reject) => {
+        const fileStream = fs.createWriteStream(targetPath);
+        const client = mp3Url.startsWith('https') ? https : http;
+        let isCleanedUp = false;
 
-      fileStream.on('error', cleanupAndReject);
+        const cleanupAndReject = (err) => {
+          if (isCleanedUp) return;
+          isCleanedUp = true;
+          try { fileStream.destroy(); } catch {}
+          fs.unlink(targetPath, () => {});
+          reject(err);
+        };
 
-      const req = client.get(
-        mp3Url,
-        {
-          timeout: 15000,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.myinstants.com/',
-            'Accept': '*/*',
+        fileStream.on('error', cleanupAndReject);
+
+        const req = client.get(
+          mp3Url,
+          {
+            timeout: 10000,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+              'Referer': 'https://www.myinstants.com/',
+              'Accept': '*/*',
+            },
           },
-        },
-        (response) => {
-          if (response.statusCode !== 200) {
-            return cleanupAndReject(new Error(`Gagal mengunduh audio: HTTP ${response.statusCode}`));
+          (response) => {
+            if (response.statusCode !== 200) {
+              return cleanupAndReject(new Error(`HTTP ${response.statusCode}`));
+            }
+            response.pipe(fileStream);
+            fileStream.on('finish', () => {
+              fileStream.close(() => {
+                downloadSuccess = true;
+                resolve();
+              });
+            });
           }
-          response.pipe(fileStream);
-          fileStream.on('finish', () => {
-            fileStream.close(() => resolve());
-          });
-        }
-      );
+        );
 
-      req.on('timeout', () => {
-        req.destroy();
-        cleanupAndReject(new Error('Koneksi unduhan audio timeout'));
-      });
+        req.on('timeout', () => {
+          req.destroy();
+          cleanupAndReject(new Error('Koneksi timeout'));
+        });
 
-      req.on('error', (err) => {
-        cleanupAndReject(err);
+        req.on('error', (err) => {
+          cleanupAndReject(err);
+        });
       });
-    });
+    } catch (nodeErr) {
+      logger.warn(MODULE_NAME, `Node HTTPS download failed (${nodeErr.message}), attempting curl fallback...`);
+    }
+
+    // Strategi 2: Fallback via curl.exe jika Node HTTPS diblokir oleh Cloudflare WAF (HTTP 403)
+    if (!downloadSuccess) {
+      await new Promise((resolve, reject) => {
+        const { execFile } = require('child_process');
+        const args = [
+          '-sL',
+          '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          '-e', 'https://www.myinstants.com/',
+          '--max-time', '15',
+          '-o', targetPath,
+          mp3Url
+        ];
+
+        execFile('curl.exe', args, { timeout: 18000 }, (err) => {
+          if (err || !fs.existsSync(targetPath) || fs.statSync(targetPath).size < 100) {
+            try { fs.unlinkSync(targetPath); } catch {}
+            return reject(new Error('Gagal mengunduh audio dari MyInstants (WAF Block/Network error)'));
+          }
+          downloadSuccess = true;
+          resolve();
+        });
+      });
+    }
 
     if (this.mediaService) {
       await this.mediaService.updateMediaSettings(filename, { name, category: 'sound effect' });

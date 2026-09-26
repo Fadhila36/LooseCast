@@ -205,6 +205,20 @@ describe('Server API Endpoints Integration Test', () => {
     assert.strictEqual(res.body.ok, false);
   });
 
+  it('GET /api/obs/stream-status harus mengembalikan status stream OBS telemetry', async () => {
+    const res = await request('GET', '/api/obs/stream-status');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(typeof res.body.outputActive, 'boolean');
+    assert.strictEqual(typeof res.body.outputTimecode, 'string');
+  });
+
+  it('GET /api/obs/record-status harus mengembalikan status recording OBS telemetry', async () => {
+    const res = await request('GET', '/api/obs/record-status');
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(typeof res.body.outputActive, 'boolean');
+    assert.strictEqual(typeof res.body.outputTimecode, 'string');
+  });
+
   it('POST /api/macros/import dan GET /api/macros/:id/export harus mengimpor dan mengekspor single macro dengan benar', async () => {
     const macroPayload = {
       name: 'Integration Test Macro',

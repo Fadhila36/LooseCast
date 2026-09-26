@@ -31,6 +31,23 @@ class OBSController {
     this.config = { ...DEFAULT_OBS_CONFIG };
     this.isConnecting = false;
     this._reconnectScheduledForCycle = false;
+    this.telemetryTimer = null;
+    this.streamStatus = {
+      outputActive: false,
+      outputReconnecting: false,
+      outputTimecode: '00:00:00',
+      outputDuration: 0,
+      outputBytes: 0,
+      outputSkippedFrames: 0,
+      outputTotalFrames: 0,
+    };
+    this.recordStatus = {
+      outputActive: false,
+      outputPaused: false,
+      outputTimecode: '00:00:00',
+      outputDuration: 0,
+      outputBytes: 0,
+    };
   }
 
   /**
@@ -96,11 +113,38 @@ class OBSController {
       }
     });
 
+    this.obs.on('StreamStateChanged', async (data) => {
+      logger.info(MODULE_NAME, `Stream state changed: active=${data.outputActive}, state=${data.outputState}`);
+      await this.getStreamStatus();
+      if (this.io) {
+        this.io.emit('obs-stream-state-changed', {
+          outputActive: data.outputActive,
+          outputState: data.outputState,
+          stream: this.streamStatus,
+        });
+      }
+    });
+
+    this.obs.on('RecordStateChanged', async (data) => {
+      logger.info(MODULE_NAME, `Record state changed: active=${data.outputActive}, state=${data.outputState}`);
+      await this.getRecordStatus();
+      if (this.io) {
+        this.io.emit('obs-record-state-changed', {
+          outputActive: data.outputActive,
+          outputState: data.outputState,
+          record: this.recordStatus,
+        });
+      }
+    });
+
     this.obs.on('ConnectionClosed', () => {
       const wasConnected = this.isConnected;
       this.isConnected = false;
       this.currentScene = null;
       this.scenes = [];
+      this._stopTelemetryPolling();
+      this.streamStatus.outputActive = false;
+      this.recordStatus.outputActive = false;
       logger.warn(MODULE_NAME, 'OBS WebSocket connection closed');
       if (wasConnected && this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
@@ -112,6 +156,7 @@ class OBSController {
 
     this.obs.on('ConnectionError', (err) => {
       this.isConnected = false;
+      this._stopTelemetryPolling();
       logger.warn(MODULE_NAME, `OBS WebSocket connection error: ${err.message} (code: ${err.code || 'N/A'})`);
     });
 
@@ -200,6 +245,8 @@ class OBSController {
       }
       logger.info(MODULE_NAME, `Successfully connected and identified with OBS Studio WebSocket at ${url}`);
 
+      this._startTelemetryPolling();
+
       const sceneList = await this.obs.call('GetSceneList');
       this.scenes = (sceneList.scenes || []).map((s) => s.sceneName).reverse();
       this.currentScene = sceneList.currentProgramSceneName || (this.scenes.length > 0 ? this.scenes[0] : null);
@@ -217,6 +264,7 @@ class OBSController {
       };
     } catch (err) {
       this.isConnected = false;
+      this._stopTelemetryPolling();
       logger.warn(MODULE_NAME, `Failed connecting to OBS Studio at ${url}: ${err.message} (code: ${err.code || 'N/A'})`);
       if (this.io) {
         this.io.emit('obs-status-changed', this.getStatus());
@@ -233,6 +281,7 @@ class OBSController {
    * @returns {Promise<{ success: boolean }>}
    */
   async disconnect() {
+    this._stopTelemetryPolling();
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -394,14 +443,110 @@ class OBSController {
   }
 
   /**
-   * Retrieve current connection and scene status overview
-   * @returns {{ connected: boolean, currentScene: string|null, scenes: string[], config: { ip: string, port: number, autoConnect: boolean, hasPassword: boolean } }}
+   * Start polling OBS stream & record telemetry (1000ms interval)
+   * @private
+   */
+  _startTelemetryPolling() {
+    this._stopTelemetryPolling();
+    this._pollTelemetry().catch(() => {});
+    this.telemetryTimer = setInterval(() => {
+      this._pollTelemetry().catch(() => {});
+    }, 1000);
+  }
+
+  /**
+   * Stop polling OBS telemetry
+   * @private
+   */
+  _stopTelemetryPolling() {
+    if (this.telemetryTimer) {
+      clearInterval(this.telemetryTimer);
+      this.telemetryTimer = null;
+    }
+  }
+
+  /**
+   * Poll live stream and record status and broadcast via Socket.io
+   * @private
+   */
+  async _pollTelemetry() {
+    if (!this.isConnected) return;
+    try {
+      const [stream, record] = await Promise.all([
+        this.getStreamStatus(),
+        this.getRecordStatus(),
+      ]);
+      if (this.io) {
+        this.io.emit('obs-telemetry', {
+          connected: true,
+          stream,
+          record,
+        });
+      }
+    } catch (err) {
+      logger.debug(MODULE_NAME, `Telemetry poll error: ${err.message}`);
+    }
+  }
+
+  /**
+   * Retrieve live stream status from OBS Studio
+   * @returns {Promise<{ outputActive: boolean, outputReconnecting: boolean, outputTimecode: string, outputDuration: number, outputBytes: number, outputSkippedFrames: number, outputTotalFrames: number }>}
+   */
+  async getStreamStatus() {
+    if (!this.isConnected) {
+      return this.streamStatus;
+    }
+    try {
+      const res = await this.obs.call('GetStreamStatus');
+      this.streamStatus = {
+        outputActive: Boolean(res.outputActive),
+        outputReconnecting: Boolean(res.outputReconnecting),
+        outputTimecode: res.outputTimecode || '00:00:00',
+        outputDuration: Number(res.outputDuration) || 0,
+        outputBytes: Number(res.outputBytes) || 0,
+        outputSkippedFrames: Number(res.outputSkippedFrames) || 0,
+        outputTotalFrames: Number(res.outputTotalFrames) || 0,
+      };
+      return this.streamStatus;
+    } catch {
+      return this.streamStatus;
+    }
+  }
+
+  /**
+   * Retrieve recording status from OBS Studio
+   * @returns {Promise<{ outputActive: boolean, outputPaused: boolean, outputTimecode: string, outputDuration: number, outputBytes: number }>}
+   */
+  async getRecordStatus() {
+    if (!this.isConnected) {
+      return this.recordStatus;
+    }
+    try {
+      const res = await this.obs.call('GetRecordStatus');
+      this.recordStatus = {
+        outputActive: Boolean(res.outputActive),
+        outputPaused: Boolean(res.outputPaused),
+        outputTimecode: res.outputTimecode || '00:00:00',
+        outputDuration: Number(res.outputDuration) || 0,
+        outputBytes: Number(res.outputBytes) || 0,
+      };
+      return this.recordStatus;
+    } catch {
+      return this.recordStatus;
+    }
+  }
+
+  /**
+   * Retrieve current connection, scenes, and stream/record status overview
+   * @returns {{ connected: boolean, currentScene: string|null, scenes: string[], stream: object, record: object, config: { ip: string, port: number, autoConnect: boolean, hasPassword: boolean } }}
    */
   getStatus() {
     return {
       connected: this.isConnected,
       currentScene: this.currentScene,
       scenes: this.scenes,
+      stream: this.streamStatus,
+      record: this.recordStatus,
       config: {
         ip: this.config.ip || '127.0.0.1',
         port: parseInt(this.config.port, 10) || 4455,

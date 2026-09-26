@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/deck.css">
+<script src="/js/tauri-bridge.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -527,46 +528,60 @@ function renderOBSSourcesDrawer() {
     return;
   }
 
-  let html = '';
+  let html = `<div class="obs-rack-grid">`;
 
-  // Active Scene Sources
+  // Active Scene Sources Rack
   html += `
-  <div class="obs-drawer-section">
-    <div class="obs-drawer-label">👁️ SOURCES:</div>
-    <div class="obs-drawer-items">`;
+  <div class="obs-rack-column">
+    <div class="obs-rack-header">
+      <span class="obs-rack-icon">👁️</span>
+      <span class="obs-rack-title">SCENE LAYERS (${obsSceneItems.length})</span>
+    </div>
+    <div class="obs-rack-list">`;
   if (obsSceneItems.length) {
     obsSceneItems.forEach(item => {
       const isEn = !!item.sceneItemEnabled;
       html += `
-      <div class="obs-source-pill ${isEn ? 'active' : 'inactive'}" onclick="toggleOBSSourceItem(${item.sceneItemId})" title="${isEn ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan'}">
-        <span>${isEn ? '👁️' : '👁️‍🗨️'}</span>
-        <span>${item.sourceName}</span>
+      <div class="obs-rack-item ${isEn ? 'active' : 'inactive'}" onclick="toggleOBSSourceItem(${item.sceneItemId})" title="${isEn ? 'Klik untuk sembunyikan layer' : 'Klik untuk tampilkan layer'}">
+        <div class="obs-rack-item-left">
+          <span class="obs-rack-dot ${isEn ? 'on' : 'off'}"></span>
+          <span class="obs-rack-name">${item.sourceName}</span>
+        </div>
+        <span class="obs-rack-tag ${isEn ? 'on' : 'off'}">${isEn ? 'VISIBLE' : 'HIDDEN'}</span>
       </div>`;
     });
   } else {
-    html += `<span style="font-size:0.62rem;color:var(--tx3);">(Tidak ada source di scene ini)</span>`;
+    html += `<div class="obs-rack-empty">Tidak ada source di scene ini</div>`;
   }
   html += `</div></div>`;
 
-  // Audio Inputs Mute Toggles
+  // Audio Channels Mixer Rack
+  html += `
+  <div class="obs-rack-column">
+    <div class="obs-rack-header">
+      <span class="obs-rack-icon">🎙️</span>
+      <span class="obs-rack-title">AUDIO CHANNELS (${obsAudioInputs.length})</span>
+    </div>
+    <div class="obs-rack-list">`;
   if (obsAudioInputs.length) {
-    html += `
-    <div class="obs-drawer-section" style="border-top:1px dashed rgba(255,255,255,0.06);padding-top:6px;">
-      <div class="obs-drawer-label">🎙️ AUDIO:</div>
-      <div class="obs-drawer-items">`;
     obsAudioInputs.forEach(inp => {
       const isMuted = !!inp.inputMuted;
       const esc = inp.inputName.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       html += `
-      <div class="obs-audio-pill ${isMuted ? 'muted' : 'unmuted'}" onclick="toggleOBSAudioMute('${esc}')" title="${isMuted ? 'Unmute input' : 'Mute input'}">
-        <span>${isMuted ? '🔇' : '🎙️'}</span>
-        <span>${inp.inputName}</span>
-        <span style="font-size:0.52rem;opacity:0.8;">${isMuted ? 'MUTED' : 'ON'}</span>
+      <div class="obs-rack-item audio-item ${isMuted ? 'muted' : 'unmuted'}" onclick="toggleOBSAudioMute('${esc}')" title="${isMuted ? 'Unmute input' : 'Mute input'}">
+        <div class="obs-rack-item-left">
+          <span class="obs-audio-meter-bar ${isMuted ? 'muted' : 'live'}"></span>
+          <span class="obs-rack-name">${inp.inputName}</span>
+        </div>
+        <span class="obs-audio-mute-btn ${isMuted ? 'muted' : 'live'}">${isMuted ? 'MUTED' : 'LIVE'}</span>
       </div>`;
     });
-    html += `</div></div>`;
+  } else {
+    html += `<div class="obs-rack-empty">Tidak ada audio input terdeteksi</div>`;
   }
+  html += `</div></div>`;
 
+  html += `</div>`;
   drawer.innerHTML = html;
 }
 
@@ -648,7 +663,7 @@ function renderOBSSceneStrip() {
   <div class="obs-strip-header">
     <div class="obs-strip-title">
       <span class="obs-pulse-icon"></span>
-      <span class="obs-strip-tag">OBS SCENES</span>
+      <span class="obs-strip-tag">PROGRAM BUS</span>
     </div>
   </div>
   <div class="obs-scenes-carousel">`;
@@ -656,10 +671,11 @@ function renderOBSSceneStrip() {
   obsStatus.scenes.forEach((sc, idx) => {
     const isAct = sc === obsStatus.currentScene;
     const esc = sc.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const chNum = String(idx + 1).padStart(2, '0');
     html += `
     <button class="obs-scene-card${isAct ? ' active-scene' : ''}" onclick="switchOBSScene('${esc}')" title="Switch to ${sc}">
       <div class="obs-scene-top">
-        <span class="obs-scene-badge">${isAct ? '● LIVE' : `SCENE ${idx + 1}`}</span>
+        <span class="obs-scene-badge">${isAct ? '● LIVE' : `CH ${chNum}`}</span>
         <svg class="obs-scene-icon" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <rect width="18" height="14" x="3" y="5" rx="2"/><polygon points="23 7 16 12 23 17 23 7"/>
         </svg>
@@ -671,9 +687,13 @@ function renderOBSSceneStrip() {
 
   html += `</div>
   <div class="obs-strip-actions">
+    <div class="obs-telemetry-badge" id="obs-deck-telemetry" title="OBS Live Status" style="display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);font-size:0.68rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--tx2);">
+      <span class="stream-pulse-dot" style="background:${obsStatus.connected ? '#10b981' : 'var(--tx3)'};"></span>
+      <span>${obsStatus.connected ? 'OBS READY' : 'OFFLINE'}</span>
+    </div>
     <button class="obs-strip-btn${isSourcesDrawerOpen ? ' active' : ''}" id="obs-sources-toggle-btn" onclick="toggleOBSSourcesDrawer()" title="Kontrol Sources & Audio">
-      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
-      <span>SOURCES & AUDIO</span>
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+      <span>MIXER & LAYERS</span>
     </button>
     <button class="obs-strip-cfg-btn" onclick="openOBSModal()" title="Pengaturan OBS">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1019,13 +1039,20 @@ function render() {
     }
   } else {
     // Sembunyikan audio yang merupakan companion audio dari meme lain atau bertag isCompanionOnly
-    const companionAudios = new Set(
-      files.map(f => f.settings && f.settings.companionAudio).filter(Boolean)
-    );
+    const companionAudios = new Set();
+    files.forEach(f => {
+      const ca = (f.settings && f.settings.companionAudio) || f.companionAudio;
+      if (ca) {
+        companionAudios.add(ca);
+        const baseName = ca.split(/[\\/]/).pop();
+        if (baseName) companionAudios.add(baseName);
+      }
+    });
     fs = fs.filter(f => {
       if (getType(f.name) === 'audio') {
-        if (f.settings && (f.settings.isCompanionOnly || f.settings.hiddenFromDeck)) return false;
-        if (companionAudios.has(f.name)) return false;
+        const s = f.settings || {};
+        if (s.isCompanionOnly || s.hiddenFromDeck || f.isCompanionOnly || f.hiddenFromDeck) return false;
+        if (companionAudios.has(f.name) || companionAudios.has(f.filename)) return false;
       }
       return true;
     });

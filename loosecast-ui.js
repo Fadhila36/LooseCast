@@ -111,45 +111,49 @@ const StreamKitUI = (() => {
     ];
     const langBtns = langs.map(l =>
       `<button onclick="StreamKitUI.switchLang('${l.code}')"
-        style="flex:1;padding:5px 4px;border-radius:6px;font-size:.58rem;font-weight:700;cursor:pointer;transition:all var(--duration-fast);font-family:inherit;
-          background:${_langCode === l.code ? 'var(--brand)' : 'var(--panel2)'};
+        style="flex:1;padding:4px 6px;border-radius:4px;font-size:.62rem;font-weight:600;cursor:pointer;transition:all var(--duration-fast);font-family:inherit;
+          background:${_langCode === l.code ? 'var(--panel3)' : 'transparent'};
           color:${_langCode === l.code ? '#ffffff' : 'var(--tx2)'};
-          border:1px solid ${_langCode === l.code ? 'var(--brand-hover)' : 'var(--bd2)'};
+          border:1px solid ${_langCode === l.code ? 'var(--bd2)' : 'transparent'};
           ">${l.flag} ${l.name}</button>`
     ).join('');
 
     const langSection = `
-      <div style="padding:10px 14px;border-top:1px solid var(--bd);">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-          <span style="color:var(--tx3);display:flex;align-items:center;">${ICONS.lang.replace('16', '13').replace('height="16"', 'height="13"')}</span>
-          <span style="font-size:.54rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);">${t('nav_language', 'Bahasa')}</span>
+      <div style="padding:8px 10px;border-top:1px solid var(--bd);background:#08090d;">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;">
+          <span style="color:var(--tx3);display:flex;align-items:center;">${ICONS.lang.replace('16', '12').replace('height="16"', 'height="12"')}</span>
+          <span style="font-size:.52rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);">${t('nav_language', 'Bahasa')}</span>
         </div>
-        <div style="display:flex;gap:5px;">${langBtns}</div>
+        <div style="display:flex;gap:3px;background:var(--panel);padding:2px;border-radius:5px;border:1px solid var(--bd);">${langBtns}</div>
       </div>`;
 
     return `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--bd);">
-        <div style="font-size:.78rem;font-weight:900;letter-spacing:1px;line-height:1.3;font-family:'Syne',sans-serif;">LOOSE<span style="color:var(--brand);display:inline;">CAST</span><span style="display:block;font-size:0.5rem;font-weight:600;color:var(--tx3);letter-spacing:1px;">LOCAL SYSTEM CASTING</span></div>
-        <button onclick="closeSidebar()" style="background:none;border:1px solid var(--bd2);color:var(--tx2);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.8rem;">✕</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 12px 10px;border-bottom:1px solid var(--bd);background:#08090d;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:22px;height:22px;border-radius:4px;background:var(--panel3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:0.7rem;font-weight:800;">L</div>
+          <div style="font-size:.72rem;font-weight:800;letter-spacing:0.4px;line-height:1.2;font-family:'Inter',sans-serif;">LOOSE<span style="color:var(--brand);display:inline;">CAST</span><span style="display:block;font-size:0.48rem;font-weight:600;color:var(--tx3);letter-spacing:0.8px;">STUDIO WORKSPACE</span></div>
+        </div>
+        <button onclick="closeSidebar()" class="sidebar-close-mobile" style="background:none;border:1px solid var(--bd);color:var(--tx2);width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;">✕</button>
       </div>
-      <nav style="flex:1;padding:8px 0;overflow-y:auto;min-height:0;">
+      <nav style="flex:1;padding:6px 0;overflow-y:auto;min-height:0;">
+        <div style="padding:4px 10px 2px;font-size:.52rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx3);">${t('sec_workspace', 'Studio Workspace')}</div>
         ${navLinks}
-        ${connectItem}
+        <div class="nav-sep"></div>
+        <div style="padding:4px 10px 2px;font-size:.52rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx3);">${t('sec_integrations', 'Integrasi & Hardware')}</div>
         ${obsItem}
-        <div class="nav-sep"></div>
-        <div style="padding:8px 18px 4px;font-size:.54rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);">${t('nav_more_tools', 'Alat Tambahan')}</div>
+        ${connectItem}
         ${kdItem}
-        ${docsItem}
         <div class="nav-sep"></div>
-        <div style="padding:8px 18px 4px;font-size:.54rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);">${t('hub_title', 'LooseCast Hub')}</div>
+        <div style="padding:4px 10px 2px;font-size:.52rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx3);">${t('hub_title', 'Sistem & Tools')}</div>
         ${settingsItem}
+        ${docsItem}
         ${profileItem}
         ${aboutItem}
       </nav>
-      <div style="flex-shrink:0;border-top:1px solid var(--bd);padding:14px 18px 10px;">
-        <div style="font-size:.62rem;color:var(--tx3);display:flex;align-items:center;justify-content:space-between;">
-          <span>© fadhila36</span>
-          <a href="https://fadhilaabiyyu.my.id" target="_blank" style="color:var(--brand);text-decoration:none;font-weight:700;font-size:.62rem;">fadhilaabiyyu.my.id ↗</a>
+      <div style="flex-shrink:0;border-top:1px solid var(--bd);padding:6px 10px;background:#08090d;">
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.6rem;color:var(--tx3);">
+          <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;"></span> LOCAL HOST</span>
+          <span class="mono" style="color:var(--tx2);">:3000</span>
         </div>
       </div>
       ${langSection}`;
@@ -159,6 +163,67 @@ const StreamKitUI = (() => {
   function injectSidebar() {
     const aside = document.getElementById('sidebar');
     if (aside) aside.innerHTML = sidebarHTML();
+
+    const topbar = document.querySelector('.topbar');
+
+    // 1. Inject Live OBS Telemetry Pill into .topbar
+    if (topbar && !document.getElementById('topbar-stream-telemetry')) {
+      const telPill = document.createElement('div');
+      telPill.id = 'topbar-stream-telemetry';
+      telPill.className = 'topbar-stream-pill';
+      telPill.title = 'OBS Live Stream & Recording Status';
+      telPill.innerHTML = `
+        <span class="stream-pulse-dot" id="telemetry-dot"></span>
+        <span id="telemetry-txt">OFF AIR</span>
+      `;
+      topbar.appendChild(telPill);
+    }
+
+    // 2. Inject Window Controls into .topbar on desktop
+    if (topbar && !document.getElementById('desktop-win-controls')) {
+      topbar.setAttribute('data-tauri-drag-region', 'true');
+      topbar.addEventListener('dblclick', (e) => {
+        if (!e.target.closest('button, a, input, select, .url-chip, .obs-wrap, .win-btn, .topbar-stream-pill')) {
+          if (window.tauriDesktop && window.tauriDesktop.window) {
+            window.tauriDesktop.window.toggleMaximize();
+          }
+        }
+      });
+      const winControls = document.createElement('div');
+      winControls.id = 'desktop-win-controls';
+      winControls.className = 'window-controls';
+      winControls.innerHTML = `
+        <button class="win-btn" onclick="window.tauriDesktop && window.tauriDesktop.window.minimize()" title="Minimize">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><rect y="5" width="12" height="1.5" rx="0.75"/></svg>
+        </button>
+        <button class="win-btn" onclick="window.tauriDesktop && window.tauriDesktop.window.toggleMaximize()" title="Maximize / Restore">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="10" rx="1.5"/></svg>
+        </button>
+        <button class="win-btn win-btn-close" onclick="window.tauriDesktop && window.tauriDesktop.window.close()" title="Close to Tray">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 2l8 8M10 2L2 10"/></svg>
+        </button>
+      `;
+      topbar.appendChild(winControls);
+    }
+
+    // 3. Inject Desktop Status Bar into .main-wrap if not exists
+    const mainWrap = document.querySelector('.main-wrap');
+    if (mainWrap && !document.querySelector('.desktop-statusbar')) {
+      const statusBar = document.createElement('footer');
+      statusBar.className = 'desktop-statusbar';
+      statusBar.innerHTML = `
+        <div class="statusbar-left">
+          <span class="statusbar-item"><span class="statusbar-dot"></span> Core Server: Online</span>
+          <span class="statusbar-item" style="color:var(--tx2);">PORT 3000</span>
+          <span class="statusbar-item" id="statusbar-obs-status">OBS: Standby</span>
+        </div>
+        <div class="statusbar-right">
+          <span class="statusbar-item" id="status-mem-usage">RAM: ~45 MB</span>
+          <span class="statusbar-item" style="color:var(--tx2);">v1.0.4 (Tauri v2)</span>
+        </div>
+      `;
+      mainWrap.appendChild(statusBar);
+    }
     // Override active color for customdeck
     let styleEl = document.getElementById('streamkit-sidebar-accent') || document.getElementById('ksk-sidebar-accent');
     if (!styleEl) { 
@@ -166,9 +231,6 @@ const StreamKitUI = (() => {
       styleEl.id = 'streamkit-sidebar-accent'; 
       document.head.appendChild(styleEl); 
     }
-    const accentCSS = _activePage === 'customdeck'
-      ? '.nav-item.active{color:#ef4444!important;}.nav-item.active::before{background:#ef4444!important;}'
-      : '';
     // Scrollbar tipis untuk sidebar
     const scrollCSS = `
       #sidebar::-webkit-scrollbar{width:3px;}
@@ -179,7 +241,7 @@ const StreamKitUI = (() => {
       #sidebar nav::-webkit-scrollbar-track{background:transparent;}
       #sidebar nav::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
     `;
-    styleEl.textContent = accentCSS + scrollCSS;
+    styleEl.textContent = scrollCSS;
   }
 
   // Language switching
@@ -275,7 +337,7 @@ const StreamKitUI = (() => {
           ${getDocContent('start')}
         </div>
         <div style="padding:12px 18px;border-top:1px solid var(--bd);background:var(--panel2);display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:0.65rem;color:var(--tx3);">LooseCast — Local System Casting Stream</span>
+          <span style="font-size:0.65rem;color:var(--tx3);">LooseCast · Local System Casting Stream</span>
           <button onclick="StreamKitUI.closeDocs()" style="background:rgba(255,255,255,0.08);color:var(--tx);border:1px solid var(--bd2);padding:6px 18px;border-radius:var(--r-sm);font-size:0.72rem;font-weight:600;cursor:pointer;outline:none;transition:all var(--duration-fast);" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Tutup</button>
         </div>
       </div>
@@ -451,7 +513,10 @@ const StreamKitUI = (() => {
 
   function getHubContent(tab) {
     _hubState.activeTab = tab || 'settings';
+    const isTauri = !!(window.tauriDesktop && window.tauriDesktop.isTauri) || !!window.__TAURI_INTERNALS__;
     const isElectron = !!getElectronBridge();
+    const runtimeModeLabel = isTauri ? 'Desktop App (Tauri v2)' : (isElectron ? 'Desktop App (Electron)' : 'Web Browser');
+    const platformLabel = isTauri ? 'Windows 64-bit · Desktop Native' : (navigator.platform || 'Desktop / Web');
     const mediaSizeFormatted = _hubState.mediaSize > 1048576 
       ? (_hubState.mediaSize / 1048576).toFixed(1) + ' MB' 
       : (_hubState.mediaSize / 1024).toFixed(0) + ' KB';
@@ -513,12 +578,12 @@ const StreamKitUI = (() => {
         <div class="hub-section-title">${t('profile_account_title', 'Identitas Streamer & Workspace')}</div>
         <div class="hub-card">
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-            <div style="width:40px;height:40px;border-radius:10px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:0.9rem;font-weight:800;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--tx1);font-size:0.85rem;font-weight:800;font-family:'JetBrains Mono',monospace;">
               LC
             </div>
             <div>
               <div style="font-size:0.9rem;font-weight:700;color:var(--tx1);">${t('profile_streamer_tag', 'LooseCast Streamer')}</div>
-              <div style="font-size:0.66rem;color:var(--tx3);margin-top:2px;">Broadcast Workspace</div>
+              <div style="font-size:0.66rem;color:var(--tx3);margin-top:2px;">Broadcast Workspace Controller</div>
             </div>
           </div>
           <div class="hub-info-grid">
@@ -550,11 +615,11 @@ const StreamKitUI = (() => {
             </div>
             <div class="hub-info-item">
               <div class="hub-info-label">${t('profile_runtime_mode', 'Mode Runtime')}</div>
-              <div class="hub-info-value">${isElectron ? 'Desktop App (Electron)' : 'Web Browser'}</div>
+              <div class="hub-info-value">${runtimeModeLabel}</div>
             </div>
             <div class="hub-info-item">
               <div class="hub-info-label">${t('profile_platform_os', 'Platform')}</div>
-              <div class="hub-info-value">${navigator.platform || 'Windows / Web'}</div>
+              <div class="hub-info-value">${platformLabel}</div>
             </div>
           </div>
         </div>
@@ -578,7 +643,7 @@ const StreamKitUI = (() => {
           <div class="hub-card-header">
             <div>
               <div style="font-size:0.92rem;font-weight:700;color:var(--tx1);">LooseCast</div>
-              <div style="font-size:0.68rem;color:var(--tx3);margin-top:3px;">Local System Casting Stream — Meme Overlay & OBS Suite</div>
+              <div style="font-size:0.68rem;color:var(--tx3);margin-top:3px;">Local System Casting Stream · Meme Overlay & OBS Suite</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
               <span class="mono" style="font-size:0.72rem;background:rgba(255,255,255,0.05);border:1px solid var(--bd2);padding:4px 8px;border-radius:6px;color:var(--tx2);">v${_hubState.version || '1.0.0'}</span>
@@ -909,6 +974,57 @@ const StreamKitUI = (() => {
     }
   }
 
+  function updateOBSTelemetryUI(data) {
+    const pill = document.getElementById('topbar-stream-telemetry');
+    const txt = document.getElementById('telemetry-txt');
+    const footerOBS = document.getElementById('statusbar-obs-status');
+    const deckTel = document.getElementById('obs-deck-telemetry');
+
+    if (!pill || !txt) return;
+
+    if (!data || !data.connected) {
+      pill.className = 'topbar-stream-pill';
+      txt.textContent = 'OBS OFFLINE';
+      if (footerOBS) footerOBS.textContent = 'OBS: Offline';
+      if (deckTel) {
+        deckTel.className = 'obs-telemetry-badge';
+        deckTel.innerHTML = `<span class="stream-pulse-dot"></span><span>OFF AIR</span>`;
+      }
+      return;
+    }
+
+    const stream = data.stream || {};
+    const record = data.record || {};
+
+    if (stream.outputActive) {
+      pill.className = 'topbar-stream-pill live';
+      const timecode = (stream.outputTimecode || '00:00:00').split('.')[0];
+      txt.textContent = `LIVE ${timecode}`;
+      if (footerOBS) footerOBS.textContent = `OBS: LIVE (${timecode})`;
+      if (deckTel) {
+        deckTel.className = 'obs-telemetry-badge live';
+        deckTel.innerHTML = `<span class="stream-pulse-dot"></span><span>LIVE ${timecode}</span>`;
+      }
+    } else if (record.outputActive) {
+      pill.className = 'topbar-stream-pill rec';
+      const timecode = (record.outputTimecode || '00:00:00').split('.')[0];
+      txt.textContent = `REC ${timecode}`;
+      if (footerOBS) footerOBS.textContent = `OBS: REC (${timecode})`;
+      if (deckTel) {
+        deckTel.className = 'obs-telemetry-badge rec';
+        deckTel.innerHTML = `<span class="stream-pulse-dot"></span><span>REC ${timecode}</span>`;
+      }
+    } else {
+      pill.className = 'topbar-stream-pill';
+      txt.textContent = 'OBS READY';
+      if (footerOBS) footerOBS.textContent = 'OBS: Standby';
+      if (deckTel) {
+        deckTel.className = 'obs-telemetry-badge';
+        deckTel.innerHTML = `<span class="stream-pulse-dot" style="background:#10b981;"></span><span>OBS READY</span>`;
+      }
+    }
+  }
+
   // Module initialization
   async function init(activePage) {
     _activePage = activePage || 'dashboard';
@@ -918,10 +1034,28 @@ const StreamKitUI = (() => {
     injectDocsModal();
     injectHubModal();
     applyPageStrings();
+
+    // Hook Socket.io telemetry
+    if (typeof io === 'function' || window.socket) {
+      const s = window.socket || (typeof io === 'function' ? io() : null);
+      if (s) {
+        s.on('obs-telemetry', (data) => updateOBSTelemetryUI(data));
+        s.on('obs-status-changed', (st) => {
+          if (st) {
+            updateOBSTelemetryUI({
+              connected: st.connected,
+              stream: st.stream,
+              record: st.record,
+            });
+          }
+        });
+      }
+    }
   }
 
   return {
     init,
+    updateOBSTelemetryUI,
     switchLang,
     t,
     getLang,

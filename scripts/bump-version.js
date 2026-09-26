@@ -56,6 +56,20 @@ try {
     fs.writeFileSync(LOCK_PATH, JSON.stringify(lock, null, 2) + '\n', 'utf8');
   }
 
+  const TAURI_CONF_PATH = path.join(ROOT_DIR, 'src-tauri', 'tauri.conf.json');
+  if (fs.existsSync(TAURI_CONF_PATH)) {
+    const tauriConf = JSON.parse(fs.readFileSync(TAURI_CONF_PATH, 'utf8'));
+    tauriConf.version = newVersion;
+    fs.writeFileSync(TAURI_CONF_PATH, JSON.stringify(tauriConf, null, 2) + '\n', 'utf8');
+  }
+
+  const CARGO_TOML_PATH = path.join(ROOT_DIR, 'src-tauri', 'Cargo.toml');
+  if (fs.existsSync(CARGO_TOML_PATH)) {
+    let cargo = fs.readFileSync(CARGO_TOML_PATH, 'utf8');
+    cargo = cargo.replace(/version\s*=\s*"[^"]+"/, `version = "${newVersion}"`);
+    fs.writeFileSync(CARGO_TOML_PATH, cargo, 'utf8');
+  }
+
   console.log(`[version-bumper] Successfully bumped version from v${oldVersion} to v${newVersion} (${type})`);
 } catch (err) {
   console.error(`[version-bumper] Error bumping version: ${err.message}`);

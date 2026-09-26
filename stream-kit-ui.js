@@ -128,28 +128,32 @@ const StreamKitUI = (() => {
       </div>`;
 
     return `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--bd);">
-        <div style="font-size:.78rem;font-weight:900;letter-spacing:1px;line-height:1.3;font-family:'Syne',sans-serif;">LOOSE<span style="color:var(--brand);display:inline;">CAST</span><span style="display:block;font-size:0.5rem;font-weight:600;color:var(--tx3);letter-spacing:1px;">LOCAL SYSTEM CASTING</span></div>
-        <button onclick="closeSidebar()" style="background:none;border:1px solid var(--bd2);color:var(--tx2);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.8rem;">✕</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 14px 12px;border-bottom:1px solid var(--bd);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:24px;height:24px;border-radius:6px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:0.75rem;font-weight:900;">L</div>
+          <div style="font-size:.76rem;font-weight:900;letter-spacing:0.8px;line-height:1.2;font-family:'Syne',sans-serif;">LOOSE<span style="color:var(--brand);display:inline;">CAST</span><span style="display:block;font-size:0.5rem;font-weight:600;color:var(--tx3);letter-spacing:1px;">STUDIO WORKSPACE</span></div>
+        </div>
+        <button onclick="closeSidebar()" class="sidebar-close-mobile" style="background:none;border:1px solid var(--bd2);color:var(--tx2);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;">✕</button>
       </div>
       <nav style="flex:1;padding:8px 0;overflow-y:auto;min-height:0;">
+        <div style="padding:6px 14px 4px;font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);">${t('sec_workspace', 'Studio Workspace')}</div>
         ${navLinks}
-        ${connectItem}
+        <div class="nav-sep"></div>
+        <div style="padding:6px 14px 4px;font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);">${t('sec_integrations', 'Integrasi & Hardware')}</div>
         ${obsItem}
-        <div class="nav-sep"></div>
-        <div style="padding:8px 18px 4px;font-size:.54rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);">${t('nav_more_tools', 'Alat Tambahan')}</div>
+        ${connectItem}
         ${kdItem}
-        ${docsItem}
         <div class="nav-sep"></div>
-        <div style="padding:8px 18px 4px;font-size:.54rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);">${t('hub_title', 'LooseCast Hub')}</div>
+        <div style="padding:6px 14px 4px;font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);">${t('hub_title', 'Sistem & Tools')}</div>
         ${settingsItem}
+        ${docsItem}
         ${profileItem}
         ${aboutItem}
       </nav>
-      <div style="flex-shrink:0;border-top:1px solid var(--bd);padding:14px 18px 10px;">
-        <div style="font-size:.62rem;color:var(--tx3);display:flex;align-items:center;justify-content:space-between;">
-          <span>© fadhila36</span>
-          <a href="https://fadhilaabiyyu.my.id" target="_blank" style="color:var(--brand);text-decoration:none;font-weight:700;font-size:.62rem;">fadhilaabiyyu.my.id ↗</a>
+      <div style="flex-shrink:0;border-top:1px solid var(--bd);padding:8px 12px;background:rgba(0,0,0,0.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.62rem;color:var(--tx3);">
+          <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;box-shadow:0 0 6px #22c55e;"></span> LOCAL HOST</span>
+          <span class="mono" style="color:var(--tx2);">:3000</span>
         </div>
       </div>
       ${langSection}`;
@@ -159,6 +163,53 @@ const StreamKitUI = (() => {
   function injectSidebar() {
     const aside = document.getElementById('sidebar');
     if (aside) aside.innerHTML = sidebarHTML();
+
+    // 1. Inject Window Controls into .topbar on desktop
+    const topbar = document.querySelector('.topbar');
+    if (topbar && !document.getElementById('desktop-win-controls')) {
+      topbar.setAttribute('data-tauri-drag-region', 'true');
+      topbar.addEventListener('dblclick', (e) => {
+        if (!e.target.closest('button, a, input, select, .url-chip, .obs-wrap, .win-btn')) {
+          if (window.tauriDesktop && window.tauriDesktop.window) {
+            window.tauriDesktop.window.toggleMaximize();
+          }
+        }
+      });
+      const winControls = document.createElement('div');
+      winControls.id = 'desktop-win-controls';
+      winControls.className = 'window-controls';
+      winControls.innerHTML = `
+        <button class="win-btn" onclick="window.tauriDesktop && window.tauriDesktop.window.minimize()" title="Minimize">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><rect y="5" width="12" height="1.5" rx="0.75"/></svg>
+        </button>
+        <button class="win-btn" onclick="window.tauriDesktop && window.tauriDesktop.window.toggleMaximize()" title="Maximize / Restore">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="10" rx="1.5"/></svg>
+        </button>
+        <button class="win-btn win-btn-close" onclick="window.tauriDesktop && window.tauriDesktop.window.close()" title="Close to Tray">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 2l8 8M10 2L2 10"/></svg>
+        </button>
+      `;
+      topbar.appendChild(winControls);
+    }
+
+    // 2. Inject Desktop Status Bar into .main-wrap if not exists
+    const mainWrap = document.querySelector('.main-wrap');
+    if (mainWrap && !document.querySelector('.desktop-statusbar')) {
+      const statusBar = document.createElement('footer');
+      statusBar.className = 'desktop-statusbar';
+      statusBar.innerHTML = `
+        <div class="statusbar-left">
+          <span class="statusbar-item"><span class="statusbar-dot"></span> Core Server: Online</span>
+          <span class="statusbar-item" style="color:var(--tx2);">PORT 3000</span>
+          <span class="statusbar-item" id="statusbar-obs-status">OBS: Standby</span>
+        </div>
+        <div class="statusbar-right">
+          <span class="statusbar-item" id="status-mem-usage">RAM: ~45 MB</span>
+          <span class="statusbar-item" style="color:var(--tx2);">v1.0.4 (Tauri v2)</span>
+        </div>
+      `;
+      mainWrap.appendChild(statusBar);
+    }
     // Override active color for customdeck
     let styleEl = document.getElementById('streamkit-sidebar-accent') || document.getElementById('ksk-sidebar-accent');
     if (!styleEl) { 
@@ -451,7 +502,10 @@ const StreamKitUI = (() => {
 
   function getHubContent(tab) {
     _hubState.activeTab = tab || 'settings';
+    const isTauri = !!(window.tauriDesktop && window.tauriDesktop.isTauri) || !!window.__TAURI_INTERNALS__;
     const isElectron = !!getElectronBridge();
+    const runtimeModeLabel = isTauri ? 'Desktop App (Tauri v2)' : (isElectron ? 'Desktop App (Electron)' : 'Web Browser');
+    const platformLabel = isTauri ? 'Windows 64-bit · Desktop Native' : (navigator.platform || 'Desktop / Web');
     const mediaSizeFormatted = _hubState.mediaSize > 1048576 
       ? (_hubState.mediaSize / 1048576).toFixed(1) + ' MB' 
       : (_hubState.mediaSize / 1024).toFixed(0) + ' KB';
@@ -513,12 +567,12 @@ const StreamKitUI = (() => {
         <div class="hub-section-title">${t('profile_account_title', 'Identitas Streamer & Workspace')}</div>
         <div class="hub-card">
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-            <div style="width:40px;height:40px;border-radius:10px;background:var(--brand-dim);border:1px solid var(--brand-border);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:0.9rem;font-weight:800;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--tx1);font-size:0.85rem;font-weight:800;font-family:'JetBrains Mono',monospace;">
               LC
             </div>
             <div>
               <div style="font-size:0.9rem;font-weight:700;color:var(--tx1);">${t('profile_streamer_tag', 'LooseCast Streamer')}</div>
-              <div style="font-size:0.66rem;color:var(--tx3);margin-top:2px;">Broadcast Workspace</div>
+              <div style="font-size:0.66rem;color:var(--tx3);margin-top:2px;">Broadcast Workspace Controller</div>
             </div>
           </div>
           <div class="hub-info-grid">
@@ -550,11 +604,11 @@ const StreamKitUI = (() => {
             </div>
             <div class="hub-info-item">
               <div class="hub-info-label">${t('profile_runtime_mode', 'Mode Runtime')}</div>
-              <div class="hub-info-value">${isElectron ? 'Desktop App (Electron)' : 'Web Browser'}</div>
+              <div class="hub-info-value">${runtimeModeLabel}</div>
             </div>
             <div class="hub-info-item">
               <div class="hub-info-label">${t('profile_platform_os', 'Platform')}</div>
-              <div class="hub-info-value">${navigator.platform || 'Windows / Web'}</div>
+              <div class="hub-info-value">${platformLabel}</div>
             </div>
           </div>
         </div>
@@ -578,7 +632,7 @@ const StreamKitUI = (() => {
           <div class="hub-card-header">
             <div>
               <div style="font-size:0.92rem;font-weight:700;color:var(--tx1);">LooseCast</div>
-              <div style="font-size:0.68rem;color:var(--tx3);margin-top:3px;">Local System Casting Stream — Meme Overlay & OBS Suite</div>
+              <div style="font-size:0.68rem;color:var(--tx3);margin-top:3px;">Local System Casting Stream · Meme Overlay & OBS Suite</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
               <span class="mono" style="font-size:0.72rem;background:rgba(255,255,255,0.05);border:1px solid var(--bd2);padding:4px 8px;border-radius:6px;color:var(--tx2);">v${_hubState.version || '1.0.0'}</span>

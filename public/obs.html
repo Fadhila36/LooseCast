@@ -78,7 +78,7 @@ html,body{width:100%;height:100%;background:transparent;overflow:hidden;}
   <canvas id="fx-canvas" width="1920" height="1080"></canvas>
   <div id="mw">
     <img id="mi" src="" alt="" style="display:none">
-    <video id="mv" src="" style="display:none" playsinline></video>
+    <video id="mv" src="" style="display:none" preload="auto" playsinline webkit-playsinline></video>
     <canvas id="mc" style="display:none"></canvas>
   </div>
 </div>
@@ -288,38 +288,52 @@ function triggerConfetti(dur = 3000) {
 let chromaVideoCallbackId = null;
 
 function chromaFrame(tr, tg, tb, sens, blend) {
-  if (mv.paused || mv.ended || hiding) {
+  if (hiding || mv.ended) {
     chromaRAF = null;
     chromaVideoCallbackId = null;
     return;
   }
-  const w = mc.width, h = mc.height;
-  if (!w || !h) return;
 
-  ctx.drawImage(mv, 0, 0, w, h);
-  const frame = ctx.getImageData(0, 0, w, h);
-  const d = frame.data;
-  
-  const sensDist = sens * 442;
-  const blendDist = blend * 442;
-  const sensSq = sensDist * sensDist;
-  const maxDist = sensDist + blendDist;
-  const maxSq = maxDist * maxDist;
-
-  for (let i = 0; i < d.length; i += 4) {
-    const dr = d[i] - tr;
-    const dg = d[i+1] - tg;
-    const db = d[i+2] - tb;
-    const distSq = dr * dr + dg * dg + db * db;
-
-    if (distSq < sensSq) {
-      d[i+3] = 0;
-    } else if (distSq < maxSq && blendDist > 0) {
-      const dist = Math.sqrt(distSq);
-      d[i+3] = Math.round(255 * ((dist - sensDist) / blendDist));
-    }
+  // If video is still buffering / paused temporarily, keep loop alive
+  if (mv.paused) {
+    chromaRAF = requestAnimationFrame(() => chromaFrame(tr, tg, tb, sens, blend));
+    return;
   }
-  ctx.putImageData(frame, 0, 0);
+
+  const w = mc.width, h = mc.height;
+  if (!w || !h) {
+    chromaRAF = requestAnimationFrame(() => chromaFrame(tr, tg, tb, sens, blend));
+    return;
+  }
+
+  try {
+    ctx.drawImage(mv, 0, 0, w, h);
+    const frame = ctx.getImageData(0, 0, w, h);
+    const d = frame.data;
+    
+    const sensDist = sens * 442;
+    const blendDist = blend * 442;
+    const sensSq = sensDist * sensDist;
+    const maxDist = sensDist + blendDist;
+    const maxSq = maxDist * maxDist;
+
+    for (let i = 0; i < d.length; i += 4) {
+      const dr = d[i] - tr;
+      const dg = d[i+1] - tg;
+      const db = d[i+2] - tb;
+      const distSq = dr * dr + dg * dg + db * db;
+
+      if (distSq < sensSq) {
+        d[i+3] = 0;
+      } else if (distSq < maxSq && blendDist > 0) {
+        const dist = Math.sqrt(distSq);
+        d[i+3] = Math.round(255 * ((dist - sensDist) / blendDist));
+      }
+    }
+    ctx.putImageData(frame, 0, 0);
+  } catch (err) {
+    console.warn('[OBS Overlay] Chroma frame processing warning:', err);
+  }
 
   if ('requestVideoFrameCallback' in mv) {
     chromaVideoCallbackId = mv.requestVideoFrameCallback(() => chromaFrame(tr, tg, tb, sens, blend));
@@ -339,11 +353,11 @@ function startChroma(data, onReady) {
 
   const tryStart = () => {
     if (mv.videoWidth && mv.videoHeight) {
-      chromaInitTimer = null;
       mc.width = mv.videoWidth;
       mc.height = mv.videoHeight;
       mc.style.display = 'block';
       mv.style.display = 'none';
+      if (chromaRAF) cancelAnimationFrame(chromaRAF);
       chromaFrame(tr, tg, tb, sens, blend);
       if (onReady) onReady();
     } else {
@@ -452,19 +466,27 @@ function doShow(data){
   hideTimer = null;
   stopChroma();
 
-  // Reset event listeners on media elements to avoid stale event triggers
+  // Reset semua event listeners sebelum menyentuh media elements
+  mi.onerror = null;
+  mi.onload = null;
   mv.onended = null;
   mv.onerror = null;
-  mv.onplay = null;
+  mv.onplaying = null;
+  mv.ontimeupdate = null;
+  mv.onloadedmetadata = null;
   mv.oncanplay = null;
   ma.onended = null;
   ma.onerror = null;
-  ma.onplay = null;
+  ma.onplaying = null;
 
   mi.style.display='none'; mv.style.display='none'; mc.style.display='none';
-  mv.pause(); ma.pause();
-  mv.currentTime = 0; ma.currentTime = 0;
-  mi.src=''; mv.src=''; ma.src='';
+  try { mv.pause(); } catch(e){}
+  try { ma.pause(); } catch(e){}
+  
+  // Bersihkan src dengan aman tanpa memicu browser 404 / onerror loop
+  mi.removeAttribute('src');
+  mv.removeAttribute('src');
+  ma.removeAttribute('src');
 
   if(companionAudio){
     ma.src='/assets/'+encodeURIComponent(companionAudio);
@@ -511,28 +533,86 @@ function doShow(data){
       }, imgDuration * 1000);
     }
   } else {
-    console.log('[OBS Overlay] Playing video:', url, 'effectiveVol:', effectiveVol);
+    console.log('[OBS Overlay] Playing video:', url, 'effectiveVol:', effectiveVol, 'duration:', data.duration, 'durationMode:', data.durationMode);
     
     // Exact playback speed enforcement
     const speed = (data.playbackRate != null && Number(data.playbackRate) > 0) 
       ? Number(data.playbackRate) 
       : ((data.speed != null && Number(data.speed) > 0) ? Number(data.speed) : 1.0);
 
+    const isLoop = data.loop === true || data.loop === 'true';
+    const customDur = (data.durationMode === 'custom' && Number(data.duration) > 0)
+      ? Number(data.duration)
+      : (data.customDuration ? Number(data.customDuration) : 0);
+
     mv.playbackRate = speed;
     mv.defaultPlaybackRate = speed;
-    mv.loop = false;
+    mv.loop = Boolean(isLoop);
     mv.volume = Math.max(0, Math.min(1, effectiveVol));
-    mv.src = url;
-    mv.currentTime = 0;
+    mv.muted = effectiveVol <= 0;
+
+    let lastVideoTime = 0;
+
+    mv.onplaying = () => {
+      mv.playbackRate = speed;
+      console.log('[OBS Overlay] Video playback active & playing');
+    };
 
     mv.onerror = (e) => {
+      if (hiding || !mv.src || mv.src === window.location.href) return;
       console.warn('[OBS Overlay] Video load error for:', url, e);
       if (!hiding) doHide(outAnim, animOutSpeed);
     };
 
     mv.onended = () => {
-      if (!hiding) doHide(outAnim, animOutSpeed);
+      console.log('[OBS Overlay] Video playback ended naturally. isLoop:', isLoop);
+      if (!hiding && !isLoop) {
+        doHide(outAnim, animOutSpeed);
+      }
     };
+
+    mv.ontimeupdate = () => {
+      if (hiding || isLoop) return;
+      const cur = mv.currentTime;
+      const dur = mv.duration;
+
+      // 1. Boundary check: If within 80ms of end
+      if (dur && isFinite(dur) && dur > 0 && cur >= (dur - 0.08)) {
+        console.log('[OBS Overlay] Video reached end timestamp via timeupdate');
+        doHide(outAnim, animOutSpeed);
+        return;
+      }
+
+      // 2. Loop wrap-around detection (jumped back to start)
+      if (lastVideoTime > 0.4 && cur < (lastVideoTime - 0.4)) {
+        console.log('[OBS Overlay] Video looped back to start while loop=false. Terminating.');
+        doHide(outAnim, animOutSpeed);
+        return;
+      }
+      lastVideoTime = cur;
+    };
+
+    const setupSafetyTimer = () => {
+      if (!isLoop && customDur <= 0 && mv.duration && isFinite(mv.duration) && mv.duration > 0) {
+        const exactDurationSec = (mv.duration / (speed || 1)) + 0.25;
+        console.log(`[OBS Overlay] Auto safety hide timer set for ${exactDurationSec.toFixed(2)}s`);
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+          if (!hiding) {
+            console.log('[OBS Overlay] Safety duration timer triggered');
+            doHide(outAnim, animOutSpeed);
+          }
+        }, exactDurationSec * 1000);
+      }
+    };
+
+    mv.onloadedmetadata = () => {
+      console.log(`[OBS Overlay] Video metadata loaded. Duration: ${mv.duration}s, Speed: ${speed}, Loop: ${isLoop}`);
+      setupSafetyTimer();
+    };
+    mv.oncanplay = setupSafetyTimer;
+
+    mv.src = url;
 
     const playPromise = mv.play();
     if (playPromise !== undefined) {
@@ -541,6 +621,17 @@ function doShow(data){
       }).catch((err) => {
         console.warn('[OBS Overlay] Video play promise rejected:', err);
         if (err && err.name === 'AbortError') return;
+        // Fallback untuk browser autoplay restriction
+        if (err && err.name === 'NotAllowedError') {
+          console.log('[OBS Overlay] Retrying video play with muted fallback...');
+          mv.muted = true;
+          mv.play().then(() => {
+            setTimeout(() => {
+              mv.muted = effectiveVol <= 0;
+              mv.volume = Math.max(0, Math.min(1, effectiveVol));
+            }, 100);
+          }).catch(() => {});
+        }
       });
     }
 
@@ -556,17 +647,13 @@ function doShow(data){
       playShow();
     }
     
-    // Explicit custom video duration override if specified, otherwise safety fallback 10 mins
-    if (data.customDuration && Number(data.customDuration) > 0) {
+    // Duration Timer (for custom duration mode):
+    if (customDur > 0) {
+      console.log(`[OBS Overlay] Setting custom video hide timer: ${customDur}s`);
+      clearTimeout(hideTimer);
       hideTimer = setTimeout(()=>{
         if(!hiding) doHide(outAnim, animOutSpeed);
-      }, Number(data.customDuration) * 1000);
-    } else {
-      hideTimer = setTimeout(()=>{
-        if(!hiding && (mv.ended || mv.paused)) {
-          doHide(outAnim, animOutSpeed);
-        }
-      }, 600000);
+      }, customDur * 1000);
     }
     return;
   }
@@ -588,17 +675,27 @@ function doHide(anim='fadeOut', speed=300){
     return;
   }
   hiding=true;
-  mv.pause();
-  ma.pause();
+  try {
+    mv.loop = false;
+    mv.pause();
+    mv.ontimeupdate = null;
+    mv.onended = null;
+    mv.onloadedmetadata = null;
+    mv.oncanplay = null;
+    mv.onplaying = null;
+  } catch(e){}
+  try { ma.pause(); ma.onended = null; } catch(e){}
   stopChroma();
   mw.style.animation=`${anim} ${speed}ms ease forwards`;
   setTimeout(()=>{
     mw.style.display='none';
     mw.style.animation='';
     mi.style.display='none'; mv.style.display='none'; mc.style.display='none';
-    mv.onended = null; mv.onerror = null;
-    ma.onended = null; ma.onerror = null;
-    mi.src=''; mv.src=''; ma.src='';
+    mi.onerror = null; mi.onload = null;
+    mi.removeAttribute('src');
+    mv.removeAttribute('src');
+    ma.removeAttribute('src');
+    try { mv.load(); } catch(e){}
     hiding=false;
     if(queued){ const d=queued; queued=null; doShow(d); }
   }, speed);

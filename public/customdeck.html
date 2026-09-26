@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/customdeck.css">
+<script src="/js/tauri-bridge.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -205,22 +206,30 @@
 
         <!-- Thumbnail picker (video only) -->
         <div class="fg" id="thumb-section" style="display:none;margin-top:10px;">
-          <div class="fl" data-i18n="studio_thumb_frame">Video Thumbnail Frame</div>
+          <div class="fl" data-i18n="studio_thumb_frame">Frame Thumbnail Video (Tampilan Kartu Deck)</div>
           <div class="thumb-wrap">
             <div class="thumb-row">
-              <div class="thumb-cur" id="thumb-cur"><span>none</span></div>
+              <div class="thumb-cur" id="thumb-cur" title="Thumbnail yang aktif saat ini"><span>none</span></div>
               <div class="thumb-right">
                 <div class="thumb-scrub-wrap">
-                  <video id="thumb-video" class="thumb-video" muted playsinline preload="metadata"></video>
-                  <input type="range" class="thumb-slider" id="thumb-slider" min="0" max="100" value="0" step="0.1" oninput="scrubThumb(this.value)">
-                  <div class="thumb-time" id="thumb-time">0:00 / 0:00</div>
+                  <video id="thumb-video" class="thumb-video" muted playsinline preload="auto" crossorigin="anonymous"></video>
+                  <input type="range" class="thumb-slider" id="thumb-slider" min="0" max="100" value="0" step="0.05" oninput="scrubThumb(this.value)">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:0.58rem;color:var(--tx3);">Geser slider untuk memilih frame</span>
+                    <div class="thumb-time" id="thumb-time">0:00 / 0:00</div>
+                  </div>
                 </div>
-                <div class="thumb-btns">
-                  <button class="thumb-cap" onclick="captureThumb()" style="display:inline-flex;align-items:center;gap:6px;">
+                <div class="thumb-btns" style="flex-wrap:wrap;">
+                  <button type="button" class="thumb-cap" onclick="captureThumb()" style="display:inline-flex;align-items:center;gap:6px;">
                     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    <span data-i18n="studio_use_frame">Use this frame</span>
+                    <span data-i18n="studio_use_frame">Gunakan Frame Ini</span>
                   </button>
-                  <button class="thumb-clr" onclick="clearThumb()" data-i18n="studio_remove_thumb">✕ Remove</button>
+                  <button type="button" class="thumb-cap" onclick="document.getElementById('custom-vthumb-input').click()" style="background:var(--panel3);border-color:var(--bd2);color:var(--tx);display:inline-flex;align-items:center;gap:6px;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Upload Gambar</span>
+                  </button>
+                  <input type="file" id="custom-vthumb-input" accept="image/*" style="display:none" onchange="onCustomVideoThumb(this.files[0])">
+                  <button type="button" class="thumb-clr" onclick="clearThumb()" data-i18n="studio_remove_thumb">✕ Reset</button>
                 </div>
               </div>
             </div>
@@ -340,8 +349,28 @@
                 <div class="rrow"><input type="range" id="outspd" min="100" max="1500" value="350" oninput="rv(this,'rv-out','ms')"><span class="rv" id="rv-out">350ms</span></div>
               </div>
             </div>
-            <div class="fg" id="dur-wrap"><div class="fl" data-i18n="studio_duration_label">Durasi Tampil (detik) (0 = manual hide)</div>
-              <div class="rrow"><input type="range" id="dur" min="0" max="30" value="5" step="0.5" oninput="rv(this,'rv-dur','s');updateAccSummaries()"><span class="rv" id="rv-dur">5s</span></div>
+
+            <!-- Video duration mode selector (video only) -->
+            <div class="fg" id="video-dur-mode-wrap" style="display:none;margin-top:6px;">
+              <div class="fl">Mode Durasi Pemutaran Video</div>
+              <div style="display:flex;gap:6px;margin-bottom:8px;">
+                <button type="button" class="athumb-mode-btn on" id="vdur-auto-btn" onclick="setVideoDurMode('auto')">🎬 Otomatis (Durasi Asli Video)</button>
+                <button type="button" class="athumb-mode-btn" id="vdur-custom-btn" onclick="setVideoDurMode('custom')">⏱️ Kustom (Detik)</button>
+              </div>
+            </div>
+
+            <!-- Duration slider (for images or custom video duration) -->
+            <div class="fg" id="dur-wrap">
+              <div class="fl" id="dur-label" data-i18n="studio_duration_label">Durasi Tampil (detik)</div>
+              <div class="rrow"><input type="range" id="dur" min="0.5" max="60" value="5" step="0.5" oninput="rv(this,'rv-dur','s');updateAccSummaries()"><span class="rv" id="rv-dur">5s</span></div>
+            </div>
+
+            <!-- Loop toggle (video only) -->
+            <div class="fg" id="video-loop-wrap" style="display:none;margin-top:6px;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:0.75rem;cursor:pointer;color:var(--tx2);">
+                <input type="checkbox" id="video-loop-check" style="width:16px;height:16px;accent-color:var(--brand);">
+                <span>Loop Video (Ulangi video secara terus menerus)</span>
+              </label>
             </div>
           </div>
         </div>
@@ -820,13 +849,20 @@ function render(){
     fs=fs.filter(f=>getType(f.name)===filt);
   } else {
     // Sembunyikan audio yang merupakan companion audio dari meme visual
-    const companionAudios = new Set(
-      files.map(f => f.settings && f.settings.companionAudio).filter(Boolean)
-    );
+    const companionAudios = new Set();
+    files.forEach(f => {
+      const ca = (f.settings && f.settings.companionAudio) || f.companionAudio;
+      if (ca) {
+        companionAudios.add(ca);
+        const baseName = ca.split(/[\\/]/).pop();
+        if (baseName) companionAudios.add(baseName);
+      }
+    });
     fs = fs.filter(f => {
       if (getType(f.name) === 'audio') {
-        if (f.settings && (f.settings.isCompanionOnly || f.settings.hiddenFromDeck)) return false;
-        if (companionAudios.has(f.name)) return false;
+        const s = f.settings || {};
+        if (s.isCompanionOnly || s.hiddenFromDeck || f.isCompanionOnly || f.hiddenFromDeck) return false;
+        if (companionAudios.has(f.name) || companionAudios.has(f.filename)) return false;
       }
       return true;
     });
@@ -999,7 +1035,8 @@ function openM(e,name){
     v.onloadedmetadata=()=>{
       origW=v.videoWidth; origH=v.videoHeight;
       fillSz(s);
-      setCanvasThumb(null, s.thumbnailData||null);
+      const activeThumb = s.thumbnailData || ('/api/thumb/' + encodeURIComponent(name));
+      setCanvasThumb(null, activeThumb);
     };
     if(mp) { mp.appendChild(v); }
     initThumbPicker(url, s.thumbnailData||null);
@@ -1011,8 +1048,19 @@ function openM(e,name){
   sv('aout', s.animOut||'fade');
   srng('inspd',  s.animInSpeed||400,  'rv-in',  'ms');
   srng('outspd', s.animOutSpeed||350, 'rv-out', 'ms');
-  srng('dur',    s.duration!=null?s.duration:5, 'rv-dur','s');
+  srng('dur',    s.duration!=null && s.duration>0 ? s.duration : 5, 'rv-dur','s');
   srng('vol',    s.volume!=null?s.volume:80,    'rv-vol','%');
+
+  // Video duration mode & loop setup
+  if (t === 'video') {
+    const vMode = s.durationMode || (s.duration && s.duration > 0 ? 'custom' : 'auto');
+    setVideoDurMode(vMode);
+    document.getElementById('video-loop-check').checked = Boolean(s.loop);
+  } else {
+    document.getElementById('video-dur-mode-wrap').style.display = 'none';
+    document.getElementById('video-loop-wrap').style.display = 'none';
+    document.getElementById('dur-wrap').style.display = (t === 'image') ? '' : 'none';
+  }
 
   curW=s.maxW||600; curH=s.maxH||400;
   aspectRatio = curW / curH;
@@ -1036,7 +1084,6 @@ function openM(e,name){
   syncSnap();
 
   document.getElementById('thumb-section').style.display = (t==='video') ? '' : 'none';
-  document.getElementById('dur-wrap').style.display = (t==='video') ? 'none' : '';
   document.getElementById('audio-thumb-wrap').style.display = (t==='audio') ? '' : 'none';
   document.getElementById('acc-anim').style.display = (t==='audio') ? 'none' : '';
   document.getElementById('acc-pos').style.display = (t==='audio') ? 'none' : '';
@@ -1480,6 +1527,27 @@ function initCropDrag(){
 
 
 
+let currentVideoDurMode = 'auto'; // 'auto' | 'custom'
+
+function setVideoDurMode(mode){
+  currentVideoDurMode = mode;
+  const autoBtn = document.getElementById('vdur-auto-btn');
+  const customBtn = document.getElementById('vdur-custom-btn');
+  const durWrap = document.getElementById('dur-wrap');
+  const durLabel = document.getElementById('dur-label');
+
+  if(autoBtn) autoBtn.classList.toggle('on', mode === 'auto');
+  if(customBtn) customBtn.classList.toggle('on', mode === 'custom');
+
+  if(mode === 'auto'){
+    if(durWrap) durWrap.style.display = 'none';
+  } else {
+    if(durWrap) durWrap.style.display = '';
+    if(durLabel) durLabel.textContent = 'Durasi Tampil Kustom (detik)';
+  }
+  updateAccSummaries();
+}
+
 function initThumbPicker(url, savedThumb){
   thumbChanged = false;
   const tv = document.getElementById('thumb-video');
@@ -1487,63 +1555,78 @@ function initThumbPicker(url, savedThumb){
   const timeEl = document.getElementById('thumb-time');
   const curEl = document.getElementById('thumb-cur');
 
-  // Show saved thumb if exists
+  // Show saved thumb if exists, or server generated thumbnail
   if(savedThumb){
     thumbDataUrl = savedThumb;
-    curEl.innerHTML = '<img src="'+savedThumb+'">';
+    curEl.innerHTML = '<img src="'+savedThumb+'" style="width:100%;height:100%;object-fit:cover;">';
   } else {
     thumbDataUrl = null;
-    curEl.innerHTML = '<span>none</span>';
+    const serverThumbUrl = '/api/thumb/' + encodeURIComponent(editing);
+    curEl.innerHTML = '<img src="' + serverThumbUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML=\'<span>none</span>\'">';
   }
 
   tv.src = url;
   tv.onloadedmetadata = () => {
-    const dur = tv.duration;
+    const dur = tv.duration || 1;
     slider.max = dur;
-    slider.value = 0;
-    timeEl.textContent = '0:00 / '+fmt(dur);
-    // Seek to 0 to show first frame
-    tv.currentTime = 0;
+    slider.value = Math.min(0.5, dur * 0.1);
+    timeEl.textContent = fmt(slider.value) + ' / ' + fmt(dur);
+    tv.currentTime = parseFloat(slider.value);
   };
+
   tv.onseeked = () => {
-    // Live preview: draw current frame on a temp canvas & show in slider area
-    const tmp = document.createElement('canvas');
-    tmp.width = tv.videoWidth; tmp.height = tv.videoHeight;
-    tmp.getContext('2d').drawImage(tv, 0, 0);
-    slider.style.background = 'linear-gradient(to right, var(--brand) 0%, var(--brand) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) 100%)';
+    if(tv.duration && slider){
+      slider.style.background = 'linear-gradient(to right, var(--brand) 0%, var(--brand) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) '+(tv.currentTime/tv.duration*100)+'%, var(--bd2) 100%)';
+    }
   };
 }
 
 function scrubThumb(val){
   const tv = document.getElementById('thumb-video');
   const timeEl = document.getElementById('thumb-time');
-  if(!tv.duration) return;
+  if(!tv || !tv.duration) return;
   tv.currentTime = parseFloat(val);
   timeEl.textContent = fmt(tv.currentTime)+' / '+fmt(tv.duration);
 }
 
 function captureThumb(){
   const tv = document.getElementById('thumb-video');
-  if(!tv.videoWidth) return;
+  if(!tv || !tv.videoWidth) {
+    toast('Tunggu video dimuat...');
+    return;
+  }
   const c = document.createElement('canvas');
-  // Store at reasonable size
-  const scale = Math.min(1, 640/tv.videoWidth);
-  c.width = Math.round(tv.videoWidth*scale);
-  c.height = Math.round(tv.videoHeight*scale);
+  const scale = Math.min(1, 480 / tv.videoWidth);
+  c.width = Math.max(160, Math.round(tv.videoWidth * scale));
+  c.height = Math.max(90, Math.round(tv.videoHeight * scale));
   c.getContext('2d').drawImage(tv, 0, 0, c.width, c.height);
   thumbDataUrl = c.toDataURL('image/jpeg', 0.85);
   thumbChanged = true;
-  document.getElementById('thumb-cur').innerHTML = '<img src="'+thumbDataUrl+'">';
+  document.getElementById('thumb-cur').innerHTML = '<img src="'+thumbDataUrl+'" style="width:100%;height:100%;object-fit:cover;">';
   setCanvasThumb(null, thumbDataUrl);
-  toast('Thumbnail captured!');
+  toast('✓ Frame thumbnail berhasil dipilih!');
+}
+
+function onCustomVideoThumb(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    thumbDataUrl = e.target.result;
+    thumbChanged = true;
+    document.getElementById('thumb-cur').innerHTML = '<img src="'+thumbDataUrl+'" style="width:100%;height:100%;object-fit:cover;">';
+    setCanvasThumb(null, thumbDataUrl);
+    toast('✓ Thumbnail kustom di-upload!');
+  };
+  reader.readAsDataURL(file);
 }
 
 function clearThumb(){
-  thumbDataUrl = null; thumbChanged = true;
+  thumbDataUrl = null;
+  thumbChanged = true;
   document.getElementById('thumb-cur').innerHTML = '<span>none</span>';
   document.getElementById('thumb-slider').style.background = '';
   setCanvasThumb(null, null);
-  toast('Thumbnail removed');
+  toast('Thumbnail direset');
 }
 
 function fmt(s){ const m=Math.floor(s/60); return m+':'+(Math.floor(s%60)+'').padStart(2,'0'); }
@@ -1575,6 +1658,7 @@ function toggleChroma(){
   const tog = document.getElementById('chroma-toggle');
   tog.classList.toggle('on');
   document.getElementById('chroma-options').style.display = tog.classList.contains('on') ? '' : 'none';
+  updateAccSummaries();
 }
 function onChromaColorChange(hex){
   document.getElementById('chroma-color-swatch').style.background = hex;
@@ -1621,7 +1705,6 @@ function setAudioThumbMode(mode){
 }
 function onAudioThumbText(){
   const inp = document.getElementById('athumb-text');
-  // Limit to 5 characters (counting emoji as 1)
   const chars = [...inp.value];
   if(chars.length > 5) inp.value = chars.slice(0,5).join('');
 }
@@ -1663,6 +1746,8 @@ async function playPreview(){
     const chromaColEl = document.getElementById('chroma-color');
     const chromaSensEl = document.getElementById('chroma-sens');
     const chromaBlendEl = document.getElementById('chroma-blend');
+    const loopCheck = document.getElementById('video-loop-check');
+    const isVid = getType(editing) === 'video';
 
     const cfg = {
       filename: editing,
@@ -1673,7 +1758,9 @@ async function playPreview(){
       animOut: aoutEl ? aoutEl.value : 'fade',
       animInSpeed: inspdEl ? +inspdEl.value : 400,
       animOutSpeed: outspdEl ? +outspdEl.value : 350,
-      duration: getType(editing)==='video' ? 0 : (durEl ? +durEl.value : 5),
+      durationMode: isVid ? currentVideoDurMode : 'custom',
+      duration: (isVid && currentVideoDurMode === 'auto') ? 0 : (durEl ? +durEl.value : 5),
+      loop: isVid && loopCheck ? loopCheck.checked : false,
       maxW: mwEl ? (+mwEl.value || 600) : 600,
       maxH: mhEl ? (+mhEl.value || 400) : 400,
       volume: volEl ? +volEl.value : 80,
@@ -1697,7 +1784,7 @@ async function playPreview(){
     });
 
     if (res.ok) {
-      toast('Preview terkirim ke OBS Studio');
+      toast('▶ Test play terkirim ke OBS Studio');
       if(btn) {
         btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Terkirim ke OBS</span>';
         setTimeout(() => { if(btn) { btn.innerHTML = origHtml; btn.disabled = false; } }, 1600);
@@ -1718,6 +1805,10 @@ async function saveM(){
   const ca=document.getElementById('alist').value||'';
   const dn=document.getElementById('dname').value.trim();
   const t=getType(editing);
+  const isVid = t === 'video';
+  const durEl = document.getElementById('dur');
+  const loopCheck = document.getElementById('video-loop-check');
+
   const cfg={
     stageFormat: currentStageFormat,
     stageW: stageW,
@@ -1726,7 +1817,9 @@ async function saveM(){
     animOut:document.getElementById('aout').value,
     animInSpeed:+document.getElementById('inspd').value,
     animOutSpeed:+document.getElementById('outspd').value,
-    duration: t==='video' ? 0 : +document.getElementById('dur').value,
+    durationMode: isVid ? currentVideoDurMode : 'custom',
+    duration: (isVid && currentVideoDurMode === 'auto') ? 0 : (durEl ? +durEl.value : 5),
+    loop: isVid && loopCheck ? loopCheck.checked : false,
     maxW:+document.getElementById('mw').value||600,
     maxH:+document.getElementById('mh').value||400,
     volume:+document.getElementById('vol').value,
@@ -1826,9 +1919,15 @@ function updateAccSummaries() {
   const inspd = document.getElementById('inspd');
   const dur = document.getElementById('dur');
   if (ain && aout) {
-    const durEl = document.getElementById('dur-wrap');
-    const durVisible = durEl && durEl.style.display !== 'none';
-    const durStr = durVisible ? ' · ' + (dur ? dur.value+'s' : '5s') : '';
+    const isVid = editing && getType(editing) === 'video';
+    let durStr = '';
+    if (isVid) {
+      durStr = (currentVideoDurMode === 'auto') ? ' · auto (durasi video)' : ' · ' + (dur ? dur.value+'s' : '5s');
+    } else {
+      const durEl = document.getElementById('dur-wrap');
+      const durVisible = durEl && durEl.style.display !== 'none';
+      durStr = durVisible ? ' · ' + (dur ? dur.value+'s' : '5s') : '';
+    }
     document.getElementById('acc-anim-summary').textContent =
       ain.value + ' → ' + aout.value + ' · ' + (inspd ? inspd.value+'ms' : '400ms') + durStr;
   }
@@ -2217,7 +2316,7 @@ async function useMyInstantsSound(mp3Url, title, mode) {
       await fetch('/api/media/' + encodeURIComponent(savedFilename) + '/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: title, category: 'sound effect' })
+        body: JSON.stringify({ name: title, category: 'sound effect', isCompanionOnly: Boolean(isCompanion) })
       });
 
       data = {

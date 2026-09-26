@@ -3,6 +3,9 @@ node_modules/
 
 # Build and Packaging Outputs
 dist/
+release/
+src-tauri/target/
+src-tauri/gen/
 
 # User Data & Media Directories (Generated/Local)
 assets/

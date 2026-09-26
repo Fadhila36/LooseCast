@@ -16,6 +16,11 @@ const LOCK_PATH = path.join(ROOT_DIR, 'package-lock.json');
 const type = (process.argv[2] || 'patch').toLowerCase();
 
 function bump(currentVersion, bumpType) {
+  // If user passes explicit semver format directly like "1.2.0"
+  if (/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(bumpType)) {
+    return bumpType;
+  }
+
   const parts = currentVersion.split('.').map((p) => parseInt(p, 10));
   if (parts.length !== 3 || parts.some(isNaN)) {
     throw new Error(`Invalid semver version: "${currentVersion}"`);

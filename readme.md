@@ -164,7 +164,7 @@ LooseCast/
 
 ---
 
-## 📦 Building Executable Packages
+## 📦 Building Executable Packages & Local Release
 
 To build production-ready installer and standalone binaries using Tauri v2:
 
@@ -172,11 +172,42 @@ To build production-ready installer and standalone binaries using Tauri v2:
 npm run build
 # atau
 npm run tauri:build
+
+# Siapkan output ke folder ./release (Setup.exe, Portable.exe, MSI, SHA256 checksums)
+node scripts/prepare-release.js
 ```
 
-Compiled executables will be output to:
-- `src-tauri/target/release/bundle/nsis/` (Windows NSIS Setup `.exe`)
-- `src-tauri/target/release/bundle/msi/` (Windows MSI Installer)
+Compiled executables:
+- `release/LooseCast-Setup-<version>.exe` (Windows NSIS Setup)
+- `release/LooseCast-Portable-<version>.exe` (Standalone Portable)
+- `release/LooseCast_<version>_x64_en-US.msi` (Windows MSI Installer)
+
+---
+
+## 🚀 CI/CD & Automated GitHub Releases
+
+Project ini dilengkapi dengan **GitHub Actions CI/CD** (`.github/workflows/release.yml`):
+
+### 1. Rilis Otomatis via GitHub UI (Manual Workflow Dispatch)
+1. Buka tab **Actions** di GitHub repository.
+2. Pilih workflow **"Release & Build CI/CD"** di sidebar.
+3. Klik **"Run workflow"** dan pilih:
+   - **Version Bump Type**: `patch` (+0.0.1), `minor` (+0.1.0), `major` (+1.0.0), atau `custom` (isi versi manual).
+   - Opsi *Draft* atau *Pre-release* jika diperlukan.
+4. GitHub Actions akan secara otomatis:
+   - Menjalankan seluruh test suite (`npm test`).
+   - Menaikkan versi di `package.json`, `package-lock.json`, `tauri.conf.json`, dan `Cargo.toml`.
+   - Membuat Git Commit dan Git Tag `vX.Y.Z`.
+   - Melakukan kompilasi release build Windows.
+   - Mengunggah installer `.exe`, portable `.exe`, `.msi`, dan checksum ke **GitHub Releases**.
+
+### 2. Rilis via Git Tag Push
+Cukup buat tag versi baru dan push ke repository:
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
+Workflow CI/CD akan mendeteksi tag baru dan otomatis mem-build serta mempublikasikan rilisnya.
 
 ---
 

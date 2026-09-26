@@ -1,0 +1,135 @@
+name: Release & Build CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version Bump Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - 'patch'
+          - 'minor'
+          - 'major'
+          - 'custom'
+          - 'none (build current version)'
+      custom_version:
+        description: 'Custom Version (Only used if bump_type is "custom", e.g. 1.2.0)'
+        required: false
+        default: ''
+        type: string
+      is_draft:
+        description: 'Create Draft Release'
+        required: false
+        default: false
+        type: boolean
+      is_prerelease:
+        description: 'Mark as Pre-release'
+        required: false
+        default: false
+        type: boolean
+
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Windows Release & Publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Run Test Suite
+        run: npm test
+
+      - name: Determine & Apply Version Bump
+        id: versioning
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUMP_TYPE="${{ github.event.inputs.bump_type }}"
+            CUSTOM_VER="${{ github.event.inputs.custom_version }}"
+            
+            if [ "$BUMP_TYPE" = "custom" ] && [ -n "$CUSTOM_VER" ]; then
+              echo "Applying custom version bump: $CUSTOM_VER"
+              node scripts/bump-version.js "$CUSTOM_VER"
+            elif [ "$BUMP_TYPE" != "none (build current version)" ]; then
+              echo "Applying version bump: $BUMP_TYPE"
+              node scripts/bump-version.js "$BUMP_TYPE"
+            else
+              echo "Building current version without bump"
+            fi
+            
+            # Extract new version
+            VERSION=$(node -p "require('./package.json').version")
+            TAG_NAME="v$VERSION"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+            
+            # Git config and commit if version files changed
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            
+            if [ -n "$(git status --porcelain package.json package-lock.json src-tauri/tauri.conf.json src-tauri/Cargo.toml)" ]; then
+              git add package.json package-lock.json src-tauri/tauri.conf.json src-tauri/Cargo.toml
+              git commit -m "chore(release): bump version to $TAG_NAME [skip ci]"
+              git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+              git push origin HEAD:${{ github.ref_name }}
+              git push origin "$TAG_NAME"
+            fi
+          else
+            # Triggered via git tag push
+            TAG_NAME="${{ github.ref_name }}"
+            VERSION="${TAG_NAME#v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Tauri Desktop Application
+        run: npx tauri build
+
+      - name: Standardize & Prepare Release Artifacts
+        run: node scripts/prepare-release.js
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.versioning.outputs.tag_name }}
+          name: LooseCast ${{ steps.versioning.outputs.tag_name }}
+          draft: ${{ github.event.inputs.is_draft || false }}
+          prerelease: ${{ github.event.inputs.is_prerelease || false }}
+          generate_release_notes: true
+          files: |
+            release/LooseCast-Setup-*.exe
+            release/LooseCast-Portable-*.exe
+            release/LooseCast_*_x64_en-US.msi
+            release/SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
